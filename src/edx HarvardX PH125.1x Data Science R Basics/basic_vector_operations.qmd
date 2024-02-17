@@ -1,0 +1,72 @@
+---
+title: "Basic Vector Operations"
+format: html
+editor: visual
+---
+
+ChatGPT give me r examples showing the following cases:
+
+Subset a vector based on properties of another vector. Use multiple logical operators to index vectors. Extract the indices of vector elements satisfying one or more logical conditions. Extract the indices of vector elements matching with another vector. Determine which elements in one vector are present in another vector.
+
+### 1. Subset a Vector Based on Properties of Another Vector
+
+Let's say we have two vectors, `v1` and `v2`. We want to subset `v1` where elements in `v2` are greater than a specific value.
+
+```{r}
+v1 <- c(10, 20, 30, 40, 50)
+v2 <- c(1, 2, 6, 4, 5)
+# Subset v1 where elements in v2 are greater than 3
+result <- v1[v2 > 3]
+print(result)
+```
+
+### 2. Use Multiple Logical Operators to Index Vectors
+
+If we want to select elements from a vector that satisfy multiple conditions, we can use logical operators.
+
+```{r}
+v <- c(10, 20, 30, 40, 50)
+# Select elements greater than 15 and less than 45
+result <- v[v > 15 & v < 45]
+print(result)
+```
+
+### 3. Extract the Indices of Vector Elements Satisfying One or More Logical Conditions
+
+We can use `which()` function to get indices of elements that meet certain conditions.
+
+```{r}
+v <- c(10, 20, 30, 40, 50)
+# Get indices of elements greater than 25
+indices <- which(v > 25)
+print(indices)
+```
+
+### 4. Extract the Indices of Vector Elements Matching with Another Vector
+
+To find the indices in one vector that match the elements of another vector, `match()` function can be used.
+
+```{r}
+v1 <- c(10, 20, 30, 40, 50)
+v2 <- c(20, 40)
+# Get indices of v1 that match elements in v2
+indices <- match(v2, v1)
+print(indices)
+```
+
+### 5. Determine Which Elements in One Vector Are Present in Another Vector
+
+To identify which elements of one vector are present in another, `%in%` operator can be used, and to get the elements themselves, we can subset the vector based on this logical vector.
+
+```{r}
+v1 <- c(10, 20, 30, 40, 50)
+v2 <- c(20, 40, 60)
+# Determine which elements of v1 are in v2
+is_present <- v1 %in% v2
+print(is_present)
+# To get the elements themselves
+elements_present <- v1[is_present]
+print(elements_present)
+```
+
+These examples cover a range of operations for subsetting and indexing vectors in R based on various conditions and relationships between vectors.

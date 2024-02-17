@@ -1,0 +1,22 @@
+---
+title: "Test of Proportion"
+format: html
+editor: visual
+url: https://online.stat.psu.edu/statprogram/reviews/statistical-concepts/proportions
+---
+
+# **S.6 Test of Proportion**
+
+Let us consider the parameter p of the population proportion. For instance, we might want to know the proportion of males within a total population of adults when we conduct a survey. A test of proportion will assess whether or not a sample from a population represents the true proportion of the entire population.
+
+![](tp1.png)
+
+## **Example S.6.1**
+
+Newborn babies are more likely to be boys than girls. A random sample found 13,173 boys were born among 25,468 newborn children. The sample proportion of boys was 0.5172. Is this sample evidence that the birth of boys is more common than the birth of girls in the entire population?
+
+![](tp2.png)
+
+![](tp3.png)
+
+![](tp4.png)

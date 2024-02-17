@@ -1,0 +1,159 @@
+### Testing Joins
+
+Load libraries
+
+```{r}
+library(readxl)
+library(dplyr)
+```
+
+Open dataset
+
+```{r}
+orders <- read_excel("g://my drive//current//courses//datasets//8h_ut_course//Sample Superstore.xlsx", sheet = "Orders")
+returns <- read_excel("g://my drive//current//courses//datasets//8h_ut_course//Sample Superstore.xlsx", sheet = "Returns")
+```
+
+Display information about columns and their data types
+
+```{r}
+print(sapply(orders, class))
+print(str(orders))
+```
+
+Display top rows
+
+```{r}
+head(orders)
+```
+
+### Check the number of duplicate rows in the orders table
+
+```{r}
+nrow(orders[duplicated(orders),])
+nrow(orders[!duplicated(orders),])
+```
+
+The result shows no duplicate rows in the orders table, each row is unique in its values.
+
+Let us examine the unique values using **`dplyr::distinct()`**
+
+```{r}
+nrow(orders %>% distinct())
+```
+
+What about distinct order ids
+
+```{r}
+nrow(orders %>% distinct(`Order ID`))
+```
+
+Similarly, we can check the number of unique order ids in the orders table using the **`base::unique()`** function
+
+```{r}
+length(unique(orders$`Order ID`))
+```
+
+The number of unique is 6455, which is less that the original \~9000 rows which suggests that there are multiple rows with similar order id!
+
+Let us get those non-unique values –\> duplicated values.
+
+```{r}
+# Find all duplicated Order IDs (including the first occurrence)
+duplicated_order_ids <- orders$`Order ID`[duplicated(orders$`Order ID`) | duplicated(orders$`Order ID`, fromLast = TRUE)]
+
+# Get the unique Order IDs from the duplicated ones
+unique_duplicated_order_ids <- unique(duplicated_order_ids)
+
+# Print the unique non-unique Order IDs
+length(unique_duplicated_order_ids)
+
+```
+
+### Check the number of duplicate rows in the returns table
+
+```{r}
+nrow(returns[duplicated(returns),])
+nrow(returns[!duplicated(returns),])
+```
+
+Return the number of unique order ids in the returns table
+
+```{r}
+length(unique(returns$`Order ID`))
+```
+
+Implement left join orders with returns
+
+```{r}
+lj_orders_returns <- left_join(orders, returns, by = "Order ID")
+nrow(lj_orders_returns)
+```
+
+Implement left join returns with orders
+
+```{r}
+lj_returns_orders <- left_join(returns, orders, by = "Order ID")
+nrow(lj_returns_orders)
+```
+
+Implement right join
+
+```{r}
+print(paste("Number of rows in returns =", nrow(returns)))
+
+rj_orders_returns <- right_join(orders, returns, by = "Order ID")
+
+print(paste("Number of rows in right join between orders and returns =",nrow(rj_orders_returns)))
+```
+
+Let us find the the rows in the right join orders vs returns relationship that are not in the original returns table, that is the rows that were added by the right join due to the duplicate order ids in the orders table.
+
+you can achieve an anti-left join using the **`anti_join()`** function. This function will return all rows from the first (left) table that do not have corresponding rows in the second (right) table, based on matching key columns.
+
+```{r}
+
+anti_left_join_result <- anti_join(rj_orders_returns, returns, by = "Order ID")
+
+nrow(anti_left_join_result)
+# View the result
+head(anti_left_join_result)
+
+nrow(rj_orders_returns)
+nrow(returns)
+```
+
+This attempt to find the added rows after the right join was un-successful because all the ids in the joined relation exists in the original one.
+
+So let us find the duplicate ids in the 1671 rows instead.
+
+```{r}
+x<-duplicated(rj_orders_returns$'Order ID')
+
+length(x[x == TRUE])
+rj_orders_returns[x,]
+```
+
+Let us display the columns in reverse order
+
+```{r}
+df_reversed_columns <- rj_orders_returns[, ncol(rj_orders_returns):1]
+
+# Now if you want to display the first few rows of this reversed dataframe
+head(df_reversed_columns)
+```
+
+Lets try another method to find the duplicates order ids after the join and that is by using the group by and counting rows.
+
+```{r}
+order_id_counts <- rj_orders_returns %>%
+  group_by(`Order ID`) %>%
+  summarise(Count = n()) %>%
+  filter(Count > 1) %>%
+  arrange(desc(Count))
+
+# View the results
+print(order_id_counts)
+```
+
+\

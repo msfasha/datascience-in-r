@@ -1,0 +1,292 @@
+|                           |
+|---------------------------|
+| title: "Basic Data Types" |
+| format: html              |
+| editor: visual            |
+
+# **Basic Data Types**
+
+**Contents**
+
+-   [**Variable Types**](https://www.cyclismo.org/tutorial/R/types.html#variable-types)
+
+-   [**Tables**](https://www.cyclismo.org/tutorial/R/types.html#tables)
+
+We look at some of the ways that R can store and organize data. This is a basic introduction to a small subset of the different data types recognized by R and is not comprehensive in any sense. The main goal is to demonstrate the different kinds of information R can handle. It is assumed that you know how to enter data or read data files which is covered in the first chapter.
+
+## [**2.1. Variable Types**](https://www.cyclismo.org/tutorial/R/types.html#id1)
+
+### **2.1.1. Numbers**
+
+The way to work with real numbers has already been covered in the first chapter and is briefly discussed here. The most basic way to store a number is to make an assignment of a single number:
+
+```{r}
+a <- 3
+```
+
+The “\<-” tells R to take the number to the right of the symbol and store it in a variable whose name is given on the left. You can also use the “=” symbol. When you make an assignment R does not print out any information. If you want to see what value a variable has just type the name of the variable on a line and press the enter key:
+
+```{r}
+a[1]  
+```
+
+This allows you to do all sorts of basic operations and save the numbers:
+
+```{r}
+b <- sqrt(a*a+3)
+b
+```
+
+If you want to get a list of the variables that you have defined in a particular session you can list them all using the ls command:
+
+```{r}
+ls()
+```
+
+You are not limited to just saving a single number. You can create a list (also called a “vector”) using the c command:
+
+```{r}
+a <- c(1,2,3,4,5)
+a[1] 
+a+1[1]
+mean(a)
+var(a) 
+```
+
+You can get access to particular entries in the vector in the following manner:
+
+```{r}
+a <- c(1,2,3,4,5) 
+a[1]
+a[2]
+a[0] 
+a[5]
+a[6]
+```
+
+Note that the zero entry is used to indicate how the data is stored. The first entry in the vector is the first number, and if you try to get a number past the last number you get “NA.”
+
+To initialize a list of numbers the *numeric* command can be used. For example, to create a list of 10 numbers, initialized to zero, use the following command:
+
+```{r}
+a <- numeric(10)
+a
+```
+
+If you wish to determine the data type used for a variable the *type* command:
+
+```{r}
+typeof(a)
+```
+
+### **2.1.2. Strings**
+
+You are not limited to just storing numbers. You can also store strings. A string is specified by using quotes. Both single and double quotes will work:
+
+```{r}
+a <- "hello"
+a
+
+b <- c("hello","there")
+b
+
+b[1]
+```
+
+The name of the type given to strings is *character*,
+
+```{r}
+typeof(a) 
+a = character(20)
+a 
+```
+
+### **2.1.3. Factors**
+
+Another important way R can store data is as a factor. Often times an experiment includes trials for different levels of some explanatory variable. For example, when looking at the impact of carbon dioxide on the growth rate of a tree you might try to observe how different trees grow when exposed to different preset concentrations of carbon dioxide. The different levels are also called factors.
+
+Assuming you know how to read in a file, we will look at the data file given in the first chapter. Several of the variables in the file are factors:
+
+```{r}
+summary(tree$CHBR) 
+
+```
+
+Because the set of options given in the data file corresponding to the “CHBR” column are not all numbers R automatically assumes that it is a factor. When you use summary on a factor it does not print out the five point summary, rather it prints out the possible values and the frequency that they occur.
+
+In this data set several of the columns are factors, but the researchers used numbers to indicate the different levels. For example, the first column, labeled “C,” is a factor. Each trees was grown in an environment with one of four different possible levels of carbon dioxide. The researchers quite sensibly labeled these four environments as 1, 2, 3, and 4. Unfortunately, R cannot determine that these are factors and must assume that they are regular numbers.
+
+This is a common problem and there is a way to tell R to treat the “C” column as a set of factors. You specify that a variable is a factor using the factor command. In the following example we convert tree\$C into a factor:
+
+```{r}
+tree$C
+ 
+summary(tree$C)  
+ 
+
+tree$C <- factor(tree$C)
+
+tree$C 
+
+summary(tree$C) 
+
+levels(tree$C) 
+```
+
+Once a vector is converted into a set of factors then R treats it differently. A set of factors have a discrete set of possible values, and it does not make sense to try to find averages or other numerical descriptions. One thing that is important is the number of times that each factor appears, called their “frequencies,” which is printed using the summary command.
+
+### **2.1.4. Data Frames**
+
+Another way that information is stored is in data frames. This is a way to take many vectors of different types and store them in the same variable. The vectors can be of all different types. For example, a data frame may contain many lists, and each list might be a list of factors, strings, or numbers.
+
+There are different ways to create and manipulate data frames. Most are beyond the scope of this introduction. They are only mentioned here to offer a more complete description. Please see the first chapter for more information on data frames.
+
+One example of how to create a data frame is given below:
+
+```{r}
+ 
+a <- c(1,2,3,4)
+b <- c(2,4,6,8)
+levels <- factor(c("A","B","A","B"))
+
+bubba <- data.frame(first=a,second=b,f=levels)
+
+summary(bubba)
+
+bubba$first
+
+bubba$second 
+
+bubba$f
+```
+
+### **2.1.5. Logical**
+
+Another important data type is the logical type. There are two predefined variables, *TRUE* and *FALSE*:
+
+```{r}
+a = TRUE
+
+typeof(a)
+
+b = FALSE
+
+typeof(b)
+```
+
+The standard logical operators can be used:
+
+|          |                       |
+|----------|-----------------------|
+| \<       | less than             |
+| \\       | great than            |
+| \<=      | less than or equal    |
+| =        | greater than or equal |
+| ==       | equal to              |
+| !=       | not equal to          |
+| \|       | entry wise or         |
+| \|\|     | or                    |
+| !        | not                   |
+| &        | entry wise and        |
+| &&       | and                   |
+| xor(a,b) | exclusive or          |
+
+Note that there is a difference between operators that act on entries within a vector and the whole vector:
+
+```{r}
+a = c(TRUE,FALSE)
+b = c(FALSE,FALSE)
+
+a|b
+
+a[1]||b[1]
+
+xor(a,b)
+```
+
+There are a large number of functions that test to determine the type of a variable. For example the *is.numeric* function can determine if a variable is numeric:
+
+```{r}
+a = c(1,2,3) 
+ 
+is.numeric(a)
+
+is.factor(a)
+```
+
+## [**2.2. Tables**](https://www.cyclismo.org/tutorial/R/types.html#id2)
+
+Another common way to store information is in a table. Here we look at how to define both one way and two way tables. We only look at how to create and define tables; the functions used in the analysis of proportions are examined in another chapter.
+
+### **2.2.1. One Way Tables**
+
+The first example is for a one way table. One way tables are not the most interesting example, but it is a good place to start. One way to create a table is using the table command. The arguments it takes is a vector of factors, and it calculates the frequency that each factor occurs. Here is an example of how to create a one way table:
+
+```{r}
+a <- factor(c("A","A","B","A","B","B","C","A","C"))
+ 
+results <- table(a)
+results
+ 
+attributes(results)
+ 
+summary(results) 
+```
+
+If you know the number of occurrences for each factor then it is possible to create the table directly, but the process is, unfortunately, a bit more convoluted. There is an easier way to define one-way tables (a table with one row), but it does not extend easily to two-way tables (tables with more than one row). You must first create a matrix of numbers. A matrix is like a vector in that it is a list of numbers, but it is different in that you can have both rows and columns of numbers. For example, in our example above the number of occurrences of “A” is 4, the number of occurrences of “B” is 3, and the number of occurrences of “C” is 2. We will create one row of numbers. The first column contains a 4, the second column contains a 3, and the third column contains a 2:
+
+```{r}
+occur <- matrix(c(4,3,2),ncol=3,byrow=TRUE)
+
+occur
+```
+
+At this point the variable “occur” is a matrix with one row and three columns of numbers. To dress it up and use it as a table we would like to give it labels for each columns just like in the previous example. Once that is done we convert the matrix to a table using the as.table command:
+
+```{r}
+colnames(occur) <- c("A","B","C")
+
+occur
+
+occur <- as.table(occur)
+
+occur
+
+attributes(occur)
+```
+
+### **2.2.2. Two Way Tables**
+
+If you want to add rows to your table just add another vector to the argument of the table command. In the example below we have two questions. In the first question the responses are labeled “Never,” “Sometimes,” or “Always.” In the second question the responses are labeled “Yes,” “No,” or “Maybe.” The set of vectors “a,” and “b,” contain the response for each measurement. The third item in “a” is how the third person responded to the first question, and the third item in “b” is how the third person responded to the second question.
+
+```{r}
+a <- c("Sometimes","Sometimes","Never","Always","Always","Sometimes","Sometimes","Never")  
+b <- c("Maybe","Maybe","Yes","Maybe","Maybe","No","Yes","No")  
+
+results <- table(a,b)  
+
+results
+```
+
+The table command allows us to do a very quick calculation, and we can immediately see that two people who said “Maybe” to the first question also said “Sometimes” to the second question.
+
+Just as in the case with one-way tables it is possible to manually enter two way tables. The procedure is exactly the same as above except that we now have more than one row. We give a brief example below to demonstrate how to enter a two-way table that includes breakdown of a group of people by both their gender and whether or not they smoke. You enter all of the data as one long list but tell R to break it up into some number of columns:
+
+```{r}
+gender_smoke <- matrix(c(70,120,65,140),ncol=2,byrow=TRUE)
+ 
+rownames(gender_smoke)<-c("male","female")  
+
+colnames(gender_smoke)<-c("smoke","nosmoke")  
+
+gender_smoke <- as.table(sexsmoke)  
+
+gender_smoke         
+```
+
+The matrix command creates a two by two matrix. The *byrow=TRUE* option indicates that the numbers are filled in across the rows first, and the *ncols=2* indicates that there are two columns.
+
+References
+
+https://www.cyclismo.org/tutorial/R/types.html
+https://www.cyclismo.org/tutorial/R/index.html

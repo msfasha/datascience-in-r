@@ -1,0 +1,25 @@
+---
+title: "Time Series Analysis"
+format: html
+editor: visual
+---
+
+-   Time Series Analysis in the broadest definition, a time series is any data set where the values are measured at different points in time.
+-   Many time series are uniformly spaced at a specific frequency, for example, hourly weather measurements, daily counts of web site visits, or monthly sales totals.
+-   Time series can also be irregularly spaced and sporadic, for example, time stamped data in a computer system's event log or a history of 911 emergency calls.
+-   Working with a time series of energy data, we'll see how techniques such as time-based indexing, resampling, and rolling windows can help us explore variations in electricity demand and renewable energy supply over time.
+
+#### Open Power Systems Data
+
+Load, wind and solar, prices in hourly resolution This data package contains different kinds of timeseries data relevant for power system modelling, namely electricity prices, electricity consumption (load) as well as wind and solar power generation and capacities. The data is aggregated either by country, control area or bidding zone. Geographical coverage includes the EU and some neighbouring countries. All variables are provided in hourly resolution. Where original data is available in higher resolution (half-hourly or quarter-hourly), it is provided in separate files. This package version only contains data provided by TSOs and power exchanges via ENTSO-E Transparency, covering the period 2015-mid 2020. See previous versions for historical data from a broader range of sources. All data processing is conducted in Python/pandas and has been documented in the Jupyter notebooks linked below.
+
+https://data.open-power-system-data.org/time_series/
+
+https://open-power-system-data.org/ https://data.open-power-system-data.org/time_series/2020-10-06 https://data.open-power-system-data.org/weather_data/2020-09-16 https://nbviewer.org/github/Open-Power-System-Data/datapackage_timeseries/tree/2020-10-06/
+
+-   Time series data structures
+-   Time-based indexing
+-   Visualizing time series data
+-   Seasonality
+-   Frequencies
+-   Trends
