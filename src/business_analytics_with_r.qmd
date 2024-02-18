@@ -527,7 +527,7 @@ Essentially this is a table (data frame), which consists of five variables each 
 In addition, it is often useful to know the structure of the object in order to get specific parts of it if needed. To this end we can use the str command:
 
 ```{r}
-str(iris)The first layer 
+str(iris) The first layer 
 ```
 
 ### Selecting and Subsetting Data
@@ -994,14 +994,14 @@ We will illustrate all this with the mtcars data: data(mtcars)
 
 #### Initiating the Graph
 
-The graph is initiated by this command:
+The graph is initiated by the command below.
+
+As we see this is the first layer - the empty plot on which we start doing a visualization.
 
 ```{r}
 library(ggplot2)
 ggplot(data=mtcars)
 ```
-
-As we see this is the first layer - the empty plot on which we start doing a visualization.
 
 #### Aesthetic Mapping or Type
 
@@ -1110,377 +1110,682 @@ All in all, there are many available geoms which can be used to create appealing
 
 -   geom_violin(stat_ydensity)
 
-All Colors and Shapes For both visual appeal, and for added informational content we can use different aesthetic properties. Taking the scatterplot for hp and mpg we can change the colors:
+#### All Colors and Shapes
 
-hp
+For both visual appeal, and for added informational content we can use different aesthetic properties.
 
-We can also incrase size:
+Taking the scatter plot for hp and mpg we can change the colors:
 
-10 100 200 300 hp
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg),
+color = "purple")
+```
+
+We can also increase the size:
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg),
+color = "purple", size=3)
+```
 
 We can also change the type of dots:
 
-ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg), color = "purple", size=3, shape=8)
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg),
+color = "purple", size=3, shape=8)
+```
 
 This, however, brings no additional information. We can add more insight by mapping a variable as the shape, color or size of the geom. For example we color the dots by how many cylinders the car has:
 
-ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg, color=as.factor(cyl)), size=3)
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg,
+color=as.factor(cyl)), size=3)
+```
 
 Note that because now the color is part of the mapping, the variable which gives the color should go with the other ones in the aes() brackets. Even more information can be added when we map the type of transmission (again transformed as factor) to points:
 
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg,
+color=as.factor(cyl), shape=as.factor(am)), size=3)
+```
+
 Another parameter that may be useful is alpha, which is a measure of transparency. Higher values of alpha are associated with a more solid color. We now map the variable am (transmission) to transparency:
 
-## Warning: Using alpha for a discrete variable is not advised.
+```{r}
+color=as.factor(mtcars$cyl)
 
-Keep in mind that ggplot2 will take into account the type of variable we are mapping to a given aesthetic and will create an appropriate scale. For example if we map the rear axle ratio (rat) to color, the scale will be changed as well:
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg,
+color=as.factor(cyl), alpha=as.factor(am)), size=3)
+```
 
-35
+Keep in mind that ggplot2 will take into account the type of variable we are mapping to a given aesthetic and will create an appropriate scale. For example if we map the rear axle ratio (drat) to color, the scale will be changed as well:
 
-30 as.factor(am) 0 1 25 drat
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg,
+color=drat, shape=as.factor(am)), size=3)
+```
 
-20 4.5 4.0
+#### Statistical Transformation
 
-3.5 15 3.0
+Some statistical transformations can be applied directly to the variables mapped. We now look at a log-log graphs of mpg and hp:
 
-10 100 200 300 hp
-
-Statistical Transformation Some statistical transformations can be applied directly to the variables mapped. We now look at a log-log graphs of mpg and hp:
-
-log(hp)
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = log(hp), y = log(mpg)),
+color = "purple", size=3)
+```
 
 Another common task is to add a trend line to a given graph. This is done with the stat_smooth function:
 
-## ?geom_smooth()? using method = ?loess? and formula ?y \~ x?
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg), size=3) +
+stat_smooth(mapping = aes(x = hp, y = mpg))
+```
 
 By default the smoothing method is a loess line but the user may specify an alternative methods, e.g. a regression line:
 
-## ?geom_smooth()? using formula ?y \~ x?
-
-100 200 300 hp
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg), size=3) +
+stat_smooth(mapping = aes(x = hp, y = mpg), method="lm")
+```
 
 The blue line is the point estimated and the shaded areas are the standard errors. We can have the overall trend line and colored points:
 
-## ?geom_smooth()? using formula ?y \~ x?
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg,
+col = as.factor(cyl)), size=3) + stat_smooth(mapping = aes(x = hp, y = mpg), method="lm")
+```
 
-Alternatively, we can have separate trand lines for all groups by modifying the appropriate geom:
+Alternatively, we can have separate trend lines for all groups by modifying the appropriate geom:
 
-## ?geom_smooth()? using formula ?y \~ x?
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg,
+col = as.factor(cyl)), size=3) + stat_smooth(mapping =
+aes(x = hp, y = mpg, col = as.factor(cyl)), method="lm")
+```
 
 This allows us to observe if the trend is robust across group or if it is excessively-driven by a given sub-group. In this case it is not robust.
 
-Facetting An additional way to think about different group of data, we can use facets - i.e. juxtaposed plots that map the same variables but differ across dimension. One can use the two command - facet_wrap (split across one dimension) and facet_grid (split across one or more dimensions). We now investigate if the link between mpg and hp holds across different number of engine cylinders. ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg), size=3) + stat_smooth(mapping = aes(x = hp, y = mpg), method="lm") + facet_wrap(\~ cyl) \## ?geom_smooth()? using formula ?y \~ x?
+#### Facetting
+
+An additional way to think about different group of data, we can use facets - i.e. juxtaposed plots that map the same variables but differ across dimension. One can use the two command - facet_wrap (split across one dimension) and facet_grid (split across one or more dimensions).
+
+We now investigate if the link between mpg and hp holds across different number of engine cylinders.
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg), size=3) + stat_smooth(mapping = aes(x = hp, y = mpg), method="lm") + facet_wrap(~ cyl)
+
+# geom_smooth() using formula y ~ x
+```
 
 Additionally, the facet_grid() command allows to see a grid of two variables that modulate the relationship of those we plot. For concreteness we now look at the cylinders and type of transmission as interfering with the link between fuel efficiency and horsepower:
 
-## Warning in qt((1 - level)/2, df): NaNs produced
-
-## Warning in max(ids, na.rm = TRUE): no non-missing arguments to max; returning \## -Inf
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg), size=3) +
+stat_smooth(mapping = aes(x = hp, y = mpg), method="lm") +
+facet_grid(am ~ cyl)
+```
 
 As data sets become larger and more complicated such nuanced views of data hold the potential to reveal unexpected relationships and to invalidate some expected ones . Additionally, they provide a clearer view of data across specific groups.
 
-Annotating and Themes There are many ways to annotate the graphs. Paticularly useful are the utilities to label axes, and to add main titles. To label axes, use labs(), and ggtitle() to add title, and xlim and ylim to set the ranges of the two axes:
+#### Annotating and Themes
 
-## ?geom_smooth()? using formula ?y \~ x?
+There are many ways to annotate the graphs. Particularly useful are the utilities to label axes, and to add main titles. To label axes, use labs(), and ggtitle() to add title, and xlim and ylim to set the ranges of the two axes:
 
-Link Between Fuel Efficiency and Engine Power
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg), size=3,) +
+stat_smooth(mapping = aes(x = hp, y = mpg), method="lm") +
+ggtitle("Link Between Fuel Efficiency and Engine Power") +
+labs(x = "Horsepower", y = "Miles per Gallon") + ylim(0, 40)
+```
 
-The overall view of the graphs is controlled by the ggplot2 themes. There one can modify all aspects of different elements (incl. sizes). Those can either be edited separately or the user can change the theme altogether. This is done through the command theme\_:
+The overall view of the graphs is controlled by the ggplot2 themes. There one can modify all aspects of different elements (incl. sizes). Those can either be edited separately or the user can change the theme altogether. This is done through the command theme:
 
-## ?geom_smooth()? using formula ?y \~ x?
-
-Link Between Fuel Efficiency and Engine Power
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg), size=3,) +
+stat_smooth(mapping = aes(x = hp, y = mpg), method="lm") +
+ggtitle("Link Between Fuel Efficiency and Engine Power") +
+labs(x = "Horsepower", y = "Miles per Gallon") + theme_bw()
+```
 
 There are packages that also add additional themes. A paticularly popular one is the ggthemes. It supports themes that resemble those of popular visuals (e.g. The Economist Magazine, Stata, Tableau, etc.)
 
-## ?geom_smooth()? using formula ?y \~ x?
+```{r}
+library(ggthemes)
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg), size=3,) +
+stat_smooth(mapping = aes(x = hp, y = mpg), method="lm") +
+ggtitle("Link Between Fuel Efficiency and Engine Power") +
+labs(x = "Horsepower", y = "Miles per Gallon") + theme_economist()
+```
 
-The Quick Plot Finally, the ggplot2 packages offers a high-level function qplot which functions very close to the standard R function plot - the user just can write the whole graph in a single function and the package will apply relevant defaults.
+#### The Quick Plot
 
-Link Between Engine Size and Fuel Efficiency
+Finally, the ggplot2 packages offers a high-level function qplot which functions very close to the standard R function plot - the user just can write the whole graph in a single function and the package will apply relevant defaults.
 
-25 as.factor(gear)
-
-10 100 200 300 400 Displacement
+```{r}
+qplot(x = disp, y = mpg, col = as.factor(gear), size = I(3),
+data = mtcars, xlab = "Displacement", ylab = "Miles per Gallon",
+main = "Link Between Engine Size and Fuel Efficiency")
+```
 
 In addition to that, the user can add to any qplot graph the same elements that can be added to a ggplot graph, albeit with much less flexibility. For example, adding the trend line:
 
-## ?geom_smooth()? using formula ?y \~ x?
-
-Link Between Engine Size and Fuel Efficiency
-
-25 as.factor(gear)
-
-Displacement
+```{r}
+qplot(x = disp, y = mpg, col = as.factor(gear), size = I(3),
+data = mtcars, xlab = "Displacement", ylab = "Miles per Gallon",
+main = "Link Between Engine Size and Fuel Efficiency") +
+stat_smooth(method = "lm", se = FALSE)
+```
 
 ### Session 5: Comparing Groups: T-test, ANOVA, and Clusters
 
-A classic question in data analytics is whether the differences we observe between two (or more) groups are due to chance or not (i.e. if they are statistically meaningful). For example, a company may be interested if their female or male customers have a higher propensity to buy and if there is a robust difference between the group. To compare groups we can use different approaches, with the analysis of variance being a particularly popular one. We will illustrate three major approaches ? T-test - when we compare between two groups ? ANOVA - when we compare between two or more groups ? k-means clusters - which allows for similar observation to be grouped Should the reader be interested in a more thorough treatment of the ANOVA or t-test, they are pointed to Chapter 7 of Diez et al. (2019). James et al. (2021, pp. 516-532) provide an exellent overview of clustering algorithms, including k-means. For this purpose we use the SLID data from the car package. The SLID data frame has 7425 rows and 5 columns. The data are from the 1994 wave of the Canadian Survey of Labour and Income Dynamics, for the province of Ontario. There are missing data, particularly for wages. library(car)
+A classic question in data analytics is whether the differences we observe between two (or more) groups are due to chance or not (i.e. if they are statistically meaningful). For example, a company may be interested if their female or male customers have a higher propensity to buy and if there is a robust difference between the group. To compare groups we can use different approaches, with the analysis of variance being a particularly popular one.
 
-Naturally, we would expect higher education and higher wages to be associated. ggplot(data = SLID, mapping = aes(x = education, y = wages, color = sex)) + geom_point()
+We will illustrate three major approaches:
 
-## ?geom_smooth()? using formula ?y \~ x?
+-   T-test - when we compare between two groups
 
-## Warning: Removed 3411 rows containing non-finite values (stat_smooth). \## Warning: Removed 3411 rows containing missing values (geom_point).
+-   ANOVA - when we compare between two or more groups
 
-Connection Between Wage and Education across Genders
+-   k-means clusters - which allows for similar observation to be grouped
 
-T-test It is interesting to observe how wages fluctuate across genders and languages. ggplot(data = SLID, mapping = aes(x = sex, y = wages, color = sex)) + geom_boxplot() + \## Warning: Removed 3278 rows containing non-finite values (stat_boxplot). Level of Wages across Genders
+Should the reader be interested in a more thorough treatment of the ANOVA or t-test, they are pointed to Chapter 7 of Diez et al. (2019). James et al. (2021, pp. 516-532) provide an excellent overview of clustering algorithms, including k-means.
 
-This begs the question if whether the difference we observe is actually statistically significant. This can be tested with the t-test. The t-test is used to determine whether there is a significant difference between two sets of scores. It consists of comparing the values of some continuous variable for two groups or on two occasions. Types:
+For this purpose we use the SLID data from the car package. The SLID (Survey of Labour and Income Dynamics) data frame has 7425 rows and 5 columns. The data are from the 1994 wave of the Canadian Survey of Labour and Income Dynamics, for the province of Ontario. There are missing data, particularly for wages.
 
-? independent samples (compares the mean scores of two different groups of people or conditions) ? paired samples (the mean scores for the same group of people on two different occasion / conditions)
+?SLID
 
-t.test(wages \~ sex, data = SLID)
+```{r}
+install.packages("car")
+library(car)
 
-ANOVA A further point to investigate is whether the language spoken by the individual has an effect on their hourly remuneration. A short visual analysis seems to hint that this is not the case, especially after we control for gender. We will test formally using an ANOVA model. ggplot(data = SLID, mapping = aes(x = language, y = wages, color = sex)) + geom_boxplot(
+# The SLID data frame has 7425 rows and 5 columns. The data are from the 1994 wave of the Canadian Survey of Labour and Income Dynamics, for the province of Ontario. There are missing data, particularly for wages.
 
-## Warning: Removed 3278 rows containing non-finite values (stat_boxplot).
+data(SLID)
+summary(SLID)
+```
 
-Level of Wages across Genders and Languages
+Naturally, we would expect higher education and higher wages to be associated.
 
-English French Other NA language
+```{r}
+ggplot(data = SLID, mapping = aes(x = education, y = wages, color = sex)) + geom_point() + ggtitle("Education vs Wages by Gender") +   theme(plot.title = element_text(hjust = 0.5))
+```
 
-ANOVA stands for ANalysis Of VAriance. The test aims to analyze difference between groups based on their variance and means. It is Similar to t-test but used to compare more than two groups. It is possible to measure not only main effects but also interaction effects. This is done using the following command: summary(aov(formula = wages \~ language, data = SLID))
+#### T-test
 
-The variable language fails to reach statistical significance, meaning that there is no meaningful difference between hourly rates for speakers of different languages in Canada. Measuring the interaction effect: summary(aov(formula = wages \~ language + sex + language \* sex, data = SLID)) \## Df Sum Sq Mean Sq F value Pr(\>F)
+It is interesting to observe how wages fluctuate across genders and languages.
+
+```{r}
+ggplot(data = SLID, mapping = aes(x = sex, y = wages, color = sex)) + geom_boxplot() 
+```
+
+This raises the question if whether the difference we observe is actually statistically significant, which can be tested with the t-test.
+
+The t-test is used to determine whether there is a significant difference between two sets of scores. It consists of comparing the values of some continuous variable for two groups or on two occasions.
+
+Types:
+
+-   independent samples (compares the mean scores of two different groups of people or conditions)
+
+-   paired samples (the mean scores for the same group of people on two different occasion / conditions)
+
+```{r}
+t.test(wages ~ sex, data = SLID)
+```
+
+The difference between genders highly statistically significant, and it seems that men are indeed making more money than women in terms of their hourly rates.
+
+#### ANOVA
+
+A further point to investigate is whether the language spoken by the individual has an effect on their hourly remuneration. A short visual analysis seems to hint that this is not the case, especially after we control for gender. We will test formally using an ANOVA model.
+
+```{r}
+ggplot(data = SLID, mapping = aes(x = language, y = wages, color = sex)) + geom_boxplot()
+```
+
+ANOVA stands for ANalysis Of VAriance. The test aims to analyze difference between groups based on their variance and means. It is similar to t-test but used to compare more than two groups. It is possible to measure not only main effects but also interaction effects. This is done using the following command:
+
+```{r}
+summary(aov(formula = wages ~ language, data = SLID))
+```
+
+The variable language fails to reach statistical significance, meaning that there is no meaningful difference between hourly rates for speakers of different languages in Canada.
+
+Measuring the interaction effect:
+
+```{r}
+summary(aov(formula = wages ~ language + sex + language * sex, data = SLID))
+```
 
 Here we see that the interaction effect is not significant but we observe yet again the strong impact of gender.
 
-Clustering and K-means Sometimes large groups of interest (customers, partners, business units) are composed of different segments. Defining this segments can drive economic and business decisions by allowing tailored approach (e.g. targeted marketing to customers most likely to respond). Clustering algorithms use data to discern among those segments. A cluster is defined by a centroid and the algorithm aims to minimize the distance between a group of points and the mean (centroid) in an iterative process. K-means clustering thus describes observations based on a synthetic average case. In short, it provides the solution to the following problem:
+#### Clustering and K-means
 
-arg min ? ? \|\|x ? ?i\|\|2
+Sometimes large groups of interest (customers, partners, business units) are composed of different segments. Defining this segments can drive economic and business decisions by allowing tailored approach (e.g. targeted marketing to customers most likely to respond). Clustering algorithms use data to discern among those segments.
 
-In contrast archetypal analysis looks for ideal cases but both methods can be useful under certain conditions. We will apply k-means clustering to the Canadian data to see if any discernible groups appear. First we create a subset with no missing values: slid \<- SLID\[complete.cases(SLID),\]
+A cluster is defined by a centroid and the algorithm aims to minimize the distance between a group of points and the mean (centroid) in an iterative process.
+
+K-means clustering thus describes observations based on a synthetic average case. We will apply k-means clustering to the Canadian data to see if any discernible groups appear.
+
+First we create a subset with no missing values:
+
+```{r}
+slid <- SLID[complete.cases(SLID),]
+```
 
 Then we select only the numeric columns, and run the k-means command with five centers:
 
-The centroids give the key dimensions of each cluster and from then on the analyst can interpret the results. Here we observe clear clusterization among major demographics - wage, education, and age. kmeans\$centers
+```{r}
+slid <- slid[, 1:3]
+kmeans <- kmeans(x = slid, centers = 5)
+```
 
-The classification as to which observaion belongs to which cluters is contined in the part $cluster of the object. head(kmeans$cluster)
+The centroids give the key dimensions of each cluster and from then on the analyst can interpret the results. Here we observe clear cauterization among major demographics - wage, education, and age.
 
-Plotting the correlations with colors and accoring to clusters:
+```{r}
+kmeans$centers
+```
 
-ggplot(data = slid, mapping = aes(x = education, y = wages, color = as.factor(kmeans\$clu ggtitle("Connection Between Wage and Education across Clusters")
+The classification as to which observation belongs to which cluster is contained in the part cluster of the object
 
-Connection Between Wage and Education across Clusters
+```{r}
+head(kmeans$cluster)
 
-education
+str(kmeans)
+```
+
+Plotting the correlations with colors and according to clusters:
+
+```{r}
+ggplot(data = slid, mapping = aes(x = education, y = wages, color = as.factor(kmeans$cluster))) +
+geom_point() + 
+ggtitle("Connection Between Wage and Education across Clusters")
+```
 
 Such a sophisticated understanding of data allows for a precise reading of the characteristics fo different groups for the purposes of data analytics, business decisions, and targeted marketing initiatives.
 
-Session 6: Correlation and Regression Throughout this session we are going to use the Investment dataset from the sandwich packages. It is a classical data set that has some of the determinants for investment, and we will see their economic implications and interpretations. Additionally, we will calculate econometrically the investment function, and the investment elasticity. To this end we are going to focus on calcualating corelations and fitting regression models (see Diez et al., 2019, Chapter 9; and James et al., 2021, Chapter 3)
+### Session 6: Correlation and Regression
 
-Plotting the data: plot(Investment)
+Throughout this session we are going to use the Investment dataset from the sandwich packages. It is a classical data set that has some of the determinants for investment, and we will see their economic implications and interpretations. Additionally, we will calculate economically the investment function, and the investment elasticity. To this end we are going to focus on calculating correlations and fitting regression models (see Diez et al., 2019, Chapter 9; and James et al., 2021, Chapter 3)
 
-Investment
+```{r}
+library(sandwich)
+data("Investment")
+```
+
+Plotting the data:
+
+```{r}
+View(Investment)
+str(Investment)
+plot(Investment)
+```
+
+Get more information about this dataset:
+
+```{r}
+?Investment
+```
 
 Reviewing the data:
 
-Correlation Some variables tend to move together. A measure of this tendency is their correlation coefficient r. The coefficient ranges from 0 to ?1. If r= ?1 they move perfectly together, if r=0, then there is no association whatsoever. The Pearson correlation coefficient is defined as follows:
+```{r}
+library(psych)
+describe(Investment)
+```
 
-COV (x, y)
+#### Correlation
 
-?x,y =
+Some variables tend to move together. A measure of this tendency is their correlation coefficient r.
 
-?x?y
+The coefficient ranges from 0 to 1. If r= 1 they move perfectly together, if r=0, then there is no association whatsoever. The Pearson correlation coefficient is defined as follows:
 
-The correlation does not imply causation but is meant to explore the change of one variable with the change of another. Coefficient size measures the strength of the correlation (positive or negative):
+The correlation does not imply causation but is meant to explore the change of one variable with the change of another.
 
-? r=0.10-0.29 - small (not a strong one) ? r=0.30-0.49 - medium (of average strength) ? r=0.50-1.00 - large (very strong correlation)
+Coefficient size measures the strength of the correlation (positive or negative):
+
+-   r=0.10-0.29 - small (not a strong one)
+-   r=0.30-0.49 - medium (of average strength)
+-   r=0.50-1.00 - large (very strong correlation)
 
 We investigate the connection between GNP growth and investment growth.
 
-## ?geom_smooth()? using formula ?y \~ x?
-
-Their correlation is: cor(GNP, Invest)
-
-## \[1\] 0.9800277
-
-We remove the first line of observations because of missing value of RealInt and then calculate the correlation matrix. cor(Investment\[2:20,\])
-
-This can be displayed visually through a correlation plot: library(corrplot)
-
-## corrplot 0.92 loaded
-
-corrplot(cor(Investment\[2:20,\]))
-
-GNP
-
-Investment
-
-```         
-Price Interest RealGNP RealInv RealInt
+```{r}
+library(ggplot2)
+GNP <- as.numeric(Investment[,1])
+Invest <- as.numeric(Investment[,2])
+qplot(GNP, Invest, size = I(2)) + stat_smooth(method="lm")
 ```
 
-Simple Regression Regressions are used for modeling driver importance and for prediction of an outcome variable. The logic behind a regression is that it fits a line by minimizing the distance of individual observations to that line. The regression equation is of the following form:
+Their correlation is:
 
-y = ?0 + ?1 ? x1 + ?
+```{r}
+cor(GNP, Invest)
+```
 
-The equation of this line can be used to predict the value of an outcome variable using the values of the predictors.Note that causality is assumed beforehand. Key features of the model are as follows:
+We remove the first line of observations because of missing value of RealInt and then calculate the correlation matrix.
 
-? Significance of the model ? p-value shows if the model is actually able to predict outcome ? Amount of shared variance ? R2 or adjusted R2 ? shows what fraction of the outcome can be predicted using the given independent variables ? Regression coefficients B (or Beta) ? those are the coefficients of the regression equation (show size and direction/sign)
+```{r}
+cor(Investment[2:20,])
+```
+
+This can be displayed visually through a correlation plot:
+
+```{r}
+library(corrplot)
+corrplot(cor(Investment[2:20,]))
+```
+
+#### Simple Regression
+
+Regressions are used for modeling driver importance and for prediction of an outcome variable. The logic behind a regression is that it fits a line by minimizing the distance of individual observations to that line. The equation of this line can be used to predict the value of an outcome variable using the values of the predictors.
+
+Note that causality is assumed beforehand. Key features of the model are as follows:
+
+-   Significance of the model: p-value shows if the model is actually able to predict outcome
+
+-   Amount of shared variance: R2 or adjusted R2 shows what fraction of the outcome can be predicted using the given independent variables
+
+-   Regression coefficients B (or Beta) - those are the coefficients of the regression equation (show size and direction/sign)
 
 We now formally investigate the effects of the real interest rate on GNP.
 
-As real investment increases by 1%, GNP is likely to increase by 5%, pointing at the importance of capital as driver for growth. The model explains 83% of variance, and all predictors reach statistical significance. We can calculate the elasticity of investment to interest rates.
+```{r}
+lm1 <- lm(RealGNP ~ RealInv, data=Investment)
+summary(lm1)
+```
 
-lm2 \<- lm(formula = log(RealInv) \~ log(RealInt), data = Investment)
+As real investment increases by 1%, GNP is likely to increase by 5%, pointing at the importance of capital as driver for growth.
 
-## Warning in log(RealInt): NaNs produced
+The model explains 83% of variance, and all predictors reach statistical significance. We can calculate the elasticity of investment to interest rates.
 
+```{r}
+lm2 <- lm(formula = log(RealInv) ~ log(RealInt), data = Investment)
+```
+
+```{r}
 summary(lm2)
+```
 
 The elasticity is -0.03, but the coefficient fails to reach significance.
 
-Multiple Regression Multiple regression is a straightforward extension of the simple one by adding additional predictor variables. The effects of the betas are thus marginal - they show the influence of any individual predictor, holding all other predictors constant. The multiple regression is defined by the following equation:
+#### Multiple Regression
 
-y = ?0 + ?1 ? x1 + ?2 ? x2 + + ?n ? xn + ? Or, equivalently:
-
-n y = ?0 + ?i xi + ? i=1
+Multiple regression is a straightforward extension of the simple one by adding additional predictor variables. The effects of the betas are thus marginal - they show the influence of any individual predictor, holding all other predictors constant.
 
 We investigate the overall influence of income and interest on Investment, using multiple regression. The syntax and interpretation remain the same.
 
-Diagnostics A key determinant of model quality is the residuals. They should be random, with no distinguishable patterns. Should there be any patterns, the model probably is misspecified, or there is an omitted variable. Plotting the diagnostic plots: plot(lm3)
-
-Residuals vs Fitted
-
-Normal Q?Q
-
-```         
- Theoretical Quantiles lm(RealInv ~ RealInt + RealGNP)
+```{r}
+lm3 <- lm(formula = RealInv ~ RealInt + RealGNP, data = Investment)
+summary(lm3)
 ```
 
-Scale?Location
+#### Diagnostics
 
-```         
-     Fitted values lm(RealInv ~ RealInt + RealGNP)
+A key determinant of model quality is the residuals. They should be random, with no distinguishable patterns. Should there be any patterns, the model probably is misspecified, or there is an omitted variable.
+
+Plotting the diagnostic plots:
+
+```{r}
+plot(lm3)
 ```
 
-Residuals vs Leverage
+#### Statistical and Practical Significance
 
-Leverage lm(RealInv \~ RealInt + RealGNP)
+There is a difference between statistical (p-value) and practical (adj. R2) significance. There are no clear cut boundaries on what is a useful model, but generally it has to be statistically significant at least at the 5% level and with a reasonably high adj. R2.
 
-Statistical and Practical Significance There is a difference between statistical (p-value) and practical (adj. R2) significance. There are no clear cut boundaries on what is a useful model, but generally it has to be statistically significant at least at the 5% level and with a reasonably high adj. R2.
+### Session 7: Classification - Logistic Regression and Trees
 
-Session 7: Classification - Logistic Regression and Trees Classification Algorightms In practice it is sometimes important to distinguish between groups, i.e. to predict a categorical outcome variable. The prediction is usually based on a mathematical function or algorithm which makes use of independent variables to produce a classification result. There are wide applications in medicine, social science, and economics. Practical applications include test classifications in labs, marketing segmentation, fraud detection, risk management and loan granting. An excellent overview of classification approaches and algorithms can be found in Chapter 4 of James et al. (2021). A larger comparison of different classification algorithms can be found in Gerunov (2020). In our example we will use data to try to classify individuals as to whether they are going to be volunteers or not, based on their behavioral characteristics. For this we will use the Cowles data from the car package. The Cowles data frame has 1421 rows and 4 columns. These data come from a study of the personality determinants of volunteering for psychological research.
+#### Classification Algorithms
 
-Initially we review the data as usual: summary(Cowles)
+In practice it is sometimes important to distinguish between groups, i.e. to predict a categorical outcome variable.
+
+The prediction is usually based on a mathematical function or algorithm which makes use of independent variables to produce a classification result.
+
+There are wide applications in medicine, social science, and economics. Practical applications include test classifications in labs, marketing segmentation, fraud detection, risk management and loan granting.
+
+In our example we will use data to try to classify individuals as to whether they are going to be volunteers or not, based on their behavioral characteristics. For this we will use the Cowles data from the car package. The Cowles data frame has 1421 rows and 4 columns. These data come from a study of the personality determinants of volunteering for psychological research.
+
+```{r}
+library(car)
+data(Cowles)
+```
+
+Initially we review the data as usual:
+
+```{r}
+summary(Cowles)
+```
 
 The exploration of data starts by plotting data and trying to discern specific patterns:
 
-Volunteering Status Across Gender and Personality Traits
+```{r}
+library(ggplot2)
+ggplot(data = Cowles, mapping = aes(x = neuroticism, y = extraversion,
+color = volunteer, shape = sex)) + geom_point() + geom_jitter() +
+ggtitle("Volunteering Status Across Gender and Personality Traits")
+```
 
-neuroticism
+Here we use geo_jitter() so that all points are slightly jittered to avoid excessive overlap due to the large number of observations.
 
-Here we use geo_jitter() so that all points are slightly jittered to avoid excessive overlap due to the large number of observations. While it seems that there are more volunteers in the groups of people with higher level of extroversion and narcissism, this is far fro conclusive. We need to do more formal testing.
+While it seems that there are more volunteers in the groups of people with higher level of extroversion and narcissism, this is far from conclusive. We need to do more formal testing.
 
-Logistic Regression A simple and yet useful classification model is the logistic regression, It is another type of regression with a categorical dependent variable. Interpretation is somewhat similar to that of the multiple regression but deals with probability of belonging to one group or another. The logistic regression is based on the logistic function. It is as follows:
+#### Logistic Regression
+
+A simple and yet useful classification model is the logistic regression, It is another type of regression with a categorical dependent variable. Interpretation is somewhat similar to that of the multiple regression but deals with probability of belonging to one group or another. The logistic regression is based on the logistic function.
 
 Graphically:
 
-y = 1 + e?x
-
-x = 1 + ex
-
-Logistic Function
-
-0.00
-
-?10 ?5 0 x
-
-5 10
+```{r}
+x= seq(from = -10, to = 10, by = 0.01)
+qplot(x, y = 1/(1+exp(-x)), color=I("blue"), main = "Logistic Function")
+```
 
 With a given cutoff point, it helps determine if a given case belongs to one category or the other. A natural cutoff is the point 0, at which the logistic function interceprts the y-axis at 0.50, thus having 50% changce for classification in either group. The logistic regression is thus written as:
 
-( ) = exp (?0 + ?n
+Here, the beta coefficients signify increases in probability of belonging to a given group. We fit a logistic regression to the Cowles data to investigate what influence voluntary activity:
 
-?ixi)
+```{r}
+logreg <- glm(volunteer ~ extraversion + neuroticism + sex, data = Cowles, family = ) 
+summary(logreg)
+```
 
-1 + exp (?0 + ?n ?ixi) Here, the beta coefficients signify increases in probability of belonging to a given group. We fit a logistic regression to the Cowles data to investigate what influence voluntary activity: logreg \<- glm(volunteer \~ extraversion + neuroticism + sex, data = Cowles, family = "bin summary(logreg)
+It seems that two factors critically affect volunteer activity. Extraversion reaches significance below 1% and shows that extroverted people are more likely to volunteer. Gender is also important (significant below 5%) and here it seems that females are more likely to volunteer. The total strength to effects on probability can be obtained by exponentiating the etimated coeficients. For example, the effect of extroversion:
 
-It seems that two factors critically affect volunteer activity. Extraversion reaches significance below 1% and shows that extroverted people are more likely to volunteer. Gender is also important (significant below 5%) and here it seems that females are more likely to volunteer. The total strength to effects on probability can be obtained by exponentiating the etimated coeficients. For example, the effect of extroversion: exp(0.066325) - 1
-
-## \[1\] 0.06857395
+```{r}
+exp(0.066325) - 1
+```
 
 This shows that an increase in extroversion scale with 1 unit makes the person 6.85% more likely to volunteer.
 
-Classification Trees Another clasification approach is to use trees. Classification and Regression Trees (CART) are familiar to economists and are certainly one of the most useful and easier to interpret tools in the big data toolbox. Trees are familiar from decision sciences and provide an intuitive way to describe step-by-step data classification, while providing a powerful way to discern among classes of interest. We fit a decision tree to the classification problem at hand, using the rpart package, and then visualize with the rattle package:
+#### Classification Trees
 
-## Loading required package: bitops
+Another classification approach is to use trees. Classification and Regression Trees (CART) are familiar to economists and are certainly one of the most useful and easier to interpret tools in the big data toolbox. Trees are familiar from decision sciences and provide an intuitive way to describe step-by-step data classification, while providing a powerful way to discern among classes of interest.
 
-## Rattle: A free graphical interface for data science with R. \## Version 5.5.1 Copyright (c) 2006-2021 Togaware Pty Ltd.
+We fit a decision tree to the classification problem at hand, using the rpart package, and then visualize with the rattle package:
 
-## Type ?rattle()? to shake, rattle, and roll your data.
+```{r}
+install.packages("rattle")
+library(rpart)
+library(rattle)
+```
 
-Classification can be performed by going through the nodes and checking the particular case against the node requirements. In this case both extroversion and narcissism are used for classification, and gender is not. The main conclusion remains that extroversion is an important factor for volunteering but neuroticism is also useful in classifying. A particular feature of trees is that they can be combined in useful ensemble algorithms with many trees and make classification through majority voting. Those ensembles are called ?Random Forests? and are among the most useful machine learning techniques.
+Classification can be performed by going through the nodes and checking the particular case against the node requirements. In this case both extroversion and narcissism are used for classification, and gender is not. The main conclusion remains that extroversion is an important factor for volunteering but neuroticism is also useful in classifying.
 
-Session 8: Running Simulations The Utility of Simulations A wide range of statistical methods can be used to run comprehensive computer-aided simulations for complex problems. By using this approach the analyst simulates every conceivable state of the world, and given the resulting numbers, can draw conclusions for the likelihood of events of interest. With the addition of more and more uncertain variables, the number of possible outcomes of a system grows exponentially (as probabilities are multiplied) and the analytic solution becomes practically intractable. A possible approach to modeling such cases is to run simulations of almost all possible outcome paths and look at aggregate statistics. This will give both the expected values as well as their ranges (standard deviations). The interested reader refer to Robert & Casella (2010) for more details and examples.
+A particular feature of trees is that they can be combined in useful ensemble algorithms with many trees and make classification through majority voting. Those ensembles are called ?Random Forests? and are among the most useful machine learning techniques.
 
-Number Generators in R Oftentimes in simulations we need to generate numbers or sequences of numbers. The easiest one is to repeat a given number several times. For example, we would like to repeat ?1? ten times: rep(1, 10)
+### Session 8: Running Simulations 
 
-## \[1\] 1 1 1 1 1 1 1 1 1 1
+#### The Utility of Simulations 
 
-We can also create a sequence of numbers starting where we want with a predefined step: seq(from = 20, to = 50, by = 2)
+A wide range of statistical methods can be used to run comprehensive computer-aided simulations for complex problems. By using this approach the analyst simulates every conceivable state of the world, and given the resulting numbers, can draw conclusions for the likelihood of events of interest.
 
-## \[1\] 20 22 24 26 28 30 32 34 36 38 40 42 44 46 48 50
+With the addition of more and more uncertain variables, the number of possible outcomes of a system grows exponentially (as probabilities are multiplied) and the analytic solution becomes practically intractable. A possible approach to modeling such cases is to run simulations of almost all possible outcome paths and look at aggregate statistics. This will give both the expected values as well as their ranges (standard deviations). The interested reader refer to Robert & Casella (2010) for more details and examples.
 
-Alternatively, R can generate random numbers from a large number of distributions. Here we generate 10 numbers from a uniform distribution ranging from 0 to 1: runif(n = 10, min = 0, max = 1)
+#### Number Generators in R 
 
-Generating 5 numbers from the exponential distritubion with rate 1:
+Oftentimes in simulations we need to generate numbers or sequences of numbers. The easiest one is to repeat a given number several times. For example, we would like to repeat ?1? ten times:
 
+```{r}
+rep(1, 10)
+```
+
+We can also create a sequence of numbers starting where we want with a predefined step:
+
+```{r}
+seq(from = 20, to = 50, by = 2)
+```
+
+Alternatively, R can generate random numbers from a large number of distributions. Here we generate 10 numbers from a uniform distribution ranging from 0 to 1:
+
+```{r}
+runif(n = 10, min = 0, max = 1)
+```
+
+Generating 5 numbers from the exponential distribution with rate 1:
+
+```{r}
 rexp(n = 5, rate = 1)
+```
 
-Generating 10 numbers from a Normal distribution with mean of 0 and standard deviation of 1: rnorm(n = 10, mean = 0, sd = 1)
+Generating 10 numbers from a Normal distribution with mean of 0 and standard deviation of 1:
 
-Additional useful utilities include functions to estimate the probability of the disribution taking less than a certain value (in this case 2): pnorm(q = 2, mean = 0, sd = 1)
+```{r}
+ rnorm(n = 10, mean = 0, sd = 1)
+```
 
-The value that the distribution takes at given percentile: qnorm(p = 0.9, mean = 0, sd = 1)
+Additional useful utilities include functions to estimate the probability of the distribution taking less than a certain value (in this case 2):
 
-And also density functions: dnorm(x = (1:10), mean = 0, sd = 1)
+```{r}
+pnorm(q = 2, mean = 0, sd = 1)
+```
 
-## \[1\] 2.419707e-01 5.399097e-02 4.431848e-03 1.338302e-04 1.486720e-06 \## \[6\] 6.075883e-09 9.134720e-12 5.052271e-15 1.027977e-18 7.694599e-23
+The value that the distribution takes at given percentile:
+
+```{r}
+qnorm(p = 0.9, mean = 0, sd = 1)
+```
+
+And also density functions:
+
+```{r}
+dnorm(x = (1:10), mean = 0, sd = 1)
+```
 
 All those functions take the following form: letter + short name of distribution. The letters are as follows:
 
-? d - for density funtions (dnorm, dexp, dunif, etc) ? p - for probability funtions (pnorm, pexp, punif, etc) ? q - for quantile funtions (qnorm, qexp, qunif, etc) ? r - for random generator funtions (rnorm, rexp, runif, etc)
+-   d - for density functions (dnorm, dexp, dunif, etc)
 
-Approach to Simulation The usual way to approach a given problem in order to run a simulation:
+-   p - for probability functions (pnorm, pexp, punif, etc)
 
-? Define the decision problem and the key variables ? Quantify the relationships between the variables (generally in mathematical form) ? Define the key variables of interest that are not deterministic ? Model those key variables - what are their conceivable outcomes, and how likely they are ? Simulate the whole model by randomly drawing the values for the key variables from their respective distributions ? Iterate numerous times so that the results from the drawn samples converge to the whole population ? Calculate the statistics and distribution of outcomes and draw conclusions for RM purposes
+-   q - for quantile functions (qnorm, qexp, qunif, etc)
+
+-   r - for random generator functions (rnorm, rexp, runif, etc)
+
+#### Approach to Simulation 
+
+The usual way to approach a given problem in order to run a simulation:
+
+-   Define the decision problem and the key variables
+
+-   Quantify the relationships between the variables (generally in mathematical form)
+
+-   Define the key variables of interest that are not deterministic
+
+-   Model those key variables - what are their conceivable outcomes, and how likely they are
+
+-   Simulate the whole model by randomly drawing the values for the key variables from their respective distributions
+
+-   Iterate numerous times so that the results from the drawn samples converge to the whole population
+
+-   Calculate the statistics and distribution of outcomes and draw conclusions for RM purposes
 
 By doing this the analyst develops confidence of the possibilities but this comes at the price that potential users may conceive this exercise as a statistically-driven black box. It is therefore of urgent importance that during the model-building phase experts with domain knowledge be involved - both to ensure better model quality and improve the buy-in of results.
 
-Example Case We can simulate a simple business case. Assume a company that needs to calculate its expected profit. The profit is therefore: profit \<- revenue - cost
+#### Example Case 
 
-The firm has already signed contracts for 20 Million which it expects to fulfill them, and also has additional sales it will realize over the year. In addition that that there might be unexpected external shocks (revshock), thus we reach: revenue \<- 20 + sales + revshock
+We can simulate a simple business case. Assume a company that needs to calculate its expected profit. The profit is therefore:
+
+```{r}
+ profit <- revenue - cost
+```
+
+The firm has already signed contracts for 20 Million which it expects to fulfill them, and also has additional sales it will realize over the year. In addition that that there might be unexpected external shocks (revshock), thus we reach:
+
+```{r}
+revenue <- 20 + sales + revshock
+```
 
 We similarly model cost as the sum of fixed cost, variable cost, and a shock:
 
-cost \<- fcost + varcost + costshock
+```{r}
+cost <- fcost + varcost + costshock
+```
 
 If the fixed cost is 25 Million, and the variable one depends on the number of produced units (where this is equal to total sales over their price of 1) multiplied by the cost of producing one unit (0.8), we reach:
 
-Thus this relatively simple decision problem depends on three key variables - the expected sales, and the unexpected shocks to revenue. In a relatively stable industry with constant sales, we can model them using past data. Suppose the past sales do follows a Normal distribution with a mean of 40, and a standard deviation of 8. Note that in a rapidly growing industry the firm will model its expectations on a very different premise (e.g. a power distribution). Thus we can model sales as: sales \<- rnorm(1, mean = 40, sd = 8)
+```{r}
+p <- 1
+cost <- 25 + 0.8*(sales/p) + costshock
+```
+
+Thus this relatively simple decision problem depends on three key variables - the expected sales, and the unexpected shocks to revenue. In a relatively stable industry with constant sales, we can model them using past data. Suppose the past sales do follows a Normal distribution with a mean of 40, and a standard deviation of 8. Note that in a rapidly growing industry the firm will model its expectations on a very different premise (e.g. a power distribution).
+
+Thus we can model sales as:
+
+```{r}
+sales <- rnorm(1, mean = 40, sd = 8)
+```
 
 The random shocks can be also be modeled using historical data or expert judgment. Suppose they are uniformly distributed from -3 to +5 Million, thus being a bit positively skewed.
 
+```{r}
+revshock <- runif(1, min = -3, max = 5)
+costshock <- runif(1, min = -3, max = 5)
+```
+
 We can put all this together and thus get the values for one possible scenario. For illustrative purposes we calculate the profit margin:
 
-## \[1\] "Margin is 11.8872675158638 %."
+```{r}
+p <- 1
+sales <- rnorm(1, mean = 40, sd = 8)
+revshock <- runif(1, min = -3, max = 5)
+costshock <- runif(1, min = -3, max = 5)
+revenue <- 20 + sales + revshock
+cost <- 25 + 0.8*(sales/p) + costshock
+profit <- revenue - cost; print(paste0("Margin is ",100*profit/sales," %."))
+```
 
-In this case the analyst only sees one realization of all the probable outcomes. It may be a particularly favorable or unfavorable one, and thus can skew decision-making. This is why it is often the case that such simulations are run a lot of iterations. This gives much more
+In this case the analyst only sees one realization of all the probable outcomes. It may be a particularly favorable or unfavorable one, and thus can skew decision-making. This is why it is often the case that such simulations are run a lot of iterations. This gives much more information and is not very computationally expensive for problems of smaller scale. We thus put this whole scenario into a loop.
 
-information and is not very computationally expensive for problems of smaller scale. We thus put this whole scenario into a loop. First we create the empty object profits and then iterate for every i in the program 10,000 times. In this way we simulate 10,000 possible realizations for the scenario.
+First we create the empty object profits and then iterate for every i in the program 10,000 times. In this way we simulate 10,000 possible realizations for the scenario.
+
+```{r}
+margins <- rep(0, 10000)
+for (i in 1:10000) {
+p <- 1
+sales_i <- rnorm(1, mean = 40, sd = 8)
+revshock_i <- runif(1, min = -3, max = 5)
+costshock_i <- runif(1, min = -3, max = 5)
+revenue_i <- 20 + sales_i + revshock_i
+cost_i <- 25 + 0.8*(sales_i/p) + costshock_i
+profit_i <- revenue_i - cost_i
+margins[i] <- 100*(profit_i/sales_i)
+}
+```
 
 Overall statistics for all the simulated scenarios can be derived from the resulting object using familiar functions as per preference.
 
-## vars n mean sd min max range se \## X1 1 10000 7.02 9.23 -51.6 32.79 84.39 0.09
+```{r}
+library(psych)
+describe(margins,skew = F)
+```
 
 A particularly useful tool for simulation analyses is the histogram. It present the results for the variable of interest in an easy to grasp and intuitive way. This is shown in the following graph.
 
-Histogram of Profit Margins
-
-Profit Margins
+```{r}
+qplot(x=margins, fill=I("purple"), color=I("black"), xlab = "Profit Margins",
+main = "Histogram of Profit Margins", bins = 20)
+```
 
 Obviously, with every re-run of the analysis, the results will be different, as new values for the key variables are randomly drawn. However, if the iterations are enough in number (in this case 10,000), the results will differ only slightly as the sample size provides for convergence.
 
