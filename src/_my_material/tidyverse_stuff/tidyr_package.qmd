@@ -1,0 +1,279 @@
+---
+format: html
+editor: visual
+---
+
+![](images/logo.png){fig-align="right" width="100"}
+
+`tidyr` is a key package in the `tidyverse` suite in R, designed to help tidy data. Tidy data is a concept where each variable forms a column, each observation forms a row, and each type of observational unit forms a table. `tidyr` provides tools for reshaping and manipulating data to achieve this structure. Here are some examples demonstrating its uses:
+
+1.  **Gathering Columns into Key-Value Pairs (`pivot_longer`)**:
+    -   Replaces older `gather` function.
+    -   Use case: To turn wide data into long format.
+    -   Example: Convert years as columns into rows.
+
+Here is an example, we start with data in wide format
+
+```{r}
+
+wide_data <- data.frame(
+  branch = c("North", "South", "East", "West"),
+  year_2019 = c(200, 150, 180, 210),
+  year_2020 = c(220, 160, 190, 230),
+  year_2021 = c(240, 170, 210, 250)
+)
+
+print(wide_data)
+```
+
+We covert it into long format
+
+```{r}
+library(tidyr)
+
+long_data <- pivot_longer(
+  wide_data,
+  cols = starts_with("year"),  # Select columns that start with 'year'
+  names_to = "year",           # New column for year names
+  values_to = "sales"          # New column for sales values
+)
+```
+
+After running this code, **`long_data`** will have the following structure:
+
+-   A **`branch`** column identifying the branch.
+
+-   A **`year`** column containing the year (previously column names).
+
+-   A **`sales`** column containing the sales figures (previously the values in the year columns).
+
+The resulting dataset will look like this
+
+```{r}
+# View the transformed data
+print(long_data)
+```
+
+2.  **Spreading Key-Value Pairs into Columns (`pivot_wider`)**:
+
+    -   Replaces older `spread` function.
+
+    -   Use case: To turn long data into wide format.
+
+    -   Example: Spread a key-value pair across multiple columns.
+
+```{r}
+# Load the tidyr library
+library(tidyr)
+
+# Create a data frame with the provided data
+long_data <- data.frame(
+  region = c("North", "North", "North", "South", "South", "South", "East"),
+  year = c("year_2019", "year_2020", "year_2021", "year_2019", "year_2020", "year_2021", "year_2019"),
+  value = c(200, 220, 240, 150, 160, 170, 180)
+)
+
+print(long_data)
+```
+
+Wide data
+
+```{r}
+# Pivot long data to wide format
+wide_data <- pivot_wider(long_data, names_from = year, values_from = value)
+
+# Print the wide data
+print(wide_data)
+```
+
+3.  **Separating One Column into Multiple Columns (`separate`)**:
+    -   Use case: To split a column into multiple columns based on a delimiter or regular expression.
+
+    -   Example: Separate a combined date-time column into separate date and time columns.
+
+```{r}
+# Load the tidyr library
+library(tidyr)
+
+# Create a data frame with the provided data
+long_data <- data.frame(
+  region = c("North", "North", "North", "South", "South", "South", "East"),
+  year = c("year_2019", "year_2020", "year_2021", "year_2019", "year_2020", "year_2021", "year_2019"),
+  value = c(200, 220, 240, 150, 160, 170, 180)
+)
+
+# Example 1: Separate the "year" column into "year" and "numeric_year" columns
+separated_data <- long_data %>%
+  separate(col = year, into = c("year", "numeric_year"), sep = "_")
+
+# Print the separated data
+print(separated_data)
+
+```
+
+4.  **Uniting Multiple Columns into One Column (`unite`)**:
+    -   Use case: To combine multiple columns into a single column.
+
+    -   Example: Unite year, month, and day columns into a single date column.
+
+```{r}
+# Load the tidyr library
+library(tidyr)
+
+# Create a data frame with the provided data
+long_data <- data.frame(
+  region = c("North", "North", "North", "South", "South", "South", "East"),
+  year = c("year_2019", "year_2020", "year_2021", "year_2019", "year_2020", "year_2021", "year_2019"),
+  value = c(200, 220, 240, 150, 160, 170, 180)
+)
+
+# Example 2: Unite the "year" and "region" columns into a single "date" column
+united_data <- long_data %>%
+  unite(col = date, year, region, sep = "-")
+
+# Print the united data
+print(united_data)
+```
+
+5.  **Filling Missing Values (`fill`)**:
+    -   Use case: To fill missing values in a column using the last non-missing value.
+
+    -   Example: Fill missing data in a time series.
+
+```{r}
+# Load the tidyr library
+library(tidyr)
+
+# Create a data frame with the provided data
+long_data <- data.frame(
+  region = c("North", "North", "North", "South", "South", "South", "East"),
+  year = c("year_2019", "year_2020", "year_2021", "year_2019", "year_2020", "year_2021", "year_2019"),
+  value = c(200, 220, NA, 150, NA, 170, 180)
+)
+
+# Example 3: Fill missing values in the "value" column downward by propagating values down
+filled_data <- long_data %>%
+  fill(value, .direction = "down")
+
+# Print the filled data
+print(filled_data)
+```
+
+6.  **Dropping Missing Values (`drop_na`)**:
+    -   Use case: To remove rows with missing values.
+
+    -   Example: Drop rows where any of the specified columns have NA.
+
+```{r}
+# Load the tidyr library
+library(tidyr)
+
+# Create a data frame with the provided data
+long_data <- data.frame(
+  region = c("North", "North", "North", "South", "South", "South", "East"),
+  year = c("year_2019", "year_2020", "year_2021", "year_2019", "year_2020", "year_2021", "year_2019"),
+  value = c(200, 220, NA, 150, NA, 170, 180)
+)
+
+cleaned_data <- long_data %>%
+  drop_na(year, value)
+
+# Print the cleaned data
+print(cleaned_data)
+```
+
+7.  **Expanding Data (`expand`)**:
+    -   Use case: To create all possible combinations of two or more variables.
+
+    -   Example: Expand a dataset to include all combinations of year and month.
+
+```{r}
+
+# Load the tidyr library
+library(tidyr)
+
+# Create a data frame with some sample data
+raw_data <- data.frame(
+  year = c(2020, 2021),
+  month = c("January", "February")
+)
+
+print(raw_data)
+
+# Example 5: Expand the data frame to include all combinations of "year" and "month"
+expanded_data <- raw_data %>%
+  expand(year, month)
+
+# Print the expanded data
+print(expanded_data)
+```
+
+8.  **Nesting Data (`nest`)**:
+    -   Use case: To create a nested data frame where each row contains a data frame.
+
+    -   Example: Nest data by a grouping variable.
+
+```{r}
+# Load the dplyr library
+library(dplyr)
+
+# Create a sample data frame
+raw_data <- data.frame(
+  group_variable = c("A", "B", "A", "B"),
+  value = c(10, 20, 30, 40)
+)
+
+# Example 6: Group by "group_variable" and nest the data
+nested_data <- raw_data %>%
+  group_by(group_variable) %>%
+  nest()
+
+# Print the nested data
+print(nested_data)
+
+```
+
+Now, the **`nested_data`** dataframe contains two groups ("A" and "B"), and each group has a nested dataframe stored in the "data" column. The nested data frames represent the original data subsets for each group.
+
+To access the nested data frames within the **`nested_data`** dataframe, you can use the **`unnest`** function from the **`tidyr`** package. Here's how you can do it:
+
+```{r}
+# Load the tidyr library
+library(tidyr)
+
+# Access the nested data frames within nested_data
+unnested_data <- nested_data %>%
+  unnest(data)
+```
+
+In the code above, we use the **`unnest(data)`** function within the **`dplyr`** pipeline to extract the nested data frames from the "data" column within the **`nested_data`** dataframe. The resulting **`unnested_data`** dataframe will contain the data frames from all the groups combined into one.
+
+```{r}
+# Print the unnested data
+print(unnested_data)
+```
+
+\
+If you want to access the nested data frame for a specific group within the **`nested_data`** dataframe, you can use standard subsetting or filtering techniques. Here's how you can access the nested data frame for a specific group:
+
+Assuming you want to access the nested data frame for the group with **`group_variable`** equal to "A":
+
+```{r}
+# Access the nested data frame for a specific group (e.g., "A")
+group_A_data <- nested_data %>%
+  filter(group_variable == "A") %>%
+  unnest(data)
+```
+
+In this code, we first filter the **`nested_data`** dataframe to select only the rows where **`group_variable`** is equal to "A." Then, we use **`unnest(data)`** to extract and unnest the data frame for that specific group. The resulting **`group_A_data`** dataframe will contain the data for the "A" group:
+
+```{r}
+# Print the data for group A
+print(group_A_data)
+```
+
+`tidyr`'s functions are essential for making data analysis easier and more efficient, especially when dealing with complex or messy datasets. It works seamlessly with other `tidyverse` packages, enhancing the data cleaning and preparation process significantly.
+
+### References
+
+Content generated with the assistance of ChatGPT 3.5 and ChatGPT 4.

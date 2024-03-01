@@ -1,0 +1,37 @@
+---
+title: "Lesson 1"
+format: html
+editor: visual
+---
+
+# **Lesson 1: Getting Started: Basic R**
+
+## **Overview**
+
+Our main goal here is to become familiar with basic operations in R.
+
+We'll be using Chapter 1 of [**Essential R**](https://online.stat.psu.edu/stat484/lesson/essential-r-notes-learning-r "Essential R - Notes on learning R").
+
+## **Data and R Code Files**
+
+The R code file and data files for this lesson can be found on the [**Essential R - Notes on learning R**](https://online.stat.psu.edu/stat484/lesson/essential-r-notes-learning-r) page.
+
+-   [1.1 - Introduction to R Studio](https://online.stat.psu.edu/stat484/lesson/1/1.1)
+
+-   [1.2 - Introduction to the Console - Part 1](https://online.stat.psu.edu/stat484/lesson/1/1.2/1.2.1)
+
+-   [1.3 - Introduction to the Console - Part 2](https://online.stat.psu.edu/stat484/lesson/1/1.3/1.3.2)
+
+-   [1.4 - Creating Vectors](https://online.stat.psu.edu/stat484/lesson/1/1.4)
+
+-   [1.5 - Indexing Vectors & Logical Extraction](https://online.stat.psu.edu/stat484/lesson/1/1.5)
+
+-   [1.6 - Operations with Vectors](https://online.stat.psu.edu/stat484/lesson/1/1.6)
+
+-   [1.7 - Basic Loops in R](https://online.stat.psu.edu/stat484/lesson/1/1.7)
+
+-   [1.8 - Schematic of R Work-flow](https://online.stat.psu.edu/stat484/lesson/1/1.8)
+
+## **Book traversal links for Lesson 1: Getting Started: Basic R**
+
+-   

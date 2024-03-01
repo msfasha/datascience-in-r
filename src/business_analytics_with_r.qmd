@@ -8,7 +8,7 @@ editor: visual
 
 ### Contents
 
-**Session 1: Introduction to R 5 Introduction**
+**Session 1: Introduction to R**
 
 -   Reading-In Data
 
@@ -24,7 +24,7 @@ editor: visual
 
 -   Advanced Analytics and Expansion
 
-**Session 2: Advanced Data Processing**
+**Session 2: Data Processing in R**
 
 -   Object and Data Types
 
@@ -118,7 +118,9 @@ editor: visual
 
 ### **Session 1: Introduction to R**
 
-This section of the lecture notes aims to provide a quick overview of basic functionality of the R software for statistical computing (R Core Team, 2014). It is intended to help the analyst understand the basic structure and logic of the language and prepare him or her for productive work with it.
+This section of the lecture notes aims to provide a quick overview of basic functionality of the R software for statistical computing (R Core Team, 2014).
+
+It is intended to help the analyst understand the basic structure and logic of the language and prepare him or her for productive work with it.
 
 The topics included range from an introduction into R through reading data and manipulating data, visualizing it, and conducting statistical analyses. The text is structured in a hands-on way and can be both read in its entirety or referred to on the go.
 
@@ -1613,15 +1615,15 @@ Classification can be performed by going through the nodes and checking the part
 
 A particular feature of trees is that they can be combined in useful ensemble algorithms with many trees and make classification through majority voting. Those ensembles are called ?Random Forests? and are among the most useful machine learning techniques.
 
-### Session 8: Running Simulations 
+### Session 8: Running Simulations
 
-#### The Utility of Simulations 
+#### The Utility of Simulations
 
 A wide range of statistical methods can be used to run comprehensive computer-aided simulations for complex problems. By using this approach the analyst simulates every conceivable state of the world, and given the resulting numbers, can draw conclusions for the likelihood of events of interest.
 
 With the addition of more and more uncertain variables, the number of possible outcomes of a system grows exponentially (as probabilities are multiplied) and the analytic solution becomes practically intractable. A possible approach to modeling such cases is to run simulations of almost all possible outcome paths and look at aggregate statistics. This will give both the expected values as well as their ranges (standard deviations). The interested reader refer to Robert & Casella (2010) for more details and examples.
 
-#### Number Generators in R 
+#### Number Generators in R
 
 Oftentimes in simulations we need to generate numbers or sequences of numbers. The easiest one is to repeat a given number several times. For example, we would like to repeat ?1? ten times:
 
@@ -1681,7 +1683,7 @@ All those functions take the following form: letter + short name of distribution
 
 -   r - for random generator functions (rnorm, rexp, runif, etc)
 
-#### Approach to Simulation 
+#### Approach to Simulation
 
 The usual way to approach a given problem in order to run a simulation:
 
@@ -1701,7 +1703,7 @@ The usual way to approach a given problem in order to run a simulation:
 
 By doing this the analyst develops confidence of the possibilities but this comes at the price that potential users may conceive this exercise as a statistically-driven black box. It is therefore of urgent importance that during the model-building phase experts with domain knowledge be involved - both to ensure better model quality and improve the buy-in of results.
 
-#### Example Case 
+#### Example Case
 
 We can simulate a simple business case. Assume a company that needs to calculate its expected profit. The profit is therefore:
 
@@ -1790,3 +1792,5 @@ main = "Histogram of Profit Margins", bins = 20)
 Obviously, with every re-run of the analysis, the results will be different, as new values for the key variables are randomly drawn. However, if the iterations are enough in number (in this case 10,000), the results will differ only slightly as the sample size provides for convergence.
 
 References
+
+$P(x) = X2 multiply x^2$
