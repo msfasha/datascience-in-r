@@ -1,0 +1,85 @@
+|                 |
+|-----------------|
+| title: "Tables" |
+| format: html    |
+| editor: visual  |
+
+## [**2.2. Tables**](https://www.cyclismo.org/tutorial/R/types.html#id2)
+
+Another common way to store information is in a table.
+
+Here we look at how to define both one way and two way tables.
+
+We only look at how to create and define tables; the functions used in the analysis of proportions are examined in another chapter.
+
+### **2.2.1. One Way Tables**
+
+The first example is for a one way table. One way tables are not the most interesting example, but it is a good place to start. One way to create a table is using the table command. The arguments it takes is a vector of factors, and it calculates the frequency that each factor occurs. Here is an example of how to create a one way table:
+
+```{r}
+a <- factor(c("A","A","B","A","B","B","C","A","C"))
+ 
+results <- table(a)
+results
+ 
+attributes(results)
+ 
+summary(results) 
+```
+
+If you know the number of occurrences for each factor then it is possible to create the table directly, but the process is, unfortunately, a bit more convoluted. There is an easier way to define one-way tables (a table with one row), but it does not extend easily to two-way tables (tables with more than one row). You must first create a matrix of numbers. A matrix is like a vector in that it is a list of numbers, but it is different in that you can have both rows and columns of numbers. For example, in our example above the number of occurrences of “A” is 4, the number of occurrences of “B” is 3, and the number of occurrences of “C” is 2. We will create one row of numbers. The first column contains a 4, the second column contains a 3, and the third column contains a 2:
+
+```{r}
+occur <- matrix(c(4,3,2),ncol=3,byrow=TRUE)
+
+occur
+```
+
+At this point the variable “occur” is a matrix with one row and three columns of numbers. To dress it up and use it as a table we would like to give it labels for each columns just like in the previous example. Once that is done we convert the matrix to a table using the as.table command:
+
+```{r}
+colnames(occur) <- c("A","B","C")
+
+occur
+
+occur <- as.table(occur)
+
+occur
+
+attributes(occur)
+```
+
+### **2.2.2. Two Way Tables**
+
+If you want to add rows to your table just add another vector to the argument of the table command. In the example below we have two questions. In the first question the responses are labeled “Never,” “Sometimes,” or “Always.” In the second question the responses are labeled “Yes,” “No,” or “Maybe.” The set of vectors “a,” and “b,” contain the response for each measurement. The third item in “a” is how the third person responded to the first question, and the third item in “b” is how the third person responded to the second question.
+
+```{r}
+a <- c("Sometimes","Sometimes","Never","Always","Always","Sometimes","Sometimes","Never")  
+b <- c("Maybe","Maybe","Yes","Maybe","Maybe","No","Yes","No")  
+
+results <- table(a,b)  
+
+results
+```
+
+The table command allows us to do a very quick calculation, and we can immediately see that two people who said “Maybe” to the first question also said “Sometimes” to the second question.
+
+Just as in the case with one-way tables it is possible to manually enter two way tables. The procedure is exactly the same as above except that we now have more than one row. We give a brief example below to demonstrate how to enter a two-way table that includes breakdown of a group of people by both their gender and whether or not they smoke. You enter all of the data as one long list but tell R to break it up into some number of columns:
+
+```{r}
+gender_smoke <- matrix(c(70,120,65,140),ncol=2,byrow=TRUE)
+ 
+rownames(gender_smoke)<-c("male","female")  
+
+colnames(gender_smoke)<-c("smoke","nosmoke")  
+
+gender_smoke <- as.table(sexsmoke)  
+
+gender_smoke         
+```
+
+The matrix command creates a two by two matrix. The *byrow=TRUE* option indicates that the numbers are filled in across the rows first, and the *ncols=2* indicates that there are two columns.
+
+References
+
+https://www.cyclismo.org/tutorial/R/types.html https://www.cyclismo.org/tutorial/R/index.html

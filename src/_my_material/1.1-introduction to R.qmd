@@ -1,12 +1,16 @@
 ---
-title: "Introduction to R"
+title: "1.1 Introduction to R"
 format: html
 editor: visual
+include-before: |
+  <div style="text-align: center;">
+    <img src="images/department_logo.png" width="169" />
+    <img src="images/ioa_logo.png" width="122" />
+    <img src="images/petra_logo.png" width="52" />
+  </div>
 ---
 
-### Introduction to R
-
--   R is a powerful language and environment for statistical computing and graphics.
+R is a powerful language and environment for statistical computing and graphics.
 
 -   It is widely used among statisticians and data analysts for developing statistical software and data analysis.
 
@@ -150,6 +154,30 @@ Then open the R Console
 
 ![](images/rstudio.png)
 
+### Settings - Working Directory
+
+Select General in the left panel of the “Options” dialog, then enter the path to the directory you created into the Default working directory box
+
+![](images/settings_1.png)
+
+Set the default working directory to your preferred folder.
+
+![](images/settings_2.png)
+
+We can also change the working directory from the sessions menu.
+
+![](images/settings_3.png)
+
 ### References
 
 Gen AI.
+
+In addition, we will be using the following sources for the next sections.
+
+<https://online.stat.psu.edu/stat484/>
+
+<https://online.stat.psu.edu/statprogram/sites/statprogram/files/EssentialR.pdf>
+
+[https://www.cyclismo.org/tutorial/R/index.html](https://www.cyclismo.org/tutorial/R/index.html#)
+
+R for Data Analysis in easy steps R Programming Essentials - Mike McGrath

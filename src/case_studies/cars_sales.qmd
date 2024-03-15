@@ -1,0 +1,306 @@
+---
+title: "Cars Sales"
+format: html
+editor: visual
+source: https://rpubs.com/yatinkoul/hw1
+data: https://www.kaggle.com/competitions/DontGetKicked/data?select=training.zip
+---
+
+Assignment 1 File Due February 20, 2022 Problem Overview The goal of this homework is hands-on practice with linear regression, logistic regression, classification, and model selection. You will:
+
+Conduct basic exploratory analysis of a data set Develop linear and logistic regression models Interpret your models Partition your dataset and evaluate your models in terms of classification performance The Assignment
+
+The data in the accompanying file “car_sales.csv” (posted on Canvas) contains data from 10,062 car auctions. Auto dealers purchase used cars at auctions with the plan to sell them to consumers, but sometimes these auctioned vehicles can have severe issues that prevent them from being resold. The data contains information about each auctioned vehicle (for instance: the make, color, and age, among other variables). A full data dictionary is given in carvana_data_dictionary.txt (we have included only a subset of the variables in their data set). See http://www.kaggle.com/c/DontGetKicked for documentation on the problem.
+
+Your task is to develop models to predict the target variable “IsBadBuy”, which labels whether a car purchased at auction was a “bad buy” or not. The intended use case for this model is to help an auto dealership decide whether or not to purchase an individual vehicle. Please answer the questions below clearly and concisely, providing tables or plots where applicable. Turn in a well-formatted compiled HTML document using R Markdown, containing clear answers to the questions and R code in the appropriate places.
+
+RUBRIC: There are three possible grades on this assignment: Fail (F), Pass (P), and High Pass (H). If you receive an F then you will have one more chance to turn it in to receive a P. If you receive H on 3 out of the 4 assignments this semester you’ll get a bonus point on your final average.
+
+Turn in a well-formatted compiled HTML document using R markdown. If you turn in a different file type or your code doesn’t compile, you will be asked to redo the assignment. Provide clear answers to the questions and the correct R commands as necessary, in the appropriate places. You may answer up to three sub-questions incorrectly and still receive a P on this assignment (for example, 1(a) counts as one sub-question). If you answer all sub-questions correctly on your first submission you will receive an H. The entire document must be clear, concise, readable, and well-formatted. If your assignment is unreadable or if you include more output than necessary to answer the questions you will be asked to redo the assignment. Note that this assignment is somewhat open-ended and there are many ways to answer these questions. I don’t require that we have exactly the same answers in order for you to receive full credit.
+
+car \<- read_csv("car_data.csv") #read the car_data dataset in R \## Rows: 10062 Columns: 10 \## -- Column specification -------------------------------------------------------- \## Delimiter: "," \## chr (5): Auction, Make, Color, WheelType, Size \## dbl (5): VehicleAge, VehOdo, MMRAcquisitionAuctionAveragePrice, MMRAcquisiti... \## \## i Use `spec()` to retrieve the full column specification for this data. \## i Specify the column types or set `show_col_types = FALSE` to quiet this message. names(car) #variables used in dataset \## \[1\] "Auction" "VehicleAge"\
+\## \[3\] "Make" "Color"\
+\## \[5\] "WheelType" "VehOdo"\
+\## \[7\] "Size" "MMRAcquisitionAuctionAveragePrice" \## \[9\] "MMRAcquisitionRetailAveragePrice" "IsBadBuy" 0: Example answer What is the mean of VehicleAge variable?
+
+ANSWER: The mean age of a vehicle in this dataset is 4.504969.
+
+age_mean \<- car %\>% summarise(mean_age = mean(VehicleAge)) 1: EDA and Data Cleaning Construct and report boxplots of VehOdo and VehAge (broken up by values of IsBadBuy). Does it appear there is a relationship between either of these numerical variables and IsBadBuy? ANSWER TO QUESTION 1a HERE:
+
+#PUT QUESTION 1a CODE HERE
+
+#Plotting the boxplot box_VehOdo \<- car %\>%\
+ggplot(aes(x=IsBadBuy, y=VehOdo, group = IsBadBuy)) + geom_point(color="orange") + geom_boxplot(fill="peachpuff2", alpha=0.6) + theme_classic()
+
+#Improving the boxplot box_VehOdo + theme_bw() + theme(axis.ticks = element_blank(), panel.border = element_blank(), plot.title = element_text(size=15), panel.grid.minor.y = element_blank(), panel.grid.major.y = element_line(color="grey95"), panel.grid.minor.x =element_blank(), panel.grid.major.x = element_blank(), axis.title = element_text(face="bold")) + labs(title="Distribution of Odometer Readings by IsBadBuy?", x="Is a Bad Buy? (1 = Yes, 0 = No)", y="Miles Driven") + scale_x_continuous(breaks = c(0,1))
+
+#Plotting the boxplot box_VehicleAge \<- car %\>%\
+ggplot(aes(x=IsBadBuy, y=VehicleAge, group = IsBadBuy)) + geom_point(color="saddlebrown") + geom_boxplot(fill="burlywood4", alpha=0.6) + theme_classic()
+
+#Improving the boxplot box_VehicleAge + theme_bw() + theme(axis.ticks = element_blank(), panel.border = element_blank(), plot.title = element_text(size=15), panel.grid.minor.y = element_blank(), panel.grid.major.y = element_line(color="grey95"), panel.grid.minor.x =element_blank(), panel.grid.major.x = element_blank(), axis.title = element_text(face="bold"), plot.caption = element_text(face="italic")) + labs(title="Distribution of Vehicle Age by IsBadBuy?", x="Is a Bad Buy? (1 = Yes, 0 = No)", y="Vehicle Age") + scale_x_continuous(breaks = c(0,1))
+
+After observing both the box plots, there appears to be no relationship between IsBadBuy & VehOdo or IsBadBuy & VehAge. However, it is evident that in both the cases the median is relatively greater for a bad buy .
+
+Construct a two-way table of IsBadBuy by Make. Does it appear that any vehicle makes are particularly problematic? ANSWER TO QUESTION 1b HERE:
+
+table_badbuy_make = table(car$Make ,car$IsBadBuy) table_badbuy_make #Printing the table \##\
+\## 0 1 \## ACURA 4 5 \## BUICK 43 60 \## CADILLAC 1 2 \## CHEVROLET 1191 930 \## CHRYSLER 604 613 \## DODGE 911 742 \## FORD 774 990 \## GMC 42 43 \## HONDA 41 36 \## HYUNDAI 115 124 \## INFINITI 2 8 \## ISUZU 10 5 \## JEEP 108 134 \## KIA 203 169 \## LEXUS 0 8 \## LINCOLN 7 16 \## MAZDA 73 95 \## MERCURY 61 91 \## MINI 3 5 \## MITSUBISHI 81 65 \## NISSAN 138 191 \## OLDSMOBILE 12 31 \## PLYMOUTH 0 1 \## PONTIAC 317 280 \## SATURN 132 165 \## SCION 11 7 \## SUBARU 1 3 \## SUZUKI 84 110 \## TOYOTA 78 65 \## VOLKSWAGEN 8 10 \## VOLVO 3 0 From the above table, it can be observed that car manufacturers like Chrysler, Ford, Jeep and Suzuki have more number of bad buys than good ones. Additionally, it can be observed that manufacturers including Acura, Cadillac, Infiniti, Lexus, Mini, Plymouth, Subaru and Volvo are not majorly contributing towards populating the dataset. Hence, these brands can not be taken into consideration in the analysis or they need to be considered as a single category.
+
+Construct the following new variables : MPYind = 1 when the miles/year is above the median and 0 otherwise VehType which has the following values: SUV when Size is LARGE SUV, MEDIUM SUV, or SMALL SUV Truck when Size is Large Truck, Medium Truck, or Small Truck Regular when Size is VAN, CROSSOVER, LARGE, or MEDIUM Small when size is COMPACT, SPECIALTY, or SPORT Hint: there are lots of ways to do this one, but case_when might be a useful function that’s part of the tidyverse Price0 which is 1 when either the MMRAcquisitionRetailAveragePrice or MMRAcquisitionAuctionAveragePrice are equal to 0, and 0 otherwise Also, modify these two existing variables:
+
+The value of Make should be replaced with “other_make” when there are fewer than 20 cars with that make The value of Color should be replaced with “other_color” when there are fewer than 20 cars with that color ANSWER TO QUESTION 1c HERE:
+
+car_clean \<- car %\>% mutate( MPYind = factor(ifelse(VehOdo/VehicleAge \> median(VehOdo/VehicleAge) , 1, 0)), VehType = case_when( Size %in% list("LARGE SUV", "MEDIUM SUV", "SMALL SUV") \~ "SUV", Size %in% list("LARGE TRUCK", "MEDIUM TRUCK", "SMALL TRUCK") \~ "Truck", Size %in% list("VAN", "CROSSOVER", "LARGE", "MEDIUM") \~ "Regular", Size %in% list("COMPACT", "SPECIALTY", "SPORTS") \~ "Small" ), Price0 = factor(ifelse((MMRAcquisitionRetailAveragePrice \| MMRAcquisitionAuctionAveragePrice) == 0 ,1, 0)) ) %\>%
+
+group_by(Make) %\>% mutate(make_count = n()) %\>% ungroup() %\>% mutate( Make = ifelse(make_count \< 20, 'other_make', Make) ) %\>%
+
+group_by(Color) %\>% mutate(color_count = n()) %\>% ungroup() %\>% mutate( Color = ifelse(color_count \< 20, 'other_color', Color) ) The rows where MMRAcquisitionRetailAveragePrice or MMRAcquisitionAuctionAveragePrice are equal to 0 are suspicious - it seems like those values might not be correct. Replace the two prices with the average grouped by vehicle make. Be sure to remove the 0’s from the average calculation! Hint: this one is a little tricky. Consider using the special character NA to replace the 0’s.
+
+ANSWER TO QUESTION 1d HERE:
+
+car_clean \<- car_clean %\>% mutate( MPYind = as.factor(ifelse(VehOdo/VehicleAge \> median(VehOdo/VehicleAge) , 1, 0)), VehType = as.factor(case_when( Size %in% list("LARGE SUV", "MEDIUM SUV", "SMALL SUV") \~ "SUV", Size %in% list("LARGE TRUCK", "MEDIUM TRUCK", "SMALL TRUCK") \~ "Truck", Size %in% list("VAN", "CROSSOVER", "LARGE", "MEDIUM") \~ "Regular", Size %in% list("COMPACT", "SPECIALTY", "SPORTS") \~ "Small" )), Price0 = as.factor(ifelse((MMRAcquisitionRetailAveragePrice \| MMRAcquisitionAuctionAveragePrice) == 0 ,1, 0)) ) %\>%
+
+group_by(Make) %\>% mutate(make_count = n()) %\>% ungroup() %\>% mutate( Make = as.factor(ifelse(make_count \< 20, 'other_make', Make)) ) %\>%
+
+group_by(Color) %\>% mutate(color_count = n()) %\>% ungroup() %\>% mutate( Color = as.factor(ifelse(color_count \< 20, 'other_color', Color)) ) %\>%
+
+mutate( MMRAcquisitionAuctionAveragePrice = na_if(MMRAcquisitionAuctionAveragePrice, 0), MMRAcquisitionRetailAveragePrice = na_if(MMRAcquisitionRetailAveragePrice, 0) ) %\>%
+
+group_by(Make) %\>% mutate( MMRAcquisitionAuctionAveragePrice = ifelse(is.na(MMRAcquisitionAuctionAveragePrice), mean(car_clean$MMRAcquisitionAuctionAveragePrice, na.rm = TRUE), MMRAcquisitionAuctionAveragePrice), MMRAcquisitionRetailAveragePrice = ifelse(is.na(MMRAcquisitionRetailAveragePrice), mean(car_clean$MMRAcquisitionRetailAveragePrice, na.rm =TRUE), MMRAcquisitionRetailAveragePrice) ) %\>% ungroup()
+
+summary(car_clean) \## Auction VehicleAge Make Color\
+\## Length:10062 Min. :1.000 CHEVROLET:2121 SILVER :2081\
+\## Class :character 1st Qu.:3.000 FORD :1764 WHITE :1653\
+\## Mode :character Median :4.000 DODGE :1653 BLUE :1386\
+\## Mean :4.505 CHRYSLER :1217 GREY :1054\
+\## 3rd Qu.:6.000 PONTIAC : 597 BLACK :1013\
+\## Max. :9.000 KIA : 372 RED : 881\
+\## (Other) :2338 (Other):1994\
+\## WheelType VehOdo Size\
+\## Length:10062 Min. : 9446 Length:10062\
+\## Class :character 1st Qu.: 63489 Class :character\
+\## Mode :character Median : 74942 Mode :character\
+\## Mean : 72904\
+\## 3rd Qu.: 83662\
+\## Max. :115717\
+\##\
+\## MMRAcquisitionAuctionAveragePrice MMRAcquisitionRetailAveragePrice \## Min. : 884 Min. : 1455\
+\## 1st Qu.: 3956 1st Qu.: 5981\
+\## Median : 5684 Median : 8150\
+\## Mean : 5883 Mean : 8271\
+\## 3rd Qu.: 7450 3rd Qu.:10315\
+\## Max. :35722 Max. :39080\
+\##\
+\## IsBadBuy MPYind VehType Price0 make_count\
+\## Min. :0.0000 0:5031 Regular:6283 0:9939 Min. : 23\
+\## 1st Qu.:0.0000 1:5031 Small :1508 1: 123 1st Qu.: 372\
+\## Median :0.0000 SUV :1687 Median :1653\
+\## Mean :0.4973 Truck : 584 Mean :1272\
+\## 3rd Qu.:1.0000 3rd Qu.:1764\
+\## Max. :1.0000 Max. :2121\
+\##\
+\## color_count\
+\## Min. : 2\
+\## 1st Qu.: 881\
+\## Median :1386\
+\## Mean :1275\
+\## 3rd Qu.:1653\
+\## Max. :2081\
+\## 2: Linear Regression Train a linear regression to predict IsBadBuy using the variables listed below. Report the R\^2. Auction VehicleAge Make Color WheelType VehOdo MPYind VehType MMRAcquisitionAuctionAveragePrice MMRAcquisitionRetailAveragePrice ANSWER TO QUESTION 2a HERE:
+
+model1 \<- lm(data = car_clean, IsBadBuy \~ factor(Auction) + VehicleAge + factor(Make) + factor(Color) + factor(WheelType) + VehOdo + factor(MPYind) + factor(VehType) + MMRAcquisitionAuctionAveragePrice + MMRAcquisitionRetailAveragePrice)
+
+summary(model1) \## \## Call: \## lm(formula = IsBadBuy \~ factor(Auction) + VehicleAge + factor(Make) + \## factor(Color) + factor(WheelType) + VehOdo + factor(MPYind) + \## factor(VehType) + MMRAcquisitionAuctionAveragePrice + MMRAcquisitionRetailAveragePrice, \## data = car_clean) \## \## Residuals: \## Min 1Q Median 3Q Max \## -1.2697 -0.3950 -0.1620 0.4688 0.9560 \## \## Coefficients: \## Estimate Std. Error t value Pr(\>\|t\|)\
+\## (Intercept) -1.270e-02 1.091e-01 -0.116 0.907300\
+\## factor(Auction)MANHEIM 4.284e-02 1.201e-02 3.568 0.000361 ***\## factor(Auction)OTHER 7.337e-03 1.367e-02 0.537 0.591418\
+\## VehicleAge 5.026e-02 5.517e-03 9.111 \< 2e-16*** \## factor(Make)CHEVROLET -3.849e-02 4.595e-02 -0.837 0.402339\
+\## factor(Make)CHRYSLER 4.944e-02 4.685e-02 1.055 0.291318\
+\## factor(Make)DODGE 4.746e-03 4.643e-02 0.102 0.918577\
+\## factor(Make)FORD 2.673e-02 4.617e-02 0.579 0.562673\
+\## factor(Make)GMC -3.755e-02 6.694e-02 -0.561 0.574852\
+\## factor(Make)HONDA -1.229e-01 6.842e-02 -1.796 0.072494 .\
+\## factor(Make)HYUNDAI 8.449e-03 5.367e-02 0.157 0.874912\
+\## factor(Make)JEEP 9.915e-03 5.437e-02 0.182 0.855300\
+\## factor(Make)KIA 2.576e-02 5.110e-02 0.504 0.614167\
+\## factor(Make)LINCOLN 6.727e-02 1.045e-01 0.644 0.519713\
+\## factor(Make)MAZDA 3.541e-02 5.680e-02 0.623 0.533010\
+\## factor(Make)MERCURY 4.231e-02 5.779e-02 0.732 0.464084\
+\## factor(Make)MITSUBISHI -1.113e-01 5.850e-02 -1.903 0.057054 .\
+\## factor(Make)NISSAN 3.383e-02 5.123e-02 0.660 0.509117\
+\## factor(Make)OLDSMOBILE 8.039e-02 8.224e-02 0.978 0.328319\
+\## factor(Make)other_make 4.915e-02 6.549e-02 0.751 0.452959\
+\## factor(Make)PONTIAC -1.001e-02 4.856e-02 -0.206 0.836728\
+\## factor(Make)SATURN 3.882e-02 5.202e-02 0.746 0.455535\
+\## factor(Make)SUZUKI 1.415e-01 5.628e-02 2.514 0.011945 \*\
+\## factor(Make)TOYOTA -2.325e-02 5.885e-02 -0.395 0.692831\
+\## factor(Color)BEIGE -7.511e-03 9.360e-02 -0.080 0.936048\
+\## factor(Color)BLACK 1.465e-02 9.008e-02 0.163 0.870765\
+\## factor(Color)BLUE 5.836e-03 8.978e-02 0.065 0.948174\
+\## factor(Color)BROWN 2.807e-02 1.052e-01 0.267 0.789634\
+\## factor(Color)GOLD 4.684e-02 9.050e-02 0.518 0.604730\
+\## factor(Color)GREEN -7.624e-03 9.153e-02 -0.083 0.933617\
+\## factor(Color)GREY 7.381e-03 9.007e-02 0.082 0.934694\
+\## factor(Color)MAROON 8.210e-02 9.296e-02 0.883 0.377167\
+\## factor(Color)ORANGE -1.621e-02 1.127e-01 -0.144 0.885639\
+\## factor(Color)OTHER -1.531e-01 1.157e-01 -1.323 0.185998\
+\## factor(Color)other_color -4.843e-01 3.320e-01 -1.459 0.144684\
+\## factor(Color)PURPLE 5.833e-02 1.073e-01 0.543 0.586809\
+\## factor(Color)RED 3.190e-02 9.027e-02 0.353 0.723832\
+\## factor(Color)SILVER 3.332e-02 8.950e-02 0.372 0.709686\
+\## factor(Color)WHITE 2.865e-02 8.966e-02 0.320 0.749349\
+\## factor(Color)YELLOW -8.274e-02 1.163e-01 -0.712 0.476756\
+\## factor(WheelType)Covers -2.524e-02 1.110e-02 -2.275 0.022940 \*\
+\## factor(WheelType)NULL 5.193e-01 1.508e-02 34.448 \< 2e-16 ***\## factor(WheelType)Special -1.037e-02 4.584e-02 -0.226 0.820983\
+\## VehOdo 2.410e-06 3.967e-07 6.075 1.28e-09*** \## factor(MPYind)1 -1.113e-02 1.512e-02 -0.736 0.461643\
+\## factor(VehType)Small 6.806e-02 1.375e-02 4.949 7.58e-07 ***\## factor(VehType)SUV 1.237e-02 1.600e-02 0.773 0.439345\
+\## factor(VehType)Truck -2.927e-02 2.205e-02 -1.327 0.184444\
+\## MMRAcquisitionAuctionAveragePrice -2.344e-06 5.396e-06 -0.434 0.663942\
+\## MMRAcquisitionRetailAveragePrice 3.210e-07 3.592e-06 0.089 0.928804\
+\## --- \## Signif. codes: 0 '***' 0.001 '\*\*' 0.01 '\*' 0.05 '.' 0.1 ' ' 1 \## \## Residual standard error: 0.4513 on 10012 degrees of freedom \## Multiple R-squared: 0.1894, Adjusted R-squared: 0.1854 \## F-statistic: 47.75 on 49 and 10012 DF, p-value: \< 2.2e-16 summary(model1)\$r.squared \## \[1\] 0.1894114 The R\^2 value for the above model is 0.1894114
+
+What is the predicted value of IsBadBuy for a MANHEIM Auction, 4-year-old Compact Blue Volvo with 32000 miles, WheelType = Special, an MMR Auction Price of \$8000, and an MMR Retail Price of \$12000? What would be your predicted classification for the car, using a cutoff of 0.5? ANSWER TO QUESTION 2b HERE:
+
+#table(car$Make) #MPYind <- ifelse(12000/4 > median(car$VehOdo/car\$VehicleAge) , 1, 0) #MPYind = 0
+
+pred_data = data.frame(Auction="MANHEIM", VehicleAge=4, Color="BLUE", VehType="Small", Make="other_make", VehOdo=32000, MPYind=0, WheelType="Special", MMRAcquisitionAuctionAveragePrice=8000, MMRAcquisitionRetailAveragePrice=12000)
+
+predict(model1, newdata = pred_data) \## 1 \## 0.4060868 The predicted value for this model is approximately 0.4 and since the classification cutoff is 0.5, it means that it would be classified as a good buy.
+
+Do you have any reservations about this predicted IsBadBuy? That is, would you feel sufficiently comfortable with this prediction in order to take action based on it? Why or why not? ANSWER TO QUESTION 2c HERE:
+
+In my opinion, this prediction can not be trusted because we haven’t cross-validated the model and it is predicting the value based on just training data. In order to build a model which can actually be considered feasible, the data set needs to be partitioned into training data and validation data. The model can be trained using the training data and validated using the validation data.
+
+3: Logistic Regression Train a Logistic Regression model using the same variables as in 2a. Report the AIC of your model. ANSWER TO QUESTION 3a HERE:
+
+model2 \<- glm(data = car_clean, IsBadBuy \~ factor(Auction) + VehicleAge + factor(Make) + factor(Color) + factor(WheelType) + VehOdo + factor(MPYind) + factor(VehType) + MMRAcquisitionAuctionAveragePrice + MMRAcquisitionRetailAveragePrice, family = 'binomial')
+
+summary(model2) \## \## Call: \## glm(formula = IsBadBuy \~ factor(Auction) + VehicleAge + factor(Make) + \## factor(Color) + factor(WheelType) + VehOdo + factor(MPYind) + \## factor(VehType) + MMRAcquisitionAuctionAveragePrice + MMRAcquisitionRetailAveragePrice, \## family = "binomial", data = car_clean) \## \## Deviance Residuals: \## Min 1Q Median 3Q Max\
+\## -3.1104 -0.9833 -0.5302 1.0960 2.1348\
+\## \## Coefficients: \## Estimate Std. Error z value Pr(\>\|z\|)\
+\## (Intercept) -2.705e+00 6.476e-01 -4.177 2.95e-05 ***\## factor(Auction)MANHEIM 1.914e-01 5.978e-02 3.202 0.00137** \## factor(Auction)OTHER 2.404e-02 7.198e-02 0.334 0.73839\
+\## VehicleAge 2.597e-01 2.778e-02 9.348 \< 2e-16* **\## factor(Make)CHEVROLET -1.983e-01 2.295e-01 -0.864 0.38752\
+\## factor(Make)CHRYSLER 2.174e-01 2.340e-01 0.929 0.35300\
+\## factor(Make)DODGE -2.782e-03 2.317e-01 -0.012 0.99042\
+\## factor(Make)FORD 1.173e-01 2.305e-01 0.509 0.61081\
+\## factor(Make)GMC -2.128e-01 3.253e-01 -0.654 0.51292\
+\## factor(Make)HONDA -6.113e-01 3.515e-01 -1.739 0.08200 .\
+\## factor(Make)HYUNDAI 2.965e-02 2.675e-01 0.111 0.91173\
+\## factor(Make)JEEP 2.930e-02 2.699e-01 0.109 0.91354\
+\## factor(Make)KIA 1.188e-01 2.552e-01 0.465 0.64172\
+\## factor(Make)LINCOLN 2.665e-01 5.259e-01 0.507 0.61229\
+\## factor(Make)MAZDA 1.441e-01 2.820e-01 0.511 0.60929\
+\## factor(Make)MERCURY 1.866e-01 2.857e-01 0.653 0.51361\
+\## factor(Make)MITSUBISHI -5.976e-01 2.957e-01 -2.021 0.04331 \*\
+\## factor(Make)NISSAN 1.507e-01 2.548e-01 0.591 0.55419\
+\## factor(Make)OLDSMOBILE 3.832e-01 4.222e-01 0.908 0.36408\
+\## factor(Make)other_make 2.403e-01 3.247e-01 0.740 0.45927\
+\## factor(Make)PONTIAC -5.656e-02 2.422e-01 -0.234 0.81532\
+\## factor(Make)SATURN 1.847e-01 2.586e-01 0.714 0.47517\
+\## factor(Make)SUZUKI 6.932e-01 2.804e-01 2.472 0.01344 \*\
+\## factor(Make)TOYOTA -1.725e-01 2.923e-01 -0.590 0.55496\
+\## factor(Color)BEIGE 1.988e-02 5.848e-01 0.034 0.97288\
+\## factor(Color)BLACK 1.585e-01 5.694e-01 0.278 0.78075\
+\## factor(Color)BLUE 1.048e-01 5.681e-01 0.184 0.85371\
+\## factor(Color)BROWN 2.196e-01 6.241e-01 0.352 0.72492\
+\## factor(Color)GOLD 3.155e-01 5.709e-01 0.553 0.58052\
+\## factor(Color)GREEN 5.893e-02 5.747e-01 0.103 0.91832\
+\## factor(Color)GREY 1.214e-01 5.693e-01 0.213 0.83120\
+\## factor(Color)MAROON 4.979e-01 5.802e-01 0.858 0.39087\
+\## factor(Color)ORANGE 7.697e-03 6.710e-01 0.011 0.99085\
+\## factor(Color)OTHER -1.165e+00 7.317e-01 -1.592 0.11144\
+\## factor(Color)other_color -3.246e+00 1.597e+00 -2.032 0.04211 \*\
+\## factor(Color)PURPLE 4.656e-01 6.435e-01 0.724 0.46936\
+\## factor(Color)RED 2.377e-01 5.701e-01 0.417 0.67665\
+\## factor(Color)SILVER 2.466e-01 5.671e-01 0.435 0.66362\
+\## factor(Color)WHITE 2.237e-01 5.677e-01 0.394 0.69358\
+\## factor(Color)YELLOW -3.500e-01 6.720e-01 -0.521 0.60242\
+\## factor(WheelType)Covers -6.587e-02 5.278e-02 -1.248 0.21204\
+\## factor(WheelType)NULL 3.469e+00 1.368e-01 25.364 \< 2e-16** *\## factor(WheelType)Special -5.133e-02 2.108e-01 -0.244 0.80761\
+\## VehOdo 1.257e-05 1.977e-06 6.358 2.05e-10* **\## factor(MPYind)1 -4.337e-02 7.386e-02 -0.587 0.55704\
+\## factor(VehType)Small 3.419e-01 6.807e-02 5.023 5.10e-07** *\## factor(VehType)SUV 5.561e-02 7.840e-02 0.709 0.47815\
+\## factor(VehType)Truck -1.436e-01 1.069e-01 -1.344 0.17895\
+\## MMRAcquisitionAuctionAveragePrice -2.731e-06 2.685e-05 -0.102 0.91897\
+\## MMRAcquisitionRetailAveragePrice -9.533e-07 1.773e-05 -0.054 0.95712\
+\## --- \## Signif. codes: 0 '***' 0.001 '**' 0.01 '\*' 0.05 '.' 0.1 ' ' 1 \## \## (Dispersion parameter for binomial family taken to be 1) \## \## Null deviance: 13949 on 10061 degrees of freedom \## Residual deviance: 11678 on 10012 degrees of freedom \## AIC: 11778 \## \## Number of Fisher Scoring iterations: 5 summary(model2)\$aic \## \[1\] 11777.91 The AIC of the above model is 11777.91
+
+What is the coefficient for VehicleAge? Provide a precise (numerical) interpretation of the coefficient. ANSWER TO QUESTION 3b HERE:
+
+Coefficient of Vehicle Age is 0.2597. On an average, for an increase in VehicleAge by 1 year, the odds of buying a bad car increases by a factor of 1.2965, provided all other variables remain constant.
+
+What is the coefficient for VehType = Small? Provide a precise (numerical) interpretation of this coefficient. ANSWER TO QUESTION 3c HERE:
+
+Coefficient of VehType is 0.3419. On an average, if type of vehicle is small, the odds of buying a bad car increases by a factor of 1.407 than for base criteria (VehType= Truck), provided all other variables remain constant
+
+Compute the predicted probability that the same car as in #2b is a bad buy. Hint: you should use the predict function, but you need to specify type = “response” when predicting probabilities from logistic regression (otherwise, it will predict the value of logit). For example: predict(mymodel, newdata = mydata, type = “response”). ANSWER TO QUESTION 3d HERE:
+
+predict(model2, newdata = pred_data, type = 'response') \## 1 \## 0.3845428 The predicted value for this model is approximately 0.38
+
+If you were to pick one model to use for the purposes of inference (explaining the relationship between the features and the target variable) which would it be, and why? ANSWER TO QUESTION 3e HERE:
+
+In my opinion, a logistic model would do a better job at explaining the relation between feature and target variable compared to the linear model. The reason behind this is that, in this case, the target variable is categorical and any predicted value outside the range of 0 to 1 will not be of much use.
+
+4: Classification and Evaluation Split the data into 70% training and 30% validation sets, retrain the linear and logistic regression models using the training data only, and report the resulting R\^2 and AIC, respectively. ANSWER TO QUESTION 4a HERE:
+
+train_insts = sample(nrow(car_clean), .7\*nrow(car_clean))
+
+data_train \<- car_clean\[train_insts,\] data_valid \<- car_clean\[-train_insts,\]
+
+model1_tr \<- lm(data = data_train, IsBadBuy \~ factor(Auction) + VehicleAge + factor(Make) + factor(Color) + factor(WheelType) + VehOdo + factor(MPYind) + factor(VehType) + MMRAcquisitionAuctionAveragePrice + MMRAcquisitionRetailAveragePrice)
+
+model2_tr \<- glm(data = data_train, IsBadBuy \~ factor(Auction) + VehicleAge + factor(Make) + factor(Color) + factor(WheelType) + VehOdo + factor(MPYind) + factor(VehType) + MMRAcquisitionAuctionAveragePrice + MMRAcquisitionRetailAveragePrice, family = 'binomial')
+
+summary(model1_tr)$r.squared ## [1] 0.1930742 summary(model2_tr)$aic \## \[1\] 8242.946 The R\^2 for the linear model is 0.1930742 and the AIC for the logistic model is 8242.946
+
+Compute the RMSE in the training and validation sets for the linear model (do not do the classifications, just use the predicted score). Which is better, and does this make sense? Why or why not? ANSWER TO QUESTION 4b HERE:
+
+rmse_cal \<- function(model, data, actual){ pred \<- predict(model, newdata = data) sqrt(mean((pred - actual)\^2)) }
+
+rmse_tr \<- rmse_cal(model1_tr, data_train, data_train$IsBadBuy) rmse_val <- rmse_cal(model1_tr, data_valid, data_valid$IsBadBuy)
+
+rmse_tr \## \[1\] 0.449139 rmse_val \## \[1\] 0.4541079 The RMSE for both the training and validation data is approximately same. In my opinion, you can not determine which one is better since the model is already trained on the training data, and it does not make sense calculating RMSE using training data.
+
+For each model, display the confusion matrix resulting from using a cutoff of 0.5 to do the classifications in the validation data set. Report the accuracy, TPR, and FPR. Which model is the most accurate? ANSWER TO QUESTION 4c HERE:
+
+classify \<- function(score, c){ classifications \<- ifelse(score \> c, 1 , 0) return(classifications) }
+
+probs1 \<- predict(model1_tr, newdata = data_valid) classifications1 \<- classify(probs1, .5)
+
+probs2 \<- predict(model2_tr, newdata = data_valid) classifications2 \<- classify(probs2, .5)
+
+valid_actuals \<- data_valid\$IsBadBuy valid_classifications1 \<- classifications1 valid_classifications2 \<- classifications2
+
+confusion_matrix \<- function(actuals, classifications){ CM \<- table(actuals, classifications) TP \<- CM\[2,2\] TN \<- CM\[1,1\] FP \<- CM\[1,2\] FN \<- CM\[2,1\] return(c(TP, TN, FP, FN)) }
+
+CM1 = confusion_matrix(valid_actuals, valid_classifications1) TP1 \<- CM1\[1\] TN1 \<- CM1\[2\] FP1 \<- CM1\[3\] FN1 \<- CM1\[4\] accuracy1 \<- (TP1+TN1)/(TP1+TN1+FP1+FN1) TPR1 \<- TP1/(TP1+FN1) TNR1 \<- TN1/(TN1+FP1) FPR1 \<- 1-TNR1
+
+CM1_metrics \<- c(accuracy1, TPR1, FPR1)
+
+CM2 = confusion_matrix(valid_actuals, valid_classifications2) TP2 \<- CM2\[1\] TN2 \<- CM2\[2\] FP2 \<- CM2\[3\] FN2 \<- CM2\[4\] accuracy2 \<- (TP2+TN2)/(TP2+TN2+FP2+FN2) TPR2 \<- TP2/(TP2+FN2) TNR2 \<- TN2/(TN2+FP2) FPR2 \<- 1-TNR2
+
+CM2_metrics \<- c(accuracy2, TPR2, FPR2)
+
+#Confusion Matrix and Metrics for Linear Model 1 table(valid_actuals, valid_classifications1) \## valid_classifications1 \## valid_actuals 0 1 \## 0 1198 320 \## 1 673 828 CM1_metrics \## \[1\] 0.6710831 0.5516322 0.2108037 #Confusion Matrix and Metrics for Logistic Model 2 table(valid_actuals, valid_classifications2) \## valid_classifications2 \## valid_actuals 0 1 \## 0 1418 100 \## 1 939 562 CM2_metrics \## \[1\] 0.65584631 0.37441706 0.06587615 For the linear model (Model 1) with a cutoff of 0.5, the accuracy is 0.6710831, the TPR is 0.5516322, the FPR is 0.2108037.
+
+For the logisitc model (Model 2) with a cutoff of 0.5, the accuracy is 0.65584631, the TPR is 0.37441706, the FPR is 0.06587615.
+
+The logistic model (Model 2) has relatively higher accuracy.
+
+For the more accurate model, compute the accuracy, TPR, and FPR using cutoffs of .25 and .75 in the validation data. Which cutoff has the highest accuracy, highest TPR, and highest FPR? ANSWER TO QUESTION 4d HERE:
+
+counter = 1 cutoff \<- c(0.25,0.75) accs \<- rep(NA,2) tprs \<- rep(NA,2) tnrs \<- rep(NA,2) fprs \<- rep(NA,2)
+
+for (c in cutoff){
+
+#classify given the cutoff predicted_classes \<- classify(probs1, c)
+
+#make the confusion matrix conf_mat \<- confusion_matrix(valid_actuals, predicted_classes) TP \<- conf_mat\[1\] TN \<- conf_mat\[2\] FP \<- conf_mat\[3\] FN \<- conf_mat\[4\]
+
+#get the relevant quantities accuracy \<- (TP+TN)/(TP+TN+FP+FN) TPR \<- TP/(TP+FN) TNR \<- TN/(TN+FP) FPR \<- 1-TNR
+
+#save the metrics in the vectors we made accs\[counter\] \<- accuracy tprs\[counter\] \<- TPR tnrs\[counter\] \<- TNR fprs\[counter\] \<- FPR
+
+counter = counter + 1 }
+
+accs #Accuracy Values for Cutoff = 0.25, 0.75 \## \[1\] 0.5382577 0.6127857 tprs #TPRs for Cutoff = 0.25, 0.75 \## \[1\] 0.9626915 0.2345103 tnrs #TNRs Values for Cutoff = 0.25, 0.75 \## \[1\] 0.1185771 0.9868248 fprs #FPRs Values for Cutoff = 0.25, 0.75 \## \[1\] 0.88142292 0.01317523 In your opinion, which cutoff of the three yields the best results for this application? Explain your reasoning. ANSWER TO QUESTION 4e HERE:
+
+In my opinion, the higher cutoff of 0.75 has better yields compared to the lower cutoff of 0.25. The accuracy and true negative rate for cutoff = 0.75 is higher which means that it is predicting 0s efficiently and correctly. Additionally, the false positive rate is also low which means that the model is not prone to predicting a good buy as a bad one often. However, the true positive rate is low for this cutoff.
