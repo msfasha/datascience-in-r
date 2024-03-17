@@ -276,6 +276,12 @@ filtered_numbers <- numbers[numbers > 25]
 print(filtered_numbers)  # Outputs 30, 40, 50
 ```
 
+**Find the Index of Matching Elements**
+
+```{r}
+which(numbers > 25)
+```
+
 **Excluding Elements**
 
 Adding a minus sign `-` before an index or a vector of indices tells R to exclude those elements.
