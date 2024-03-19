@@ -1,0 +1,109 @@
+---
+title: "DPLYR"
+format: html
+editor: visual
+---
+
+### Chapter: Data Manipulation with dplyr
+
+#### Introduction to dplyr
+
+`dplyr` is a powerful R package that provides a set of functions for efficiently manipulating data frames. It is part of the tidyverse, a collection of packages designed for data science. The core functions in `dplyr` allow you to perform the most common data manipulation tasks with minimal code.
+
+#### Key Functions
+
+- **`filter()`**: Subsets rows based on a logical condition.
+- **`select()`**: Picks columns by variable names.
+- **`mutate()`**: Adds new variables or changes existing ones.
+- **`summarise()`**: Reduces multiple values down to a single summary.
+- **`arrange()`**: Changes the ordering of the rows.
+- **`group_by()`**: Creates groups to perform group-wise operations.
+
+#### Examples
+
+##### Filtering Rows
+
+Use `filter()` to select rows where certain conditions are met:
+
+```r
+library(dplyr)
+
+# Filter rows where 'mpg' is greater than 20
+high_mpg_cars <- filter(mtcars, mpg > 20)
+print(high_mpg_cars)
+```
+
+##### Selecting Columns
+
+Use `select()` to pick specific columns:
+
+```r
+# Select the 'mpg' and 'cyl' columns
+mpg_cyl_data <- select(mtcars, mpg, cyl)
+print(mpg_cyl_data)
+```
+
+##### Adding New Variables
+
+Use `mutate()` to add new variables or transform existing ones:
+
+```r
+# Add a new column 'displ_litre' which is 'disp' in litres (1 cubic inch = 0.0163871 litres)
+mtcars <- mutate(mtcars, displ_litre = disp * 0.0163871)
+print(mtcars)
+```
+
+##### Summarizing Data
+
+Use `summarise()` to calculate summary statistics:
+
+```r
+# Calculate the average mpg
+average_mpg <- summarise(mtcars, avg_mpg = mean(mpg))
+print(average_mpg)
+```
+
+##### Arranging Rows
+
+Use `arrange()` to reorder rows based on a variable:
+
+```r
+# Arrange by descending order of 'mpg'
+mtcars_desc_mpg <- arrange(mtcars, desc(mpg))
+print(mtcars_desc_mpg)
+```
+
+##### Group-wise Operations
+
+Use `group_by()` in combination with `summarise()` to perform calculations for each group:
+
+```r
+# Calculate average 'mpg' by the number of 'cyl' (cylinders)
+average_mpg_by_cyl <- mtcars %>%
+  group_by(cyl) %>%
+  summarise(avg_mpg = mean(mpg))
+print(average_mpg_by_cyl)
+```
+
+#### Piping with `%>%`
+
+`dplyr` is designed to work with the pipe operator `%>%` from the `magrittr` package, which allows for chaining operations in a readable manner.
+
+##### Example of a dplyr Pipeline
+
+Here is an example that uses multiple `dplyr` operations chained together to filter, select, and arrange the mtcars data frame:
+
+```r
+library(dplyr)
+
+mtcars %>%
+  filter(mpg > 20) %>%
+  select(mpg, cyl, hp) %>%
+  arrange(desc(hp))
+```
+
+This pipeline filters for cars with more than 20 mpg, selects the `mpg`, `cyl`, and `hp` columns, and then arranges the resulting data frame in descending order of horsepower.
+
+#### Conclusion
+
+`dplyr` offers a succinct and expressive syntax for data manipulation, which can greatly simplify your data analysis workflow in R. Its integration with the `%>%` pipe operator allows you to write code that is both functional and easy to read, following a logical sequence of data transformation steps. With `dplyr`, you can accomplish most of the data manipulation tasks you'll encounter in data analysis.

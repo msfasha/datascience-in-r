@@ -1,5 +1,5 @@
 ---
-title: "1.2 Basic Concepts and Data Types in R"
+title: "1.2 Basic Concepts in R"
 format: html
 editor: visual
 include-before: |
@@ -171,6 +171,13 @@ rating <- factor(c("low", "medium", "high"), order = TRUE, levels = c("low", "me
 ### Vectors
 
 Vectors are one-dimensional arrays that can hold numeric, character, or logical values, but all elements must be of the same type.
+
+| Patient ID | Height (CM) | Weight (KG) | Systolic (mmHg) | Diastolic (mmHg) |
+|------------|-------------|-------------|-----------------|------------------|
+| 10200      | 165         | 71          | 120             | 80               |
+| 3600       | 180         | 92          | 110             | 85               |
+| 8437       | 172         | 76          | 118             | 82               |
+| 5911       | 167         | 82          | 115             | 78               |
 
 ```{r}
 # Numeric vector
@@ -355,14 +362,27 @@ print(subset_df)
 ```
 
 ```{r}
-# In R, rownames is a function that retrieves or sets the row names of a matrix or # data frame. Row names are essentially a character vector of unique identifiers that label the rows, similar to how column names label the columns.
+# In R, rownames is a function that retrieves or sets the row names of a matrix or # data frame. 
+# rownames are essentially a character vector of unique identifiers that label the rows, similar to how column names label the columns.
 
+# Get all rownames
 car_names <- rownames(mtcars)
 print(car_names)
+
+# Get first rowname only
 first_car_name <- rownames(mtcars)[1]
 print(first_car_name)
+
+# Find record by rowname
 datsun_710 <- mtcars["Datsun 710", ]
 print(datsun_710)
+
+
+mtcars$car_brand <- rownames(mtcars)
+rownames(mtcars) <- NULL
+head(mtcars)
+
+#View(mtcars)
 ```
 
 Select a single row
@@ -626,6 +646,264 @@ ls()
 -   Alternatively, use the **`Session > Clear Workspace...`** menu option.
 
 -   Finally, restarting the R session is a surefire way to clear all objects and start fresh. In RStudio, you can do this via the menu **`Session > Restart R`** or by using the **`Ctrl+Shift+F10`** shortcut on Windows/Linux or **`Cmd+Shift+F10`** on macOS.
+
+## Flow of Control
+
+#### Repetition in R (Loops)
+
+Loops are fundamental constructs in programming that allow you to execute a block of code repeatedly. In R, the primary looping constructs are the `for` loop, the `while` loop, and the `repeat` loop. This section will guide you through the syntax and usage of each, with examples to illustrate how they can be used in data analysis tasks.
+
+#### The `for` Loop
+
+The `for` loop is used to iterate over a sequence or a vector and execute a block of code for each element.
+
+##### Syntax:
+
+```{r, eval=FALSE}
+for (variable in sequence) {
+  # Code to execute for each element of the sequence
+}
+```
+
+##### Example:
+
+Let's iterate over a vector of numbers and print each number squared.
+
+```{r}
+# Create a vector of numbers
+numbers <- 1:5
+
+# Use a for loop to iterate and print squares
+for (num in numbers) {
+  print(num^2)
+}
+```
+
+What are the correct values for the \*s in the code below so that it will iterate over all the items of x array?
+
+```{r, eval=FALSE}
+
+x <- 50:60
+for (i in *:*)
+{
+  print(x[i])
+}
+```
+
+In this example, the loop runs five times, squaring each number from 1 to 5.
+
+#### The `while` Loop
+
+The `while` loop continues to execute as long as a specified condition is true. It's useful when the number of iterations is not known beforehand.
+
+##### Syntax:
+
+```{r, eval=FALSE}
+while (condition) {
+  # Code to execute as long as the condition is true
+}
+```
+
+##### Example:
+
+We will use a `while` loop to simulate a countdown.
+
+```{r}
+# Set the starting point of the countdown
+countdown <- 5
+
+# Begin the while loop
+while (countdown > 0) {
+  print(paste("Counting down:", countdown))
+  countdown <- countdown - 1
+}
+
+# When the loop ends
+print("Lift off!")
+```
+
+This loop will run until `countdown` is no longer greater than 0.
+
+#### The `repeat` Loop
+
+The `repeat` loop executes an indefinite number of times until explicitly told to stop with a `break` statement. It's the most basic form of loop and is less commonly used than `for` and `while` loops due to its potential to create infinite loops if not handled carefully.
+
+##### Syntax:
+
+```{r, eval=FALSE}
+repeat {
+  # Code to execute indefinitely
+  if (stop_condition) {
+    break
+  }
+}
+```
+
+##### Example:
+
+Here's a `repeat` loop that finds the first number divisible by 13 greater than 100.
+
+```{r}
+# Initialize the number
+number <- 101
+
+# Start the repeat loop
+repeat {
+  # Check if the number is divisible by 13
+  if (number %% 13 == 0) {
+    print(paste("Found a number divisible by 13:", number))
+    break
+  }
+  # Increment the number
+  number <- number + 1
+}
+```
+
+The loop runs indefinitely, incrementing `number` until it finds one that satisfies the condition.
+
+#### Nested Loops
+
+Loops can be nested inside other loops, which is useful for iterating over multiple dimensions, such as rows and columns in a matrix.
+
+##### Example:
+
+```{r}
+# Create a 3x3 matrix
+my_matrix <- matrix(1:9, nrow = 3)
+
+# Iterate over each element of the matrix
+for (row in 1:nrow(my_matrix)) {
+  for (col in 1:ncol(my_matrix)) {
+    # Multiply each element by 2
+    my_matrix[row, col] <- my_matrix[row, col] * 2
+  }
+}
+print(my_matrix)
+```
+
+In this nested loop example, every element of `my_matrix` is doubled.
+
+### Conditional Branching in R
+
+#### Introduction to Conditional Branching
+
+Conditional branching in R allows you to control the flow of execution based on conditions. It's a fundamental concept in programming that lets you execute certain sections of code while skipping others, depending on whether specified conditions are `TRUE` or `FALSE`. This section will explain how to use conditional statements in R, such as `if`, `else`, and `else if`, along with practical examples.
+
+#### The `if` Statement
+
+The `if` statement is the simplest form of conditional branching. It evaluates a condition and, if that condition is `TRUE`, it executes a block of code.
+
+##### Syntax:
+
+```{r, eval=FALSE}
+if (condition) {
+  # Code to execute if the condition is TRUE
+}
+```
+
+##### Example:
+
+Here, we check if a number is positive.
+
+```{r}
+number <- 5
+
+if (number > 0) {
+  print("The number is positive.")
+}
+```
+
+#### The `else` Statement
+
+The `else` statement is used together with an `if` statement to execute code when the `if` condition is not `TRUE`.
+
+##### Syntax:
+
+```{r, eval=FALSE}
+if (condition) {
+  # Code to execute if the condition is TRUE
+} else {
+  # Code to execute if the condition is FALSE
+}
+```
+
+##### Example:
+
+Expanding on the previous example, we also handle the case when the number is not positive.
+
+```{r}
+number <- -3
+
+if (number > 0) {
+  print("The number is positive.")
+} else {
+  print("The number is not positive.")
+}
+```
+
+#### The `else if` Statement
+
+The `else if` statement allows you to check multiple conditions. If the condition for `if` is `FALSE`, it checks the condition for `else if`, and so on.
+
+##### Syntax:
+
+```{r, eval=FALSE}
+if (condition1) {
+  # Code to execute if condition1 is TRUE
+} else if (condition2) {
+  # Code to execute if condition1 is FALSE and condition2 is TRUE
+} else {
+  # Code to execute if none of the above conditions are TRUE
+}
+```
+
+##### Example:
+
+Here, we classify a number as positive, negative, or zero.
+
+```{r}
+number <- 0
+
+if (number > 0) {
+  print("The number is positive.")
+} else if (number < 0) {
+  print("The number is negative.")
+} else {
+  print("The number is zero.")
+}
+```
+
+#### The `switch` Statement
+
+The `switch` statement is a multi-way branch used when you want to compare the same variable (or expression) with many different possible values and execute different pieces of code for each value.
+
+##### Syntax:
+
+```{r, eval=FALSE}
+switch(EXPR, 
+       "case1" = {# Code for case 1},
+       "case2" = {# Code for case 2},
+       # ...,
+       {# Default case code}
+)
+```
+
+##### Example:
+
+The following example shows how `switch` can be used to print different messages based on the value of a character variable.
+
+```{r}
+day <- "Tue"
+
+switch(day,
+       "Mon" = {print("Start of the work week")},
+       "Tue" = {print("Second day of the work week")},
+       "Wed" = {print("Middle of the work week")},
+       "Thu" = {print("Approaching the end")},
+       "Fri" = {print("Last day of the work week")},
+       {print("It must be the weekend")}
+)
+```
 
 ### References
 
