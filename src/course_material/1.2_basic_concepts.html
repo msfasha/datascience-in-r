@@ -1348,6 +1348,135 @@ Datsun 710 22.8   4  108 93 3.85 2.32 18.61  1  1    4    1</code></pre>
 </section>
 </section>
 </section>
+</section>
+<section id="creating-functions-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="creating-functions-in-r">Creating Functions in R</h2>
+<section id="introduction" class="level3">
+<h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
+<p>Functions in R are crucial for efficient and organized code, allowing for repetitive tasks to be encapsulated into single, callable entities. This chapter demonstrates how to craft your own functions, enabling the automation of tasks and making your code more modular and readable.</p>
+</section>
+<section id="basic-function-structure" class="level3">
+<h3 class="anchored" data-anchor-id="basic-function-structure">Basic Function Structure</h3>
+<p>A function is defined using the <code>function</code> keyword, followed by parentheses containing any arguments, and a body enclosed in curly braces.</p>
+<section id="example-simple-addition-function" class="level4">
+<h4 class="anchored" data-anchor-id="example-simple-addition-function">Example: Simple Addition Function</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb181"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb181-1"><a href="#cb181-1" aria-hidden="true" tabindex="-1"></a>add_two_numbers <span class="ot">&lt;-</span> <span class="cf">function</span>(a, b) {</span>
+<span id="cb181-2"><a href="#cb181-2" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> a <span class="sc">+</span> b</span>
+<span id="cb181-3"><a href="#cb181-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb181-4"><a href="#cb181-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb181-5"><a href="#cb181-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb181-6"><a href="#cb181-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the function</span></span>
+<span id="cb181-7"><a href="#cb181-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">add_two_numbers</span>(<span class="dv">5</span>, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 8</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="function-arguments-and-return-values" class="level3">
+<h3 class="anchored" data-anchor-id="function-arguments-and-return-values">Function Arguments and Return Values</h3>
+<p>Functions can take arguments and return results. R functions return the result of the last line in the function body by default, but the <code>return()</code> function can be used for clarity or early returns.</p>
+<section id="example-greeting-function" class="level4">
+<h4 class="anchored" data-anchor-id="example-greeting-function">Example: Greeting Function</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb183"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb183-1"><a href="#cb183-1" aria-hidden="true" tabindex="-1"></a>greet_person <span class="ot">&lt;-</span> <span class="cf">function</span>(name) {</span>
+<span id="cb183-2"><a href="#cb183-2" aria-hidden="true" tabindex="-1"></a>  greeting <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">"Hello,"</span>, name)</span>
+<span id="cb183-3"><a href="#cb183-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(greeting)</span>
+<span id="cb183-4"><a href="#cb183-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb183-5"><a href="#cb183-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb183-6"><a href="#cb183-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the function</span></span>
+<span id="cb183-7"><a href="#cb183-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">greet_person</span>(<span class="st">"Alice"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Hello, Alice"</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="default-argument-values" class="level3">
+<h3 class="anchored" data-anchor-id="default-argument-values">Default Argument Values</h3>
+<p>You can specify default values for arguments, making them optional.</p>
+<section id="example-power-function" class="level4">
+<h4 class="anchored" data-anchor-id="example-power-function">Example: Power Function</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb185"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb185-1"><a href="#cb185-1" aria-hidden="true" tabindex="-1"></a>raise_to_power <span class="ot">&lt;-</span> <span class="cf">function</span>(base, <span class="at">exponent =</span> <span class="dv">2</span>) {</span>
+<span id="cb185-2"><a href="#cb185-2" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> base <span class="sc">^</span> exponent</span>
+<span id="cb185-3"><a href="#cb185-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb185-4"><a href="#cb185-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb185-5"><a href="#cb185-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb185-6"><a href="#cb185-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the function with default exponent</span></span>
+<span id="cb185-7"><a href="#cb185-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">raise_to_power</span>(<span class="dv">4</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb187"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb187-1"><a href="#cb187-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Specifying both arguments</span></span>
+<span id="cb187-2"><a href="#cb187-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">raise_to_power</span>(<span class="dv">4</span>, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 64</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="returning-multiple-values" class="level3">
+<h3 class="anchored" data-anchor-id="returning-multiple-values">Returning Multiple Values</h3>
+<p>Functions in R can return multiple values using a list.</p>
+<section id="example-statistics-function" class="level4">
+<h4 class="anchored" data-anchor-id="example-statistics-function">Example: Statistics Function</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb189"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb189-1"><a href="#cb189-1" aria-hidden="true" tabindex="-1"></a>calculate_stats <span class="ot">&lt;-</span> <span class="cf">function</span>(numbers) {</span>
+<span id="cb189-2"><a href="#cb189-2" aria-hidden="true" tabindex="-1"></a>  mean_val <span class="ot">&lt;-</span> <span class="fu">mean</span>(numbers)</span>
+<span id="cb189-3"><a href="#cb189-3" aria-hidden="true" tabindex="-1"></a>  sum_val <span class="ot">&lt;-</span> <span class="fu">sum</span>(numbers)</span>
+<span id="cb189-4"><a href="#cb189-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">mean =</span> mean_val, <span class="at">sum =</span> sum_val))</span>
+<span id="cb189-5"><a href="#cb189-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb189-6"><a href="#cb189-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb189-7"><a href="#cb189-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the function</span></span>
+<span id="cb189-8"><a href="#cb189-8" aria-hidden="true" tabindex="-1"></a>stats <span class="ot">&lt;-</span> <span class="fu">calculate_stats</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>))</span>
+<span id="cb189-9"><a href="#cb189-9" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(stats)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$mean
+[1] 3
+
+$sum
+[1] 15</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="anonymous-functions" class="level3">
+<h3 class="anchored" data-anchor-id="anonymous-functions">Anonymous Functions</h3>
+<p>For short, one-time operations, anonymous functions can be used.</p>
+<section id="example-doubling-numbers" class="level4">
+<h4 class="anchored" data-anchor-id="example-doubling-numbers">Example: Doubling Numbers</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb191"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb191-1"><a href="#cb191-1" aria-hidden="true" tabindex="-1"></a>numbers <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span></span>
+<span id="cb191-2"><a href="#cb191-2" aria-hidden="true" tabindex="-1"></a>doubled_numbers <span class="ot">&lt;-</span> <span class="fu">sapply</span>(numbers, <span class="cf">function</span>(x) x <span class="sc">*</span> <span class="dv">2</span>)</span>
+<span id="cb191-3"><a href="#cb191-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(doubled_numbers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  2  4  6  8 10</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="scope-and-environment" class="level3">
+<h3 class="anchored" data-anchor-id="scope-and-environment">Scope and Environment</h3>
+<p>Variables defined inside a function are local to that function.</p>
+<section id="example-increment-function" class="level4">
+<h4 class="anchored" data-anchor-id="example-increment-function">Example: Increment Function</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb193"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb193-1"><a href="#cb193-1" aria-hidden="true" tabindex="-1"></a>increment <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb193-2"><a href="#cb193-2" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> x <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb193-3"><a href="#cb193-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(y)</span>
+<span id="cb193-4"><a href="#cb193-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb193-5"><a href="#cb193-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb193-6"><a href="#cb193-6" aria-hidden="true" tabindex="-1"></a>incremented_value <span class="ot">&lt;-</span> <span class="fu">increment</span>(<span class="dv">5</span>)</span>
+<span id="cb193-7"><a href="#cb193-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(incremented_value)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 6</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb195"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb195-1"><a href="#cb195-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Trying to print 'y' here would result in an error because 'y' is not defined in this scope.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
 <section id="references" class="level3">
 <h3 class="anchored" data-anchor-id="references">References</h3>
 <p><a href="https://bookdown.org/nguyenthieu2102/r_programming_tutorial/">R Programming Tutorial</a></p>

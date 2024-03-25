@@ -905,6 +905,109 @@ switch(day,
 )
 ```
 
+## Creating Functions in R
+
+### Introduction
+
+Functions in R are crucial for efficient and organized code, allowing for repetitive tasks to be encapsulated into single, callable entities. This chapter demonstrates how to craft your own functions, enabling the automation of tasks and making your code more modular and readable.
+
+### Basic Function Structure
+
+A function is defined using the `function` keyword, followed by parentheses containing any arguments, and a body enclosed in curly braces.
+
+#### Example: Simple Addition Function
+
+```{r}
+add_two_numbers <- function(a, b) {
+  result <- a + b
+  return(result)
+}
+
+# Using the function
+print(add_two_numbers(5, 3))
+```
+
+### Function Arguments and Return Values
+
+Functions can take arguments and return results. R functions return the result of the last line in the function body by default, but the `return()` function can be used for clarity or early returns.
+
+#### Example: Greeting Function
+
+```{r}
+greet_person <- function(name) {
+  greeting <- paste("Hello,", name)
+  return(greeting)
+}
+
+# Using the function
+print(greet_person("Alice"))
+```
+
+### Default Argument Values
+
+You can specify default values for arguments, making them optional.
+
+#### Example: Power Function
+
+```{r}
+raise_to_power <- function(base, exponent = 2) {
+  result <- base ^ exponent
+  return(result)
+}
+
+# Using the function with default exponent
+print(raise_to_power(4))
+# Specifying both arguments
+print(raise_to_power(4, 3))
+```
+
+### Returning Multiple Values
+
+Functions in R can return multiple values using a list.
+
+#### Example: Statistics Function
+
+```{r}
+calculate_stats <- function(numbers) {
+  mean_val <- mean(numbers)
+  sum_val <- sum(numbers)
+  return(list(mean = mean_val, sum = sum_val))
+}
+
+# Using the function
+stats <- calculate_stats(c(1, 2, 3, 4, 5))
+print(stats)
+```
+
+### Anonymous Functions
+
+For short, one-time operations, anonymous functions can be used.
+
+#### Example: Doubling Numbers
+
+```{r}
+numbers <- 1:5
+doubled_numbers <- sapply(numbers, function(x) x * 2)
+print(doubled_numbers)
+```
+
+### Scope and Environment
+
+Variables defined inside a function are local to that function.
+
+#### Example: Increment Function
+
+```{r}
+increment <- function(x) {
+  y <- x + 1
+  return(y)
+}
+
+incremented_value <- increment(5)
+print(incremented_value)
+# Trying to print 'y' here would result in an error because 'y' is not defined in this scope.
+```
+
 ### References
 
 [R Programming Tutorial](https://bookdown.org/nguyenthieu2102/r_programming_tutorial/)
