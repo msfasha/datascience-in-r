@@ -2,6 +2,12 @@
 title: "1.3 Data Manipulating using dplyr"
 format: html
 editor: visual
+include-before: |
+  <div style="text-align: center;">
+    <img src="images/department_logo.png" width="169" />
+    <img src="images/ioa_logo.png" width="122" />
+    <img src="images/petra_logo.png" width="52" />
+  </div>
 ---
 
 #### Introduction to `dplyr`
@@ -16,7 +22,7 @@ This section of the course will explore `dplyr`'s functionality through the anal
 
 Before diving into `dplyr`, ensure it is installed and loaded into your R environment. Also install the reader package so that we can read csv files.
 
-```{r}
+```{r eval=FALSE}
 install.packages("dplyr")
 install.packages("readr")
 
@@ -47,6 +53,7 @@ superstore <- read_csv(file_path)
 `filter()` is used to narrow down a dataset to rows that meet specific criteria. For instance, to analyze sales from the "Technology" category:
 
 ```{r}
+library(dplyr)
 technology_sales <- superstore %>% filter(Category == "Technology")
 nrow(technology_sales)
 ```

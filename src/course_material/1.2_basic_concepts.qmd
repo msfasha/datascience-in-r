@@ -1008,6 +1008,56 @@ print(incremented_value)
 # Trying to print 'y' here would result in an error because 'y' is not defined in this scope.
 ```
 
+## Exercises
+
+### Exercise 1: Hello World Variations
+
+-   **Task A:** Write a script in R that prints "Hello, World!" to the console. Modify the script to print your name instead of "World".
+-   **Task B:** Use the `cat()` function instead of `print()` to output "Hello, World!" to the console. Note any differences in the output between `print()` and `cat()`.
+
+### Exercise 2: Working with Variables
+
+-   Create variables to store your favorite number, color, and a logical value indicating whether you like pizza. Print these variables to the console.
+
+### Exercise 3: Data Type Exploration
+
+-   **Task A:** Create a vector containing the numbers 1 through 10. Use functions to determine the type of the vector and its individual elements.
+-   **Task B:** Create a list containing a numeric value, a character string, and a logical value. Determine the type of the list and its elements.
+
+### Exercise 4: Conditional Logic
+
+-   Write a script that checks if a number (you can hard-code the number in the script) is positive, negative, or zero and prints an appropriate message to the console.
+
+### Exercise 5: Looping Constructs
+
+-   **Task A:** Using a `for` loop, print the squares of numbers from 1 to 10.
+-   **Task B:** Using a `while` loop, create a countdown from 10 to 1, printing each number to the console.
+
+### Exercise 6: Function Creation
+
+-   Create a function named `calculate_area` that takes the radius of a circle as an argument and returns its area. Test your function with several different radii.
+
+### Exercise 7: Vector Operations
+
+-   **Task A:** Create two vectors, `a` and `b`, each containing 5 arbitrary numbers. Perform element-wise addition, subtraction, multiplication, and division, printing the results to the console.
+-   **Task B:** Use logical operators to compare the elements of `a` and `b` and print the results. For example, check which elements of `a` are greater than those of `b`.
+
+### Exercise 8: Factor Variables
+
+-   Create a factor variable representing three different fruit types (e.g., apple, banana, cherry). Print the factor variable, its levels, and convert it to numeric values.
+
+### Exercise 9: Data Frame Manipulation
+
+-   Create a simple data frame representing student IDs, names, and scores. Perform the following tasks:
+    -   Select and print only the names and scores of students.
+    -   Add a new column indicating whether each student passed (score \>= 50).
+
+### Exercise 10: User Input (Optional, if practical for the environment)
+
+-   Write a script that asks the user for their name and age, and then prints a message greeting them and mentioning whether they are over 18.
+
+These exercises are designed to cover a wide range of basic concepts in R, from simple script writing to more complex data manipulation and conditional logic, providing a comprehensive revision of the chapter's material.
+
 ### References
 
 [R Programming Tutorial](https://bookdown.org/nguyenthieu2102/r_programming_tutorial/)
