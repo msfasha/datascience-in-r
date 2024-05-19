@@ -1,0 +1,29 @@
+---
+title: "Untitled"
+format: html
+editor: visual
+---
+
+## S.5 Power Analysis
+
+<https://online.stat.psu.edu/statprogram/reviews/statistical-concepts/power-analysis>
+
+Why is Power Analysis Important? Consider a research experiment where the p-value computed from the data was 0.12. As a result, one would fail to reject the null hypothesis because this p-value is larger than = 0.05. However, there still exist two possible cases for which we failed to reject the null hypothesis:
+
+the null hypothesis is a reasonable conclusion, the sample size is not large enough to either accept or reject the null hypothesis, i.e., additional samples might provide additional evidence. Power analysis is the procedure that researchers can use to determine if the test contains enough power to make a reasonable conclusion. From another perspective power analysis can also be used to calculate the number of samples required to achieve a specified level of power.
+
+Example S.5.1 Let's take a look at an example that illustrates how to compute the power of the test.
+
+Example Let X denote the height of randomly selected Penn State students. Assume that X is normally distributed with unknown mean and a standard deviation of 9. Take a random sample of n = 25 students, so that, after setting the probability of committing a Type I error at , we can test the null hypothesis against the alternative hypothesis that .
+
+What is the power of the hypothesis test if the true population mean were Mu = 175?
+
+![](power_analysis.png)
+
+## Calculating Sample Size
+
+![](sz.png)
+
+![](sz_2.png)
+
+In summary, you should see how power analysis is very important so that we are able to make the correct decision when the data indicate that one cannot reject the null hypothesis. You should also see how power analysis can also be used to calculate the minimum sample size required to detect a difference that meets the needs of your research.

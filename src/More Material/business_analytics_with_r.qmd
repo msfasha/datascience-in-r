@@ -1,0 +1,1796 @@
+---
+title: "Business Analytics with R"
+format: html
+editor: visual
+---
+
+# Business Analytics with R
+
+### Contents
+
+**Session 1: Introduction to R**
+
+-   Reading-In Data
+
+-   Summarizing Data
+
+-   Data Selection
+
+-   Data Classes
+
+-   Plotting Data
+
+-   Basic Analytics
+
+-   Advanced Analytics and Expansion
+
+**Session 2: Data Processing in R**
+
+-   Object and Data Types
+
+-   Selecting and Subsetting Data
+
+-   Missing Values
+
+-   Binding Data Together
+
+-   Aggregating and Summarizing Data
+
+-   Iterating over Data
+
+-   Descriptives
+
+**Session 3: Data Visualizion**
+
+-   Scatterplot
+
+-   Bar Chart
+
+-   Histogram
+
+-   Boxplot
+
+-   Stacked Chart
+
+-   Pie chart
+
+-   Line Chart
+
+-   Multiple Charts
+
+-   Trellis Graphs
+
+**Session 4: The Grammar of Graphics**
+
+-   Initiating the Graph
+
+-   Aesthetic Mapping or Type
+
+-   All Colors and Shapes
+
+-   Statistical Transformation
+
+-   Facetting
+
+-   Annotating and Themes
+
+-   The Quick Plot
+
+**Session 5: Comparing Groups: T-test, ANOVA, and Clusters**
+
+-   T-test
+
+-   ANOVA
+
+-   Clustering and K-means
+
+**Session 6: Correlation and Regression**
+
+-   Correlation
+
+-   Simple Regression
+
+-   Multiple Regression
+
+-   Diagnostics
+
+-   Statistical and Practical Significance
+
+**Session 7: Classification - Logistic Regression and Trees**
+
+-   Classification Algorithms
+
+-   Logistic Regression
+
+-   Classification Trees
+
+**Session 8: Running Simulations**
+
+-   The Utility of Simulations
+
+-   Number Generators in R
+
+-   Approach to Simulation
+
+-   Example Case
+
+-   References
+
+### **Session 1: Introduction to R**
+
+This section of the lecture notes aims to provide a quick overview of basic functionality of the R software for statistical computing (R Core Team, 2014).
+
+It is intended to help the analyst understand the basic structure and logic of the language and prepare him or her for productive work with it.
+
+The topics included range from an introduction into R through reading data and manipulating data, visualizing it, and conducting statistical analyses. The text is structured in a hands-on way and can be both read in its entirety or referred to on the go.
+
+### Introduction
+
+Since then, R is supported by a large community and continuously developed by a core team of programmers and statisticians. It is popular among academics and researchers and is recently gaining popularity in data-intensive businesses as well. For a more through introduction to the R language and its applications, the reader is directed to Gareth et al. (2013) and to Bell (2020). It is particularly notable for the following:
+
+-   Scalable - it scales well and can do analysis on large data sets - something that traditional tools either cannot, or were slow to adapt
+
+-   Up-to-date - it includes the most novel statistical methods and approaches, that are often not contained in proprietary software packages
+
+-   Customizable - it gives the user complete control over the processes
+
+-   Diverse - it provides numerous alternative ways to do particular analysis and visualizations, letting users choose their preferred one
+
+-   Popular - it is widely used and supported by a large and enthusiastic community that can be a source of help and inspiration
+
+-   Open-source and freeware - it is open-source which allows constant development by non-members of the core team and is also free of charge, making it accessible to large audiences.
+
+Of course, this has to be taken against the steep learning curve and the sometimes demanding system requirements (especially for RAM). Overall, the R language is a versatile tool that can provide competitive advantage to those who master it and use it.
+
+### Reading-In Data
+
+The first part of an analysis is to actually read data in, that can be worked with. A standard way is to have a source of data in some form and load it. If it is a table, one can use the read.table command. The program will try to find the specified name in the command in the home directory and load it. If it is not in the home directory, the user will have to specify the full path.
+
+```{r}
+file_name <- "G:\\My Drive\\Current\\Courses\\datasets\\Chicago salaries\\chicago_salaries.csv"
+
+# https://www.kaggle.com/datasets/carrie1/ecommerce-data
+# file_name <- "G:\\My Drive\\Current\\Courses\\datasets\\Kaggle_eCommerce\\kaggle_ecommerce.csv"
+```
+
+```{r}
+read.table(file = file_name, sep = ",",header = TRUE, fill = TRUE,nrows=100)
+
+# sep = "," specifies that the separator is a comma, which is standard for CSV files.
+# header = TRUE indicates that the first row contains column names.
+# nrows = 100 limits the read operation to the first 100 rows of the file.
+# If the file might have lines with varying numbers of fields and you want to read it anyway, you can set fill = TRUE to fill in missing values:
+
+```
+
+This command gives a lot of flexibility as it has further options that can specify all details needed - the header, the separator, column names, special symbols, etc. The best way to understand a command is to write it over on the command line with a ? in front of it. This will open the help file, giving more details about it, and concrete examples of usage and syntax.
+
+```{r}
+?read.table	
+```
+
+A simpler version of this is a command to read .csv files, which has less options and is easier to use.
+
+```{r}
+read.csv(file_name)	
+```
+
+If you only write this, the data will be read but not stored in the R environment. You have to assign it to an object. The way to do this is to use the assignment operator \<-.
+
+```{r}
+ds <- read.csv(file_name)
+ds
+```
+
+In this way we create an object named data and assign it to contain the data that was read into the file.
+
+Another way to load data is to just use one of the datasets that comes in R itself and perform analysis and visualization on it.
+
+To see what data is available type:
+
+```{r}
+data()
+```
+
+For example we can load the cars dartaset. This is done with the following command:
+
+```{r}
+
+# The cars dataset includes Speed and Stopping Distances of Cars
+data(cars)
+cars
+```
+
+The data appears in the global environment and is ready to work with.
+
+### Summarizing Data
+
+A common first step is to look at a few numerical and visual summaries of data in order to better understand its form, structure, and some information.
+
+To look at the first lines of the dataset you can do the following with the head command.
+
+```{r}
+head(cars)
+```
+
+And to look at the last lines, you can use the tail command:
+
+```{r}
+tail(cars)
+```
+
+General descriptive statistics can be obtained via the summary command :
+
+```{r}
+summary(cars)
+```
+
+### Data Selection
+
+A common task is to select only a subset of data to manipulate it. For example, we may be interested in the mean or the standard deviation of only one of the four indices. A common way to select (or subset) data is to use \[x, y\] after the name of the data. Here x corresponds to the column number, and y to the row number.
+
+If we want to select all columns or rows, we just put **,** instead of a number.
+
+For example, to select the first (column) of the cars dataset, we can type:
+
+```{r}
+ cars[,1]
+```
+
+If we want to select the first row of data (observation), we can type:
+
+```{r}
+cars[1,]
+```
+
+Finally if we want to select the first observation of the first column, then it is:
+
+```{r}
+cars[1,1]
+```
+
+If we want to select just a column (variable), like the first column, the can use the "\$" sign and the name of this variable.
+
+```{r}
+cars$speed
+```
+
+Once a subset of data is selected, it can be assigned to an object in the R environment. Here we assign the distance column to the dist object:
+
+```{r}
+dist <- cars[,2]
+dist
+```
+
+We calculate the mean (mean) and the standard deviation (sd) for the distance column:
+
+```{r}
+mean(dist)
+sd(dist)
+```
+
+Instead of the object we can also use the selection syntax on the dataframe:
+
+```{r}
+mean(cars[,2])
+sd(cars[,2]) 
+```
+
+### Data Classes
+
+R supports many data classes that describe different types of data and that require different analytic methods and have different visualization needs.
+
+A few common types of data are:
+
+-   Numeric - quantitative values that can be processed through different analytics and plotted. Example: asset prices.
+
+-   Character - a string of letter, usually a name, or some textual information.
+
+    Example: company names.
+
+-   Factor - an ordinal or nominal value that distinguishes between data categories.
+
+    Example: company sector.
+
+-   Time Series - numeric data that has a temporal dimension to it.
+
+    Example: asset returns on given days.
+
+To understand what is the class of a given object or subset, we can use the class command.
+
+```{r}
+class(cars[,1])
+```
+
+To get an idea of how the object is structured, we can use the str command.
+
+```{r}
+str(cars[,1])
+```
+
+Sometimes specific analytic or plotting methods require a different class of data that the analyst may have. In this case data has to be coerced into the needed class. This is done by using the as.XX command where XX refers to the new class of data.
+
+For this example, we will use the EuStockMarkets dataset which contains the daily closing prices of major European stock indices, 1991-1998. In that dataset, we will convert the time series object car\[,1\] into numeric class and assign it to object x we do the following:
+
+First, display the data types (class) of the first column
+
+```{r}
+class(EuStockMarkets[,1])
+```
+
+Now convert that column into a numeric datatype
+
+```{r}
+DAX <- as.numeric(EuStockMarkets[,1])
+class(DAX)
+```
+
+One should be careful what data class is required by a certain method and be careful that the data class at hand and the required one are consistent. Lack of this can lead to either errors or incorrect results.
+
+### Plotting Data
+
+A key feature of any statistical language is its plotting facilities. Visualization of data helps better understanding, enable the discovery of patterns and trends in data, and finally makes for much better and clearer communication of results.
+
+The R language has many alternative plotting facilities. The most basic one is the **plot** command. It is a generic command which will produce a different default type of plot depending on the data at hand.
+
+We can use it to plot first index of the EuStockMarkets:
+
+```{r}
+plot(EuStockMarkets[,1])
+```
+
+We can customize color with the option col, change the line width with the option lwd and the two axis names with the optiona xlab and ylab. The main title is set with the option main, as follows:
+
+```{r}
+plot(EuStockMarkets[,1], col="blue", lwd=2, ylab="Indev Value",
+main = "DAX Dynamics over the period 1991-1999")
+```
+
+There are many other options that can be explored with the command below.
+
+```{r}
+?plot
+```
+
+Another important graph would be the histogram. We make a histogram (hist) of the DAX values as follows:
+
+```{r}
+hist(EuStockMarkets[,1], col="blue", ylab="No. Observations", xlab = "DAX Value",
+main = "Histogram of DAX Realizations")
+```
+
+A useful type of graphic is the boxplot. We can see the comparative values of different groups of observations using it. Here we the boxplot command to compare the four indices:
+
+```{r}
+boxplot(EuStockMarkets, col="orange",
+main="Values of EU Stock Market Indices")
+```
+
+Finally, we can see how related are two pairs of indices using a scatterplot. For this purpose we convert time series data into numeric data and assign them to two object - DAX and FTSE:
+
+```{r}
+DAX <- as.numeric(EuStockMarkets[,1])
+FTSE <- as.numeric(EuStockMarkets[,4])
+```
+
+Now we use the scatterplot. Given this types of data it will be automatically generated by the plot commnad, but we can also explicitly set using the option type in the command:
+
+```{r}
+plot(DAX, FTSE, col="blue", main="DAX and FTSE Dynamics", cex=0.3)
+
+# cex: a numerical vector giving the amount by which plotting characters and symbols should be scaled relative to the default. 
+```
+
+Now that we have plotted them against each other we can see that they are move very closely together, thus implying positive and relatively strong correlation between the two.
+
+All the plots generated by the commands in R can be saved to disk using the dev.copy() command, followed by the dev.off() one.
+
+```{r}
+# Set up the PNG device to copy the plot to a PNG file named "plot.png"
+png("plot.png")
+
+# Plot DAX against FTSE
+plot(DAX, FTSE, col="blue", main="DAX and FTSE Dynamics", cex=0.3)
+
+# Close the PNG device to save the plot to the file
+dev.off()
+```
+
+The are numerous alternative graphic systems in R which also produce more visually appealing graphs. The two leading contenders are Lattice graphs and the packages ggplot2. They are also a bit harder to learn and tend to be somewhat less generic that their more basic counterparts in the R language. However, a smooth transition to ggplot2 may be facilitated by the command qplot which is easy to use and customize. We demonstrate the same scatterplot with it, and easily add a line of best bet (with smoother option):
+
+```{r}
+library(ggplot2)
+qplot(DAX, FTSE, main="DAX and FTSE Dynamics", geom=c("point","smooth"),
+alpha=I(0.05))
+```
+
+### Basic Analytics
+
+The R language supports a wide range of statistical analyses that can provide insight into data and help in the practical risk management process. Apart from the rich functionality that comes with the base packages there are constantly new tools and techniques that are being developed by the community. Here we provide an overview of two basic but very common statistical operations. Once the logic is apparent, it can easily be transferred to other operations. It is often of interest to quantitatively measure the correlation between variables in order to see the potential for risk hedging. The basic command cor can help:
+
+```{r}
+cor(DAX, FTSE)
+```
+
+The high correlation between DAX and FTSE formalizes their close connection that was already apparent in plotting.
+
+Linear regression is commonly used to observe the effect of one independent variable (or many variables) over a dependent one.
+
+The command used for it is "lm" and R automatically prints output:
+
+```{r}
+lm(DAX~FTSE)
+```
+
+Alternatively, the analyst may choose to store the linear regression into and object and then preview a summary of that.
+
+Apart from the convenience of storing results, the summary command on the lm object will provide more information about the regression itself.
+
+```{r}
+lm <- lm(DAX~FTSE) 
+summary(lm)
+```
+
+It may be useful to extract the regression output for some purposes (e.g. if the coefficients are betas of interest). This is done by selecting the coef part of the regression summary and writing it to a disk (e.g. by using the write.csv command). This will give you most of the lm output (including coefficients, constant, errors, t-statistics, and p-values) in simple tabular from for further reuse or reporting.
+
+```{r}
+write.csv(summary(lm)$coef, "lmresults.csv")
+```
+
+A lot of analytic commands follow this structure and logic but the user is recommended to also have a look at their help pages using the ? command in order to gain greater insight and ease of use.
+
+### Advanced Analytics and Expansion
+
+Apart from the basic commands, the R statistical languages is characterized by a variety of options, tools, and methods for covering the complete spectrum of analytic needs - from the traditional classification and regression problems to the more novel ones such as social network analysis.
+
+Novel methods are usually found in packages - add-ons which are installed and loaded into the basic R version.
+
+A lot of packages are hosted on CRAN where they are listed only after passing a review for safety and operability.
+
+Every such package has a vignette which describes the new commands it adds to R. Many of them come with specific examples.
+
+Packages are installed via the install.packages() command. One of the packages that is very well-suited to financial analysis and risk management is the Performance Analytics package. We install it, and then load it into R.
+
+```{r}
+install.packages("PerformanceAnalytics")
+library(PerformanceAnalytics)
+```
+
+After this operation is done, it can be used. More information can be obtained on the package's help section.
+
+```{r}
+?PerformanceAnalytics
+```
+
+The versatility and adaptability of R, including through its ability to use community-driven advanced analytics packages makes it an indispensable tool for the modern RM and quantitative professional.
+
+Despite its steep learning curve, the R language has many benefits and unique advantages. It is also particularly suited for doing advanced business analytics that have the key to unlock competitive advantages in today's digital economy (Bartlett, 2013; Sarker, 2021).
+
+## Session 2: Advanced Data Processing
+
+### Object and Data Types R has five basic or ?atomic? classes of objects:
+
+-   character
+
+-   numeric (real numbers)
+
+-   integer
+
+-   complex
+
+-   logical (True/False)
+
+The most basic object is a **vector**. A vector can only contain objects of the same class.
+
+**Data frames** are used to store tabular data. They are represented as a special type of list where every element of the list has to have the same length.
+
+Each element of the list can be thought of as a column and the length of each element of the list is the number of rows.
+
+Data frames also have a special attribute called row.names
+
+Data frames are usually created by calling read.table() or read.csv(), or by converting other objects into them by calling as.data.frame().
+
+Data frames are extremely versatile and useful and are the preferred format to work with.
+
+Unless dealing with specific cases (such as time series, ts()) or the function/method requires data of certain type, data frames should be used.
+
+Note that new object and data types can (and are) introduced by individual packages and utilities. They are usually suited for specific purposes and are optimized to work in this setting.
+
+To illustrate these concepts and gain a better understanding of more advanced data processing, we load the Iris data. It gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris.
+
+The species are Iris setosa, versicolor, and virginica.
+
+```{r}
+data("iris")
+```
+
+We can check the class of this object:
+
+```{r}
+class(iris)
+```
+
+Looking at the data:
+
+```{r}
+head(iris)
+```
+
+Keep in mind that the overall object has a class of its own, but also the variables that it consists of are of a specific type.
+
+Investigating the first column:
+
+```{r}
+class(iris[,1])
+```
+
+Essentially this is a table (data frame), which consists of five variables each with 150 observations (different flowers), and those variables are mostly numeric and one factor.
+
+In addition, it is often useful to know the structure of the object in order to get specific parts of it if needed. To this end we can use the str command:
+
+```{r}
+str(iris) The first layer 
+```
+
+### Selecting and Subsetting Data
+
+Data can be subset with the square brackets \[\]. In them we first write the rows we would like to have, and then the columns.
+
+Selecting the observation in the first row, second column is achieved as follows:
+
+```{r}
+iris[1,2]
+```
+
+If we would like to select the first ten rows of the second and third column we go as follows:
+
+```{r}
+iris[1:10, 2:3] ## Sepal.Width Petal.Length
+```
+
+Selecting the first ten rows of all observations:
+
+```{r}
+iris[1:10,] ## Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+```
+
+Likewise we can select all the columns if we do not write specific numbers but use the **,** instead. An alternative here is to use the select command from the tidyverse package.
+
+```{r}
+library(tidyverse)
+head(select(iris, Species, Sepal.Length))
+```
+
+In some objects we can select variables using the \$ sign:
+
+```{r}
+iris$Sepal.Length
+```
+
+It is often useful to select data based on some criterion. For example if we only wanted to have the data on the setosa type of plant, we can use the subset command:
+
+```{r}
+subset(iris, Species == "setosa") ## Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+```
+
+We now want setosa species that have Petal width larger than 0.3:
+
+```{r}
+subset(iris, Species == "setosa" & Petal.Width > 0.3) ## Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+```
+
+An alternative here is to use the filter command from the tidyverse package.
+
+```{r}
+filter(iris, Species == "setosa", Petal.Width > 0.3) ## Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+```
+
+The tidyverse packages aims to provide a unified data processing, modeling and visualization flow that can be potentially very useful.
+
+### Missing Values
+
+Missing values are often a problem. A lot of algorithms and visualizations fail in the presence of missing values and they need to be therefore cleaned.
+
+There are two major types of missing values:
+
+-   Values that are result of calculations or processing and are not defined (e.g. Not a Number or NaN). An example of such is the log(-1).
+
+    ```{r}
+    log(-1)
+    ```
+
+-   Values that are just not available in the data - those are NAs, and may be due to a variety of reasons. One can either fill them (by mean substitution, extrapolation, kNN methods or others).
+
+We will see how to find and clean them. We will duplicate the iris data set and assign it to object iris2. Then we assign some value in the Petal.Length variable as NA:
+
+```{r}
+iris2 <- iris
+iris2[4,3] <- NA
+```
+
+We can see if there are missing values in the data set:
+
+```{r}
+head(is.na(iris2),4) ## Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+```
+
+Since those values are Boolean we can count the number of occurrences of missing (NA) values:
+
+```{r}
+sum(is.na(iris2))
+```
+
+We try to find the standard deviation of the variable with missing observation (Petal.Length):
+
+```{r}
+sd(iris2$Petal.Length)
+```
+
+Some functions have a command na.rm which defines how these values should be handled. If set to true, they are removed:
+
+```{r}
+sd(iris2$Petal.Length, na.rm = TRUE)
+```
+
+One can also use the function complete.cases() and then subset, which removes all observations which have a missing value in any of their variables.
+
+```{r}
+iris2 <- iris2[complete.cases(iris2),]
+sum(is.na(iris2))
+```
+
+It is useful and quick but may lead to an excessive loss of information is applied indiscriminately.
+
+### Binding Data Together
+
+There are numerous utilities that help combine different pieces of data into one object. To combine values into a vector or a list, we can use the c command:
+
+```{r}
+list <- c(1, 2, 3, 4)
+list
+```
+
+Imagine we draw the two columns from the iris data set and want to put them back together:
+
+```{r}
+slength <- iris$Sepal.Length
+swidth <- iris$Sepal.Width
+```
+
+To glue them as columns, we use the cbind command:
+
+```{r}
+columns <- cbind(slength, swidth)
+head(columns)
+```
+
+To glue them as rows, we use the rbind command:
+
+```{r}
+rows <- rbind(slength, swidth)
+head(rows)
+```
+
+### Aggregating and Summarizing Data
+
+We can summarize data by the summary command:
+
+```{r}
+summary(iris)
+```
+
+The table command allows to summarize data by defining the variables that will be rows and columns:
+
+```{r}
+table(iris$Petal.Width, iris$Species)
+```
+
+Any variable can be used to calculate different summary statistics. For example:
+
+-   Mean
+
+```{r}
+mean(iris$Sepal.Length)
+```
+
+-   Median
+
+```{r}
+mean(iris$Sepal.Length)
+```
+
+-   Variance and Standard Deviation
+
+```{r}
+var(iris$Sepal.Length)
+sd(iris$Sepal.Length)
+```
+
+-   Quantiles
+
+```{r}
+quantile(iris$Sepal.Length, probs = 0.1)
+```
+
+-   Minimum and Maximum
+
+```{r}
+min(iris$Sepal.Length)
+max(iris$Sepal.Length)
+```
+
+The tidyverse package offer the summarise command which is used to make summaries of data. We will use it in conjunction with the group_by() command, which creates groupings of variable. If for example we want to see the mean Sepal length for different plant species, we can first group data by species and then summarize, as follows:
+
+```{r}
+group <- group_by(iris, Species)
+summarise(group, mean(Sepal.Length))
+```
+
+Likewise we can see the standard deviation or a number of other relevant summary functions.
+
+```{r}
+summarise(group, sd(Sepal.Length))
+```
+
+### Iterating over Data
+
+For some applications it is needed to go in turn over parts of the data set and apply a given function to it. This is known as iterating over data and the most common way to do it in R is through the lappy, sapply (simpler version), and mapply functions.
+
+Suppose we want to go through all the columns in iris data set and see what their means are:
+
+```{r}
+sapply(iris, mean)
+```
+
+Since Species is not numeric but factor, it does not make sense to calculate mean, and we only select the numeric variable in iris - columns 1 through 4:
+
+```{r}
+sapply(iris[,1:4], mean)
+```
+
+Similarly we obtain the standard deviation or other relevant statistics by substituting the function we want:
+
+```{r}
+sapply(iris[,1:4], sd)
+```
+
+The functions from the apply family are optimized in R and provide high speed and efficiency in calculation.
+
+R also supports looping, which is typical for many programming languages. The syntax of the for loop follows. Here we try to calculate the standard deviations by looping over every column and storing the results in a pre-created object.
+
+```{r}
+sd <- c(0,0,0,0)
+for(i in 1:4) {
+sd[i] <- sd(iris[,i])
+}
+print(sd)
+```
+
+In general for loops are much slower in R than in many other languages and should be carefully used. They are also examples of flow control structures that R has and can utilize fruitfully.
+
+### Descriptive Statistics
+
+We can use the **`describe()`** function from the **`psych`** package to provide descriptive statistics for numeric variables in a data frame. It computes various summary statistics such as mean, median, standard deviation, minimum, maximum, and percentiles.
+
+```{r}
+# Install and load the psych package
+install.packages("psych")
+library(psych)
+
+# Describe numeric variables in the iris dataset
+describe(iris)
+```
+
+Descriptive statistics can be proactively used as a head start into the modeling and visualization phases.
+
+## Session 3: Data Visualization
+
+Visuals tell the story behind the data analysis and lead the reader through it. It is therefore of crucial importance to select appropriate visuals. They depend on the audience and the need:
+
+-   Visuals for exploratory analysis - large number of imperfect graphs that allow the analyst to understand data better. Usually quick and dirty and few of them (if any) are presented to the interested audience.
+
+-   Visuals for communication - few graphs that contain key points and fact, are well-thought and executed, suitably colored and clearly presented for the benefit of the interested audience.
+
+Key results need to be shown in clear, concise and appealing way so that they can support organizational decision-making. Different visualization solutions from simple graphs to complex BI tools and online dashboards exist and here we will focus on R basic visualization capabilities.
+
+The first pass at visuals should take a few points under consideration:
+
+-   Small is beautiful - minimalist visuals should get rid of superfluous parts but retain necessary ones
+
+-   Appropriate for data - visual should be suitable for the data it visualizes
+
+-   Compressed information - different aesthetics are only added if they add information, thus compressing more knowledge in a single graph
+
+-   Self-contained - visuals need to be fully understandable and lead to correct conclusions even outside context
+
+We will survey most common visualizations in base R and see what data they are suitable for.
+
+We are going to use the mtcars dataset to illustrate usage. The data was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973-74 models).
+
+#### Scatterplot
+
+Shows how two variables are interrelated with each other.
+
+We investigate the link between displacement and weight:
+
+```{r}
+plot(mtcars$disp, mtcars$wt)
+```
+
+Adding axis titles, and main title and coloring:
+
+```{r}
+plot(x = mtcars$disp, y = mtcars$wt, xlab = "Displacement", ylab="Weight",
+main = "Connection between Displacement and Weight in Retro Cars",
+col = "steelblue")
+```
+
+There are numerous graphical parameters that can be adjusted, e.g. the type of dots:
+
+```{r}
+plot(x = mtcars$disp, y = mtcars$wt, xlab = "Displacement", ylab="Weight",
+main = "Connection between Displacement and Weight in Retro Cars",
+col = "steelblue", pch=15)
+```
+
+We can add elements to this graph until we construct the visualization we want. Good examples are horizontal and vertical lines:
+
+```{r}
+plot(x = mtcars$disp, y = mtcars$wt, xlab = "Displacement", ylab="Weight",
+main = "Connection between Displacement and Weight in Retro Cars",
+col = "steelblue", pch=15) + abline(h = 3.5) + abline(v = 275)
+```
+
+In addition to that we can modify those lines just as we modify the graph. Here we change their color and their line width:
+
+```{r}
+plot(x = mtcars$disp, y = mtcars$wt, xlab = "Displacement", ylab="Weight",
+main = "Connection between Displacement and Weight in Retro Cars",
+col = "steelblue", pch=15) + abline(h = 3.5, col="red", lwd=2) +
+abline(v = 275, col="green", lwd=2)
+```
+
+We can also add a calculated regression (or trend) line, and also set the limits of the two axes using xlim and ylim:
+
+```{r}
+lm <- lm(mtcars$wt ~ mtcars$disp)
+plot(x = mtcars$disp, y = mtcars$wt, xlab = "Displacement", ylab="Weight",
+main = "Connection between Displacement and Weight in Retro Cars",
+col = "steelblue", pch=15, xlim = c(0, 600), ylim = c(0,6)) +
+abline(reg = lm, lwd=2, col = "darkblue")
+```
+
+#### Bar Chart
+
+The bar chart is very useful when visualizing total numbers and comparing them across groups. We now see how many cars have what number of gears:
+
+```{r}
+counts <- table(mtcars$gear)
+barplot(counts, main="Frequency of Different Numbers of Gears in Retro Cars",
+xlab="Number of Gears", ylab= "Total Cars", col="steelblue")
+```
+
+This can also be horizontal, instead of vertical:
+
+```{r}
+counts <- table(mtcars$gear)
+barplot(counts, main="Frequency of Different Numbers of Gears in Retro Cars",
+xlab="Number of Gears", ylab= "Total Cars", col="steelblue", horiz = TRUE)
+```
+
+#### Histogram
+
+Suitable for charting distributions and gaining overview of what values data takes. We can chart the frequency of values:
+
+```{r}
+hist(mtcars$wt, main = "Histogram of Weight in Retro Cars",
+xlab = "Car Weight", col = "steelblue")
+```
+
+We can also chart their probabilities:
+
+```{r}
+hist(mtcars$wt, main = "Histogram of Weight in Retro Cars",
+xlab = "Car Weight", col = "steelblue",freq = FALSE)
+```
+
+#### Boxplot
+
+The boxplot is very useful for charting and comparing a single variable across different groups. It gives an idea of the central tendency of the distribution, the dispersion, the range, and the outliers.
+
+We now investigate the miles per gallon depending on the number of car cylinders:
+
+```{r}
+boxplot(mtcars$mpg ~ mtcars$cyl, col="steelblue", xlab = "Cylinders",
+ylab = "Miles per Gallon",
+main = "Fuel Effiency with Different Number of Cylinders")
+```
+
+#### Stacked Chart
+
+The stacked chart is in principle close to the bar chart but it shows what proportion of different variables comprises a given bar.
+
+As such, the stacked bar chart compresses much more information and has the potential to be very useful.
+
+We can create it in R as follows, annotate it, and then add an explanatory legend:
+
+```{r}
+counts <- table(mtcars$am, mtcars$gear)
+labels = c("Manual", "Automatic")
+barplot(counts, main="Car Distribution by Gears and Transmission",
+xlab="Number of Gears", col=c("steelblue","lightblue"))
+legend("topright", title="Transmission", labels, fill=colors)
+```
+
+#### Pie chart
+
+The pie chart classically shows the proportion between parts of a whole.
+
+We can investigate what proportion of the cars are with automatic against those with manual transmission. First we calculate the two proportions:
+
+```{r}
+auto <- sum(mtcars$am[ mtcars$am == 1]) / length(mtcars$am)
+man <- 1-auto
+```
+
+Then we create the pie chart:
+
+```{r}
+pie(x = c(auto, man), labels = c("Automatic, 41%", "Manual, 59%"),
+col=c("white", "steelblue"))
+```
+
+#### Line Chart
+
+The line chart is particularly useful for displaying processes that develop over time or some specific trends. Such graphs are especially common in economic and business.
+
+We will use the sales data from the BJsales to illustrate this.
+
+```{r}
+data("BJsales")
+plot(BJsales, main = "Sales Trend over Time", col = "steelblue", lwd=2)
+```
+
+#### Multiple Charts
+
+A useful feature of graphing is to create a single visual that consists of multiple graphs which show relevant and interrelated data.
+
+This graphing capability is controlled by the command par(mfrow), and allows the user to specify what number of graphs will be tiled on a single plotting space.
+
+Here we would like to have 2 columns and 2 rows of graphs, or a total of four plots:
+
+```{r}
+par(mfrow=c(2,2))
+plot(x = mtcars$disp, y = mtcars$wt, xlab = "Displacement", ylab="Weight",
+main = "Displacement and Weight",
+col = "steelblue", pch=15) + abline(reg = lm, lwd=2, col = "darkblue")
+
+counts <- table(mtcars$gear)
+barplot(counts, main="Numbers of Gears",
+xlab="Number of Gears", ylab= "Total Cars",
+col="steelblue", horiz = TRUE)
+
+counts <- table(mtcars$am, mtcars$gear)
+barplot(counts, main="Car Distribution", xlab="Number of Gears", col=c("steelblue","lightblue"))
+
+plot(BJsales, main = "Sales Trend over Time", col = "steelblue", lwd=2)
+```
+
+## Session 4: The Grammar of Graphics
+
+The Grammar of Graphics is a formal and consistent way to think about creating visualizations the same way we use words and rules to create a human language.
+
+The grammar of graphics consists of rules how to express the creation of a visual (the grammar), and of specific commands (words) which are used in the process.
+
+This way of thinking was pioneered by Hadley Wickham in his groundbreaking work on visualizations and implemented in R in his package ggplot2.
+
+The interested reader is referred to his excellent book - Wickham, 2016. The basic idea behind visual is that one creates them layer after way to give increasingly more information. They go as follows (slightly adapted):
+
+1.  The first layer - empty plot and data to be visualized (the ggplot() command)
+2.  The second layer - aesthetic mapping - what is the type of graph, and what variables are to be mapped on it (geom\_... command)
+3.  The third layer - graph aesthetics and coloring - the color, shape, size of the aesthetic mapping (color, fill, shape, type, alpha, etc.)
+4.  The fourth layer - statistical transformations - looking at possible transformations of data such as adding a trend line (stat_smooth), or using a transformed varaible (log)
+5.  The fifth layer - facetting data - looking at the same visual at different slices and dices of the data set (facet_Wrap)
+
+We will illustrate all this with the mtcars data: data(mtcars)
+
+#### Initiating the Graph
+
+The graph is initiated by the command below.
+
+As we see this is the first layer - the empty plot on which we start doing a visualization.
+
+```{r}
+library(ggplot2)
+ggplot(data=mtcars)
+```
+
+#### Aesthetic Mapping or Type
+
+We would like to follow if there is any connection between miles per gallon, mpg (fuel efficiency) and gross horsepower, hp (power of the car).
+
+A suitable graph would be the scatter plot:
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg))
+```
+
+It seems that the more horsepower, the less miles can a car drive for a gallon of fuel. That shows how power and fuel efficiency are inversely correlated.
+
+The geom\_ command controls the type of graph we are making. Imagine now we would like to see the histogram of just mpg. We thus use geom\_
+
+```{r}
+ggplot(data=mtcars) + geom_histogram(mapping = aes(x = mpg))
+```
+
+Every geom has its own set of relevant options. For the histogram, an example is the number of bins.
+
+```{r}
+ggplot(data=mtcars) + geom_histogram(mapping = aes(x = mpg), bins = 8)
+```
+
+We can construct the density plot of mpg:
+
+```{r}
+ggplot(data=mtcars) + geom_density(mapping = aes(x =mpg))
+```
+
+We can see how the mpg is related to the type of transmission, am, using a boxplot:
+
+```{r}
+ggplot(data=mtcars) + geom_boxplot(mapping = aes(x = as.factor(am), y=mpg))
+```
+
+A classical way to represent data is through a line. Here we plot some index number of a given car (from 1 to 32) in the dataset against the mpg of this car:
+
+```{r}
+ggplot(data=mtcars) + geom_line(mapping = aes(x = seq(32), y = mpg))
+```
+
+Quite obviously, such a graph would be much more insightful if we plotted the development of a process over time or similar data.
+
+Finally, we can even add more geoms to get the most out of out visualization. If we would like to divide the graph into two parts with a vertical line (say at x=16), then we can use:
+
+```{r}
+ggplot(data=mtcars) + geom_line(mapping = aes(x = seq(32),
+y = mpg)) + geom_vline(xintercept = 16)
+```
+
+All in all, there are many available geoms which can be used to create appealing graphs:
+
+-   geom_abline(geom_hline, geom_vline)
+
+-   geom_bar(stat_count)
+
+-   geom_bin2d(stat_bin2d, stat_bin_2d)
+
+-   geom_blank
+
+-   geom_boxplot(stat_boxplot)
+
+-   geom_contour(stat_contour)
+
+-   geom_count(stat_sum)
+
+-   geom_crossbar(geom_errorbar, geom_linerange, geom_pointrange)
+
+-   geom_density(stat_density)
+
+-   geom_density_2d(geom_density2d, stat_density2d, stat_density_2d)
+
+-   geom_dotplot
+
+-   geom_errorbarh
+
+-   geom_freqpoly(geom_histogram, stat_bin)
+
+-   geom_hex(stat_bin_hex, stat_binhex)
+
+-   geom_jitter
+
+-   geom_label(geom_text)
+
+-   geom_map
+
+-   geom_path(geom_line, geom_step)
+
+-   geom_point
+
+-   geom_polygon
+
+-   geom_quantile(stat_quantile)
+
+-   geom_raster(geom_rect, geom_tile)
+
+-   geom_ribbon(geom_area)
+
+-   geom_rug
+
+-   geom_segment(geom_curve)
+
+-   geom_smooth(stat_smooth)
+
+-   geom_violin(stat_ydensity)
+
+#### All Colors and Shapes
+
+For both visual appeal, and for added informational content we can use different aesthetic properties.
+
+Taking the scatter plot for hp and mpg we can change the colors:
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg),
+color = "purple")
+```
+
+We can also increase the size:
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg),
+color = "purple", size=3)
+```
+
+We can also change the type of dots:
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg),
+color = "purple", size=3, shape=8)
+```
+
+This, however, brings no additional information. We can add more insight by mapping a variable as the shape, color or size of the geom. For example we color the dots by how many cylinders the car has:
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg,
+color=as.factor(cyl)), size=3)
+```
+
+Note that because now the color is part of the mapping, the variable which gives the color should go with the other ones in the aes() brackets. Even more information can be added when we map the type of transmission (again transformed as factor) to points:
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg,
+color=as.factor(cyl), shape=as.factor(am)), size=3)
+```
+
+Another parameter that may be useful is alpha, which is a measure of transparency. Higher values of alpha are associated with a more solid color. We now map the variable am (transmission) to transparency:
+
+```{r}
+color=as.factor(mtcars$cyl)
+
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg,
+color=as.factor(cyl), alpha=as.factor(am)), size=3)
+```
+
+Keep in mind that ggplot2 will take into account the type of variable we are mapping to a given aesthetic and will create an appropriate scale. For example if we map the rear axle ratio (drat) to color, the scale will be changed as well:
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg,
+color=drat, shape=as.factor(am)), size=3)
+```
+
+#### Statistical Transformation
+
+Some statistical transformations can be applied directly to the variables mapped. We now look at a log-log graphs of mpg and hp:
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = log(hp), y = log(mpg)),
+color = "purple", size=3)
+```
+
+Another common task is to add a trend line to a given graph. This is done with the stat_smooth function:
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg), size=3) +
+stat_smooth(mapping = aes(x = hp, y = mpg))
+```
+
+By default the smoothing method is a loess line but the user may specify an alternative methods, e.g. a regression line:
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg), size=3) +
+stat_smooth(mapping = aes(x = hp, y = mpg), method="lm")
+```
+
+The blue line is the point estimated and the shaded areas are the standard errors. We can have the overall trend line and colored points:
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg,
+col = as.factor(cyl)), size=3) + stat_smooth(mapping = aes(x = hp, y = mpg), method="lm")
+```
+
+Alternatively, we can have separate trend lines for all groups by modifying the appropriate geom:
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg,
+col = as.factor(cyl)), size=3) + stat_smooth(mapping =
+aes(x = hp, y = mpg, col = as.factor(cyl)), method="lm")
+```
+
+This allows us to observe if the trend is robust across group or if it is excessively-driven by a given sub-group. In this case it is not robust.
+
+#### Facetting
+
+An additional way to think about different group of data, we can use facets - i.e. juxtaposed plots that map the same variables but differ across dimension. One can use the two command - facet_wrap (split across one dimension) and facet_grid (split across one or more dimensions).
+
+We now investigate if the link between mpg and hp holds across different number of engine cylinders.
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg), size=3) + stat_smooth(mapping = aes(x = hp, y = mpg), method="lm") + facet_wrap(~ cyl)
+
+# geom_smooth() using formula y ~ x
+```
+
+Additionally, the facet_grid() command allows to see a grid of two variables that modulate the relationship of those we plot. For concreteness we now look at the cylinders and type of transmission as interfering with the link between fuel efficiency and horsepower:
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg), size=3) +
+stat_smooth(mapping = aes(x = hp, y = mpg), method="lm") +
+facet_grid(am ~ cyl)
+```
+
+As data sets become larger and more complicated such nuanced views of data hold the potential to reveal unexpected relationships and to invalidate some expected ones . Additionally, they provide a clearer view of data across specific groups.
+
+#### Annotating and Themes
+
+There are many ways to annotate the graphs. Particularly useful are the utilities to label axes, and to add main titles. To label axes, use labs(), and ggtitle() to add title, and xlim and ylim to set the ranges of the two axes:
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg), size=3,) +
+stat_smooth(mapping = aes(x = hp, y = mpg), method="lm") +
+ggtitle("Link Between Fuel Efficiency and Engine Power") +
+labs(x = "Horsepower", y = "Miles per Gallon") + ylim(0, 40)
+```
+
+The overall view of the graphs is controlled by the ggplot2 themes. There one can modify all aspects of different elements (incl. sizes). Those can either be edited separately or the user can change the theme altogether. This is done through the command theme:
+
+```{r}
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg), size=3,) +
+stat_smooth(mapping = aes(x = hp, y = mpg), method="lm") +
+ggtitle("Link Between Fuel Efficiency and Engine Power") +
+labs(x = "Horsepower", y = "Miles per Gallon") + theme_bw()
+```
+
+There are packages that also add additional themes. A paticularly popular one is the ggthemes. It supports themes that resemble those of popular visuals (e.g. The Economist Magazine, Stata, Tableau, etc.)
+
+```{r}
+library(ggthemes)
+ggplot(data=mtcars) + geom_point(mapping = aes(x = hp, y = mpg), size=3,) +
+stat_smooth(mapping = aes(x = hp, y = mpg), method="lm") +
+ggtitle("Link Between Fuel Efficiency and Engine Power") +
+labs(x = "Horsepower", y = "Miles per Gallon") + theme_economist()
+```
+
+#### The Quick Plot
+
+Finally, the ggplot2 packages offers a high-level function qplot which functions very close to the standard R function plot - the user just can write the whole graph in a single function and the package will apply relevant defaults.
+
+```{r}
+qplot(x = disp, y = mpg, col = as.factor(gear), size = I(3),
+data = mtcars, xlab = "Displacement", ylab = "Miles per Gallon",
+main = "Link Between Engine Size and Fuel Efficiency")
+```
+
+In addition to that, the user can add to any qplot graph the same elements that can be added to a ggplot graph, albeit with much less flexibility. For example, adding the trend line:
+
+```{r}
+qplot(x = disp, y = mpg, col = as.factor(gear), size = I(3),
+data = mtcars, xlab = "Displacement", ylab = "Miles per Gallon",
+main = "Link Between Engine Size and Fuel Efficiency") +
+stat_smooth(method = "lm", se = FALSE)
+```
+
+### Session 5: Comparing Groups: T-test, ANOVA, and Clusters
+
+A classic question in data analytics is whether the differences we observe between two (or more) groups are due to chance or not (i.e. if they are statistically meaningful). For example, a company may be interested if their female or male customers have a higher propensity to buy and if there is a robust difference between the group. To compare groups we can use different approaches, with the analysis of variance being a particularly popular one.
+
+We will illustrate three major approaches:
+
+-   T-test - when we compare between two groups
+
+-   ANOVA - when we compare between two or more groups
+
+-   k-means clusters - which allows for similar observation to be grouped
+
+Should the reader be interested in a more thorough treatment of the ANOVA or t-test, they are pointed to Chapter 7 of Diez et al. (2019). James et al. (2021, pp. 516-532) provide an excellent overview of clustering algorithms, including k-means.
+
+For this purpose we use the SLID data from the car package. The SLID (Survey of Labour and Income Dynamics) data frame has 7425 rows and 5 columns. The data are from the 1994 wave of the Canadian Survey of Labour and Income Dynamics, for the province of Ontario. There are missing data, particularly for wages.
+
+?SLID
+
+```{r}
+install.packages("car")
+library(car)
+
+# The SLID data frame has 7425 rows and 5 columns. The data are from the 1994 wave of the Canadian Survey of Labour and Income Dynamics, for the province of Ontario. There are missing data, particularly for wages.
+
+data(SLID)
+summary(SLID)
+```
+
+Naturally, we would expect higher education and higher wages to be associated.
+
+```{r}
+ggplot(data = SLID, mapping = aes(x = education, y = wages, color = sex)) + geom_point() + ggtitle("Education vs Wages by Gender") +   theme(plot.title = element_text(hjust = 0.5))
+```
+
+#### T-test
+
+It is interesting to observe how wages fluctuate across genders and languages.
+
+```{r}
+ggplot(data = SLID, mapping = aes(x = sex, y = wages, color = sex)) + geom_boxplot() 
+```
+
+This raises the question if whether the difference we observe is actually statistically significant, which can be tested with the t-test.
+
+The t-test is used to determine whether there is a significant difference between two sets of scores. It consists of comparing the values of some continuous variable for two groups or on two occasions.
+
+Types:
+
+-   independent samples (compares the mean scores of two different groups of people or conditions)
+
+-   paired samples (the mean scores for the same group of people on two different occasion / conditions)
+
+```{r}
+t.test(wages ~ sex, data = SLID)
+```
+
+The difference between genders highly statistically significant, and it seems that men are indeed making more money than women in terms of their hourly rates.
+
+#### ANOVA
+
+A further point to investigate is whether the language spoken by the individual has an effect on their hourly remuneration. A short visual analysis seems to hint that this is not the case, especially after we control for gender. We will test formally using an ANOVA model.
+
+```{r}
+ggplot(data = SLID, mapping = aes(x = language, y = wages, color = sex)) + geom_boxplot()
+```
+
+ANOVA stands for ANalysis Of VAriance. The test aims to analyze difference between groups based on their variance and means. It is similar to t-test but used to compare more than two groups. It is possible to measure not only main effects but also interaction effects. This is done using the following command:
+
+```{r}
+summary(aov(formula = wages ~ language, data = SLID))
+```
+
+The variable language fails to reach statistical significance, meaning that there is no meaningful difference between hourly rates for speakers of different languages in Canada.
+
+Measuring the interaction effect:
+
+```{r}
+summary(aov(formula = wages ~ language + sex + language * sex, data = SLID))
+```
+
+Here we see that the interaction effect is not significant but we observe yet again the strong impact of gender.
+
+#### Clustering and K-means
+
+Sometimes large groups of interest (customers, partners, business units) are composed of different segments. Defining this segments can drive economic and business decisions by allowing tailored approach (e.g. targeted marketing to customers most likely to respond). Clustering algorithms use data to discern among those segments.
+
+A cluster is defined by a centroid and the algorithm aims to minimize the distance between a group of points and the mean (centroid) in an iterative process.
+
+K-means clustering thus describes observations based on a synthetic average case. We will apply k-means clustering to the Canadian data to see if any discernible groups appear.
+
+First we create a subset with no missing values:
+
+```{r}
+slid <- SLID[complete.cases(SLID),]
+```
+
+Then we select only the numeric columns, and run the k-means command with five centers:
+
+```{r}
+slid <- slid[, 1:3]
+kmeans <- kmeans(x = slid, centers = 5)
+```
+
+The centroids give the key dimensions of each cluster and from then on the analyst can interpret the results. Here we observe clear cauterization among major demographics - wage, education, and age.
+
+```{r}
+kmeans$centers
+```
+
+The classification as to which observation belongs to which cluster is contained in the part cluster of the object
+
+```{r}
+head(kmeans$cluster)
+
+str(kmeans)
+```
+
+Plotting the correlations with colors and according to clusters:
+
+```{r}
+ggplot(data = slid, mapping = aes(x = education, y = wages, color = as.factor(kmeans$cluster))) +
+geom_point() + 
+ggtitle("Connection Between Wage and Education across Clusters")
+```
+
+Such a sophisticated understanding of data allows for a precise reading of the characteristics fo different groups for the purposes of data analytics, business decisions, and targeted marketing initiatives.
+
+### Session 6: Correlation and Regression
+
+Throughout this session we are going to use the Investment dataset from the sandwich packages. It is a classical data set that has some of the determinants for investment, and we will see their economic implications and interpretations. Additionally, we will calculate economically the investment function, and the investment elasticity. To this end we are going to focus on calculating correlations and fitting regression models (see Diez et al., 2019, Chapter 9; and James et al., 2021, Chapter 3)
+
+```{r}
+library(sandwich)
+data("Investment")
+```
+
+Plotting the data:
+
+```{r}
+View(Investment)
+str(Investment)
+plot(Investment)
+```
+
+Get more information about this dataset:
+
+```{r}
+?Investment
+```
+
+Reviewing the data:
+
+```{r}
+library(psych)
+describe(Investment)
+```
+
+#### Correlation
+
+Some variables tend to move together. A measure of this tendency is their correlation coefficient r.
+
+The coefficient ranges from 0 to 1. If r= 1 they move perfectly together, if r=0, then there is no association whatsoever. The Pearson correlation coefficient is defined as follows:
+
+The correlation does not imply causation but is meant to explore the change of one variable with the change of another.
+
+Coefficient size measures the strength of the correlation (positive or negative):
+
+-   r=0.10-0.29 - small (not a strong one)
+-   r=0.30-0.49 - medium (of average strength)
+-   r=0.50-1.00 - large (very strong correlation)
+
+We investigate the connection between GNP growth and investment growth.
+
+```{r}
+library(ggplot2)
+GNP <- as.numeric(Investment[,1])
+Invest <- as.numeric(Investment[,2])
+qplot(GNP, Invest, size = I(2)) + stat_smooth(method="lm")
+```
+
+Their correlation is:
+
+```{r}
+cor(GNP, Invest)
+```
+
+We remove the first line of observations because of missing value of RealInt and then calculate the correlation matrix.
+
+```{r}
+cor(Investment[2:20,])
+```
+
+This can be displayed visually through a correlation plot:
+
+```{r}
+library(corrplot)
+corrplot(cor(Investment[2:20,]))
+```
+
+#### Simple Regression
+
+Regressions are used for modeling driver importance and for prediction of an outcome variable. The logic behind a regression is that it fits a line by minimizing the distance of individual observations to that line. The equation of this line can be used to predict the value of an outcome variable using the values of the predictors.
+
+Note that causality is assumed beforehand. Key features of the model are as follows:
+
+-   Significance of the model: p-value shows if the model is actually able to predict outcome
+
+-   Amount of shared variance: R2 or adjusted R2 shows what fraction of the outcome can be predicted using the given independent variables
+
+-   Regression coefficients B (or Beta) - those are the coefficients of the regression equation (show size and direction/sign)
+
+We now formally investigate the effects of the real interest rate on GNP.
+
+```{r}
+lm1 <- lm(RealGNP ~ RealInv, data=Investment)
+summary(lm1)
+```
+
+As real investment increases by 1%, GNP is likely to increase by 5%, pointing at the importance of capital as driver for growth.
+
+The model explains 83% of variance, and all predictors reach statistical significance. We can calculate the elasticity of investment to interest rates.
+
+```{r}
+lm2 <- lm(formula = log(RealInv) ~ log(RealInt), data = Investment)
+```
+
+```{r}
+summary(lm2)
+```
+
+The elasticity is -0.03, but the coefficient fails to reach significance.
+
+#### Multiple Regression
+
+Multiple regression is a straightforward extension of the simple one by adding additional predictor variables. The effects of the betas are thus marginal - they show the influence of any individual predictor, holding all other predictors constant.
+
+We investigate the overall influence of income and interest on Investment, using multiple regression. The syntax and interpretation remain the same.
+
+```{r}
+lm3 <- lm(formula = RealInv ~ RealInt + RealGNP, data = Investment)
+summary(lm3)
+```
+
+#### Diagnostics
+
+A key determinant of model quality is the residuals. They should be random, with no distinguishable patterns. Should there be any patterns, the model probably is misspecified, or there is an omitted variable.
+
+Plotting the diagnostic plots:
+
+```{r}
+plot(lm3)
+```
+
+#### Statistical and Practical Significance
+
+There is a difference between statistical (p-value) and practical (adj. R2) significance. There are no clear cut boundaries on what is a useful model, but generally it has to be statistically significant at least at the 5% level and with a reasonably high adj. R2.
+
+### Session 7: Classification - Logistic Regression and Trees
+
+#### Classification Algorithms
+
+In practice it is sometimes important to distinguish between groups, i.e. to predict a categorical outcome variable.
+
+The prediction is usually based on a mathematical function or algorithm which makes use of independent variables to produce a classification result.
+
+There are wide applications in medicine, social science, and economics. Practical applications include test classifications in labs, marketing segmentation, fraud detection, risk management and loan granting.
+
+In our example we will use data to try to classify individuals as to whether they are going to be volunteers or not, based on their behavioral characteristics. For this we will use the Cowles data from the car package. The Cowles data frame has 1421 rows and 4 columns. These data come from a study of the personality determinants of volunteering for psychological research.
+
+```{r}
+library(car)
+data(Cowles)
+```
+
+Initially we review the data as usual:
+
+```{r}
+summary(Cowles)
+```
+
+The exploration of data starts by plotting data and trying to discern specific patterns:
+
+```{r}
+library(ggplot2)
+ggplot(data = Cowles, mapping = aes(x = neuroticism, y = extraversion,
+color = volunteer, shape = sex)) + geom_point() + geom_jitter() +
+ggtitle("Volunteering Status Across Gender and Personality Traits")
+```
+
+Here we use geo_jitter() so that all points are slightly jittered to avoid excessive overlap due to the large number of observations.
+
+While it seems that there are more volunteers in the groups of people with higher level of extroversion and narcissism, this is far from conclusive. We need to do more formal testing.
+
+#### Logistic Regression
+
+A simple and yet useful classification model is the logistic regression, It is another type of regression with a categorical dependent variable. Interpretation is somewhat similar to that of the multiple regression but deals with probability of belonging to one group or another. The logistic regression is based on the logistic function.
+
+Graphically:
+
+```{r}
+x= seq(from = -10, to = 10, by = 0.01)
+qplot(x, y = 1/(1+exp(-x)), color=I("blue"), main = "Logistic Function")
+```
+
+With a given cutoff point, it helps determine if a given case belongs to one category or the other. A natural cutoff is the point 0, at which the logistic function interceprts the y-axis at 0.50, thus having 50% changce for classification in either group. The logistic regression is thus written as:
+
+Here, the beta coefficients signify increases in probability of belonging to a given group. We fit a logistic regression to the Cowles data to investigate what influence voluntary activity:
+
+```{r}
+logreg <- glm(volunteer ~ extraversion + neuroticism + sex, data = Cowles, family = ) 
+summary(logreg)
+```
+
+It seems that two factors critically affect volunteer activity. Extraversion reaches significance below 1% and shows that extroverted people are more likely to volunteer. Gender is also important (significant below 5%) and here it seems that females are more likely to volunteer. The total strength to effects on probability can be obtained by exponentiating the etimated coeficients. For example, the effect of extroversion:
+
+```{r}
+exp(0.066325) - 1
+```
+
+This shows that an increase in extroversion scale with 1 unit makes the person 6.85% more likely to volunteer.
+
+#### Classification Trees
+
+Another classification approach is to use trees. Classification and Regression Trees (CART) are familiar to economists and are certainly one of the most useful and easier to interpret tools in the big data toolbox. Trees are familiar from decision sciences and provide an intuitive way to describe step-by-step data classification, while providing a powerful way to discern among classes of interest.
+
+We fit a decision tree to the classification problem at hand, using the rpart package, and then visualize with the rattle package:
+
+```{r}
+install.packages("rattle")
+library(rpart)
+library(rattle)
+```
+
+Classification can be performed by going through the nodes and checking the particular case against the node requirements. In this case both extroversion and narcissism are used for classification, and gender is not. The main conclusion remains that extroversion is an important factor for volunteering but neuroticism is also useful in classifying.
+
+A particular feature of trees is that they can be combined in useful ensemble algorithms with many trees and make classification through majority voting. Those ensembles are called ?Random Forests? and are among the most useful machine learning techniques.
+
+### Session 8: Running Simulations
+
+#### The Utility of Simulations
+
+A wide range of statistical methods can be used to run comprehensive computer-aided simulations for complex problems. By using this approach the analyst simulates every conceivable state of the world, and given the resulting numbers, can draw conclusions for the likelihood of events of interest.
+
+With the addition of more and more uncertain variables, the number of possible outcomes of a system grows exponentially (as probabilities are multiplied) and the analytic solution becomes practically intractable. A possible approach to modeling such cases is to run simulations of almost all possible outcome paths and look at aggregate statistics. This will give both the expected values as well as their ranges (standard deviations). The interested reader refer to Robert & Casella (2010) for more details and examples.
+
+#### Number Generators in R
+
+Oftentimes in simulations we need to generate numbers or sequences of numbers. The easiest one is to repeat a given number several times. For example, we would like to repeat ?1? ten times:
+
+```{r}
+rep(1, 10)
+```
+
+We can also create a sequence of numbers starting where we want with a predefined step:
+
+```{r}
+seq(from = 20, to = 50, by = 2)
+```
+
+Alternatively, R can generate random numbers from a large number of distributions. Here we generate 10 numbers from a uniform distribution ranging from 0 to 1:
+
+```{r}
+runif(n = 10, min = 0, max = 1)
+```
+
+Generating 5 numbers from the exponential distribution with rate 1:
+
+```{r}
+rexp(n = 5, rate = 1)
+```
+
+Generating 10 numbers from a Normal distribution with mean of 0 and standard deviation of 1:
+
+```{r}
+ rnorm(n = 10, mean = 0, sd = 1)
+```
+
+Additional useful utilities include functions to estimate the probability of the distribution taking less than a certain value (in this case 2):
+
+```{r}
+pnorm(q = 2, mean = 0, sd = 1)
+```
+
+The value that the distribution takes at given percentile:
+
+```{r}
+qnorm(p = 0.9, mean = 0, sd = 1)
+```
+
+And also density functions:
+
+```{r}
+dnorm(x = (1:10), mean = 0, sd = 1)
+```
+
+All those functions take the following form: letter + short name of distribution. The letters are as follows:
+
+-   d - for density functions (dnorm, dexp, dunif, etc)
+
+-   p - for probability functions (pnorm, pexp, punif, etc)
+
+-   q - for quantile functions (qnorm, qexp, qunif, etc)
+
+-   r - for random generator functions (rnorm, rexp, runif, etc)
+
+#### Approach to Simulation
+
+The usual way to approach a given problem in order to run a simulation:
+
+-   Define the decision problem and the key variables
+
+-   Quantify the relationships between the variables (generally in mathematical form)
+
+-   Define the key variables of interest that are not deterministic
+
+-   Model those key variables - what are their conceivable outcomes, and how likely they are
+
+-   Simulate the whole model by randomly drawing the values for the key variables from their respective distributions
+
+-   Iterate numerous times so that the results from the drawn samples converge to the whole population
+
+-   Calculate the statistics and distribution of outcomes and draw conclusions for RM purposes
+
+By doing this the analyst develops confidence of the possibilities but this comes at the price that potential users may conceive this exercise as a statistically-driven black box. It is therefore of urgent importance that during the model-building phase experts with domain knowledge be involved - both to ensure better model quality and improve the buy-in of results.
+
+#### Example Case
+
+We can simulate a simple business case. Assume a company that needs to calculate its expected profit. The profit is therefore:
+
+```{r}
+ profit <- revenue - cost
+```
+
+The firm has already signed contracts for 20 Million which it expects to fulfill them, and also has additional sales it will realize over the year. In addition that that there might be unexpected external shocks (revshock), thus we reach:
+
+```{r}
+revenue <- 20 + sales + revshock
+```
+
+We similarly model cost as the sum of fixed cost, variable cost, and a shock:
+
+```{r}
+cost <- fcost + varcost + costshock
+```
+
+If the fixed cost is 25 Million, and the variable one depends on the number of produced units (where this is equal to total sales over their price of 1) multiplied by the cost of producing one unit (0.8), we reach:
+
+```{r}
+p <- 1
+cost <- 25 + 0.8*(sales/p) + costshock
+```
+
+Thus this relatively simple decision problem depends on three key variables - the expected sales, and the unexpected shocks to revenue. In a relatively stable industry with constant sales, we can model them using past data. Suppose the past sales do follows a Normal distribution with a mean of 40, and a standard deviation of 8. Note that in a rapidly growing industry the firm will model its expectations on a very different premise (e.g. a power distribution).
+
+Thus we can model sales as:
+
+```{r}
+sales <- rnorm(1, mean = 40, sd = 8)
+```
+
+The random shocks can be also be modeled using historical data or expert judgment. Suppose they are uniformly distributed from -3 to +5 Million, thus being a bit positively skewed.
+
+```{r}
+revshock <- runif(1, min = -3, max = 5)
+costshock <- runif(1, min = -3, max = 5)
+```
+
+We can put all this together and thus get the values for one possible scenario. For illustrative purposes we calculate the profit margin:
+
+```{r}
+p <- 1
+sales <- rnorm(1, mean = 40, sd = 8)
+revshock <- runif(1, min = -3, max = 5)
+costshock <- runif(1, min = -3, max = 5)
+revenue <- 20 + sales + revshock
+cost <- 25 + 0.8*(sales/p) + costshock
+profit <- revenue - cost; print(paste0("Margin is ",100*profit/sales," %."))
+```
+
+In this case the analyst only sees one realization of all the probable outcomes. It may be a particularly favorable or unfavorable one, and thus can skew decision-making. This is why it is often the case that such simulations are run a lot of iterations. This gives much more information and is not very computationally expensive for problems of smaller scale. We thus put this whole scenario into a loop.
+
+First we create the empty object profits and then iterate for every i in the program 10,000 times. In this way we simulate 10,000 possible realizations for the scenario.
+
+```{r}
+margins <- rep(0, 10000)
+for (i in 1:10000) {
+p <- 1
+sales_i <- rnorm(1, mean = 40, sd = 8)
+revshock_i <- runif(1, min = -3, max = 5)
+costshock_i <- runif(1, min = -3, max = 5)
+revenue_i <- 20 + sales_i + revshock_i
+cost_i <- 25 + 0.8*(sales_i/p) + costshock_i
+profit_i <- revenue_i - cost_i
+margins[i] <- 100*(profit_i/sales_i)
+}
+```
+
+Overall statistics for all the simulated scenarios can be derived from the resulting object using familiar functions as per preference.
+
+```{r}
+library(psych)
+describe(margins,skew = F)
+```
+
+A particularly useful tool for simulation analyses is the histogram. It present the results for the variable of interest in an easy to grasp and intuitive way. This is shown in the following graph.
+
+```{r}
+qplot(x=margins, fill=I("purple"), color=I("black"), xlab = "Profit Margins",
+main = "Histogram of Profit Margins", bins = 20)
+```
+
+Obviously, with every re-run of the analysis, the results will be different, as new values for the key variables are randomly drawn. However, if the iterations are enough in number (in this case 10,000), the results will differ only slightly as the sample size provides for convergence.
+
+References
+
+$P(x) = X2 multiply x^2$

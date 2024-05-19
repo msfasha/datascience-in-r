@@ -1,0 +1,143 @@
+---
+title: "Exploratoy Data Analysis in R"
+format: html
+editor: visual
+---
+
+## EDA for Jordan Retail Dataset
+
+Open the dataset (Read Excel File)
+
+```{r}
+install.packages("readxl")
+
+library(readxl)
+
+file_path <- 'G:\\My Drive\\Current\\Datasets\\jordan_retail_single_product_orders.xlsx'
+
+data <- read_excel(file_path, sheet = 1)
+```
+
+View the data in the interactive window
+
+```{r}
+View(data)
+```
+
+Show the datatype of the mtcars variable
+
+```{r}
+class(data)
+```
+
+\
+You can perform various descriptive statistics on your sales data in R to gain insights into the data. Here are some common descriptive statistics you can calculate:
+
+1.  Summary Statistics:
+
+    -   **`summary(data)`** to get summary statistics for all numerical variables.
+
+    -   **`summary(data$unit_price)`** to get summary statistics for the unit price.
+
+2.  Mean and Median:
+
+    -   **`mean(data$unit_price)`** to calculate the mean unit price.
+
+    -   **`median(data$unit_price)`** to calculate the median unit price.
+
+3.  Variance and Standard Deviation:
+
+    -   **`var(data$unit_price)`** to calculate the variance of unit price.
+
+    -   **`sd(data$unit_price)`** to calculate the standard deviation of unit price.
+
+4.  Count and Frequency:
+
+    -   **`table(data$product_line)`** to count the frequency of each product line.
+
+5.  Histogram:
+
+    -   **`hist(data$unit_price)`** to create a histogram of unit prices.
+
+6.  Box Plot:
+
+    -   **`boxplot(data$unit_price)`** to create a box plot of unit prices.
+
+7.  Correlation:
+
+    -   **`cor(data$unit_price, data$quantity)`** to calculate the correlation between unit price and quantity.
+
+8.  Cross-tabulation:
+
+    -   **`table(data$customer_type, data$customer_gender)`** to create a cross-tabulation between customer type and gender.
+
+9.  Percentiles:
+
+    -   **`quantile(data$unit_price, c(0.25, 0.50, 0.75))`** to calculate quartiles of unit prices.
+
+10. Frequency Tables:
+
+    -   **`table(data$branch_name)`** to create a frequency table for branch names.
+
+    -   **`table(data$payment_method)`** to create a frequency table for payment methods.
+
+Display summary statisitcs
+
+```{r}
+summary(data)
+```
+
+## Possible Explorations
+
+## EDA using Visualization
+
+### Histograms
+
+```{r}
+#create histogram of values for mpg
+hist(mtcars$mpg,
+     col='steelblue',
+     main='Car Distribution according to Miles/(US) gallon',
+     xlab='Miles/(US) gallon',
+     ylab='Frequency')
+```
+
+### Box Plots
+
+```{r}
+#create boxplot of values for mpg
+boxplot(mtcars$mpg,
+        main='Distribution of Miles/(US) gallon values',
+        ylab='Miles/(US) gallon',
+        col='steelblue',
+        border='black')
+```
+
+#### Plot Analysis
+
+This plot demonstrates the distribution of the mpg values for the 999 cars in the dataset. We present below the observations//analysis of the plot.
+
+-   The the mpg values range spans from 10 to 40 while the majority of observations are centered around 15 to 23 mpg.
+-   We can see that the majority of cars have a value close to 20 mpg.
+-   We can also notice a slight skewness towards the rigth since we can see a longer right tail.
+-   We do not observe any outliers in our data.
+
+### Scatter Plots
+
+We can also use the plot() function to create a scatterplot of any pairwise combination of variables:
+
+```{r}
+#create scatterplot of mpg vs. wt
+plot(mtcars$mpg, mtcars$wt,
+     col='steelblue',
+     main='Scatterplot',
+     xlab='Miles/(US) gallon',
+     ylab='Weight (1000 lbs)',
+     pch=19)
+```
+
+```{r}
+
+```
+
+### Five Number Summary

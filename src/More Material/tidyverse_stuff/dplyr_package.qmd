@@ -1,0 +1,112 @@
+---
+title: "dplyr"
+format: html
+editor: visual
+---
+
+**`dplyr`** is a powerful package in R, part of the **`tidyverse`**, known for its functions that make data manipulation easier and more intuitive. It's particularly appreciated for its readability and efficiency with large datasets. Here are some examples demonstrating its uses and capabilities:
+
+1.  **Filtering Rows**:
+
+    -   **`filter()`** selects rows based on condition(s).
+
+    -   Example: To select rows where a column 'age' is greater than 30.
+
+        ```{r}
+        filtered_data <- your_data %>% filter(age > 30) 
+        ```
+
+2.  **Selecting Columns**:
+
+    -   **`select()`** chooses columns.
+
+    -   Example: To select columns 'name' and 'age' from a dataset.
+
+        ```{r}
+        selected_data <- your_data %>% select(name, age) 
+        ```
+
+3.  **Arranging Rows**:
+
+    -   **`arrange()`** sorts the rows.
+
+    -   Example: To sort a dataset based on the 'age' column in ascending order.
+
+        ```{r}
+        arranged_data <- your_data %>% arrange(age) 
+        ```
+
+4.  **Creating New Columns (Mutating)**:
+
+    -   **`mutate()`** adds new columns or transforms existing ones.
+
+    -   Example: To create a new column 'age_next_year' which is 'age' + 1.
+
+        ```{r}
+        mutated_data <- your_data %>% mutate(age_next_year = age + 1) 
+        ```
+
+5.  **Summarizing Data**:
+
+    -   **`summarise()`** (or **`summarize()`**) creates summary statistics.
+
+    -   Example: To calculate the mean age.
+
+        ```{r}
+        mean_age <- your_data %>% summarise(mean_age = mean(age)) 
+        ```
+
+6.  **Grouped Operations**:
+
+    -   Combine **`group_by()`** with **`summarise()`** for grouped summaries.
+
+    -   Example: To calculate mean age by a 'gender' group.
+
+        ```{r}
+        mean_age_by_gender <- your_data %>% group_by(gender) %>% summarise(mean_age = mean(age)) 
+        ```
+
+7.  **Joining Data**:
+
+    -   Various join functions merge different datasets (**`left_join()`**, **`right_join()`**, **`inner_join()`**, **`full_join()`**).
+
+    -   Example: To combine two datasets 'data1' and 'data2' by a common column 'id'.
+
+        ```{r}
+        joined_data <- data1 %>% left_join(data2, by = "id") 
+        ```
+
+8.  **Piping (%\>%)**:
+
+    -   The **`%>%`** operator allows for clear and concise code by passing the result of one function directly into the next.
+
+    -   Example: Combining multiple operations in a single flow.
+
+        ```{r}
+        final_data <- your_data %>% 
+          filter(age > 30) %>% 
+          select(name, age) %>% 
+          arrange(desc(age)) 
+        ```
+
+9.  **Handling Missing Values**:
+
+    -   Functions like **`filter()`** and **`mutate()`** can be used to handle NA values effectively.
+
+    -   Example: To filter out rows where 'age' is NA.
+
+        ```{r}
+        data_without_NA <- your_data %>% filter(!is.na(age)) 
+        ```
+
+10. **Tallying and Counting**:
+
+    -   **`tally()`** and **`count()`** are useful for frequency counts.
+
+    -   Example: To count the number of occurrences of each 'gender'.
+
+        ```{r}
+        gender_count <- your_data %>% group_by(gender) %>% tally() 
+        ```
+
+**`dplyr`** shines in its ability to make complex data manipulation tasks both simpler and more readable. It's particularly effective when working within the **`tidyverse`** ecosystem, allowing seamless integration with other **`tidyverse`** packages like **`ggplot2`** for data visualization, **`readr`** for data import, and **`tidyr`** for reshaping data.

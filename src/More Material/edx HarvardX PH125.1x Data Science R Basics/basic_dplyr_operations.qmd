@@ -1,0 +1,74 @@
+---
+title: "Basic Dplyr Operations"
+format: html
+editor: visual
+---
+
+ChatGPT Give me examples showing the following:
+
+In Section 3.2, you will: Wrangle data tables using functions in the dplyr package. Modify a data table by adding or changing columns. Subset rows in a data table. Subset columns in a data table. Perform a series of operations using the pipe operator. Create data frames.
+
+Certainly! Below are examples that illustrate various data manipulation tasks using the `dplyr` package in R. These examples will cover creating data frames, modifying them by adding or changing columns, subsetting rows and columns, and utilizing the pipe operator for chaining operations.
+
+### Prerequisites
+
+Before running these examples, ensure you have the `dplyr` package installed and loaded. You can install it by running `install.packages("dplyr")` if you haven't already, and then load it with `library(dplyr)`.
+
+### Create Data Frames
+
+```{r}
+# Load dplyr
+library(dplyr)
+
+# Create a data frame
+df <- data.frame(
+  ID = c(1, 2, 3, 4, 5),
+  Name = c("Alice", "Bob", "Charlie", "David", "Eva"),
+  Age = c(25, 30, 35, 40, 45),
+  Salary = c(50000, 55000, 60000, 65000, 70000)
+)
+```
+
+### Modify a Data Table by Adding or Changing Columns
+
+```{r}
+# Add a new column
+df <- df %>%
+  mutate(Tax = Salary * 0.2) # Add a column for tax calculation
+
+# Change an existing column (e.g., update Salary to reflect a 5% raise)
+df <- df %>%
+  mutate(Salary = Salary * 1.05)
+```
+
+### Subset Rows in a Data Table
+
+```{r}
+# Subset rows where Age is greater than 30
+df_subset <- df %>%
+  filter(Age > 30)
+```
+
+### Subset Columns in a Data Table
+
+```{r}
+# Select only the ID, Name, and Age columns
+df_columns <- df %>%
+  select(ID, Name, Age)
+```
+
+### Perform a Series of Operations Using the Pipe Operator
+
+```{r}
+# Chain operations: Filter rows where Age > 30 and select specific columns
+df_chain <- df %>%
+  filter(Age > 30) %>%
+  select(Name, Salary) %>%
+  mutate(Salary_After_Tax = Salary - (Salary * 0.2))
+```
+
+### Explanation of the Pipe Operator (`%>%`)
+
+The pipe operator `%>%` takes the output of one expression and passes it as the first argument to the next expression. It allows for clear and concise code that's easy to read, especially when performing multiple operations on a dataset.
+
+These examples demonstrate fundamental `dplyr` operations for data manipulation, including creating data frames, modifying them, and utilizing the pipe operator for efficient data analysis workflows.

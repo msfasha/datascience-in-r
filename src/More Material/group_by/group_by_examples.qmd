@@ -1,0 +1,122 @@
+---
+title: "Aggregates and Group By In R"
+format: html
+editor: visual
+---
+
+Load libraries
+
+```{r}
+library(readxl)
+library(dplyr)
+```
+
+Read dataset
+
+```{r}
+df <- read_excel("g://my drive//current//courses//datasets//8h_ut_course//Sample Superstore.xlsx", sheet = "Orders")
+```
+
+Show column names
+
+```{r}
+names(df)
+```
+
+Show column names and datatypes
+
+To list column names alongside their data types, we can combine the **`names()`** function with **`sapply()`** to apply the **`class()`** function
+
+```{r}
+sapply(df, class)
+```
+
+Show summaries
+
+### **Sales and Profit by Product Category**
+
+This analysis can help identify which product categories are the most profitable and generate the most sales.
+
+::: {#d1 style="color:red"}
+The correct way to reference columns with spaces in their names in R is by using back ticks \`\`\`
+:::
+
+```{r}
+summary_by_category <- df %>%
+  group_by(df$`Product Category`) %>%
+  summarise(
+    Total_Sales = sum(Sales),
+    Average_Sales = mean(Sales),
+    Total_Profit = sum(Profit),
+    Average_Profit = mean(Profit)
+  ) %>%
+  arrange(desc(Total_Sales))
+```
+
+### **Total Sales and Profit by Product Category**
+
+This analysis can help identify which product categories are the most profitable and generate the most sales.
+
+```{r}
+total_sales_profit_by_category <- df %>%
+  group_by(df$`Product Category`) %>%
+  summarise(
+    Total_Sales = sum(Sales),
+    Total_Profit = sum(Profit)
+  ) %>%
+  arrange(desc(Total_Sales))
+
+print(total_sales_profit_by_category)
+```
+
+### **Average discount ordered by  priority**
+
+Understanding how discounts are applied across different order priorities could help in optimizing pricing strategies.
+
+```{r}
+average_discount_by_priority <- df %>%
+  group_by(`Order Priority`) %>%
+  summarise(
+    Average_Discount = mean(Discount)
+  ) %>%
+  arrange(desc(Average_Discount))
+
+print(average_discount_by_priority)
+```
+
+### **Sales and Profit Trends Over Time**
+
+Analyzing how sales and profit change over time can provide insights into seasonal trends or the effectiveness of marketing campaigns.
+
+```{r}
+df$Order_Date <- as.Date(df$`Order Date`)
+
+sales_profit_trends <- df %>%
+  group_by(Month = format(Order_Date , "%Y-%m")) %>%
+  summarise(
+    Total_Sales = sum(Sales),
+    Total_Profit = sum(Profit)
+  ) %>%
+  arrange(Month)
+
+print(sales_profit_trends)
+```
+
+Let us plot it
+
+```{r}
+library(ggplot2)
+
+ggplot(sales_profit_trends, aes(x = Month)) +
+  geom_line(aes(y = Total_Sales, colour = "Total Sales")) +
+  geom_line(aes(y = Total_Profit, colour = "Total Profit")) +
+  scale_color_manual(values = c("Total Sales" = "blue", "Total Profit" = "red")) +
+  labs(title = "Sales and Profit Trends Over Time",
+       x = "Month-Year",
+       y = "Amount",
+       colour = "Legend") +
+  theme_minimal() +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```

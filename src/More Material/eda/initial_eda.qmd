@@ -1,0 +1,87 @@
+---
+title: "Initial Exploratoy Data Analysis in R"
+format: html
+editor: visual
+---
+
+# Initial EDA using mtcars Dataset
+
+\
+The mtcars dataset is **a built-in dataset in R**. It comprises 11 features of 32 automobiles from the 1974 Motor Trend US magazine. We will use it for this data exploration exercise.
+
+View the mtcars in the interactive window
+
+```{r}
+# View(mtcars)
+```
+
+Show the datatype of the mtcars variable
+
+```{r}
+class(mtcars)
+```
+
+Display help about the dataset
+
+```{r}
+?mtcars
+```
+
+### Display summary statistics
+
+```{r}
+summary(mtcars)
+```
+
+## Initial EDA using Visualization
+
+### Histograms
+
+```{r}
+#create histogram of values for mpg
+hist(mtcars$mpg,
+     col='steelblue',
+     main='Car Distribution according to Miles/(US) gallon',
+     xlab='Miles/(US) gallon',
+     ylab='Frequency')
+```
+
+### Box Plots
+
+```{r}
+#create boxplot of values for mpg
+boxplot(mtcars$mpg,
+        main='Distribution of Miles/(US) gallon values',
+        ylab='Miles/(US) gallon',
+        col='steelblue',
+        border='black')
+```
+
+#### Plot Analysis
+
+This plot demonstrates the distribution of the mpg values for the 999 cars in the dataset. We present below the observations//analysis of the plot.
+
+-   The the mpg values range spans from 10 to 40 while the majority of observations are centered around 15 to 23 mpg.
+-   We can see that the majority of cars have a value close to 20 mpg.
+-   We can also notice a slight skewness towards the rigth since we can see a longer right tail.
+-   We do not observe any outliers in our data.
+
+### Scatter Plots
+
+We can also use the plot() function to create a scatterplot of any pairwise combination of variables:
+
+```{r}
+#create scatterplot of mpg vs. wt
+plot(mtcars$mpg, mtcars$wt,
+     col='steelblue',
+     main='Scatterplot',
+     xlab='Miles/(US) gallon',
+     ylab='Weight (1000 lbs)',
+     pch=19)
+```
+
+```{r}
+
+```
+
+### Five Number Summary

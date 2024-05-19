@@ -1,0 +1,697 @@
+---
+title: "1.5 Hypothesis Testing"
+format: html
+editor: visual
+include-before: |
+  <div style="text-align: center;">
+    <img src="images/department_logo.png" width="169" />
+    <img src="images/ioa_logo.png" width="122" />
+    <img src="images/petra_logo.png" width="52" />
+  </div>
+---
+
+#### 1. Introduction to Hypothesis Testing
+
+-   Definition and Importance
+-   Null Hypothesis (H0) and Alternative Hypothesis (H1)
+-   Types of Errors
+    -   Type I Error (False Positive)
+    -   Type II Error (False Negative)
+-   Significance Level (α)
+
+#### 2. Steps in Hypothesis Testing
+
+-   Formulating Hypotheses
+-   Choosing the Appropriate Test
+-   Determining the Significance Level
+-   Calculating the Test Statistic
+-   Making a Decision
+-   Interpreting Results
+
+#### 3. Types of Hypothesis Tests
+
+-   One-tailed vs. Two-tailed Tests
+    -   Definition and Differences
+    -   When to Use Each Type
+
+#### 4. Parametric Tests
+
+-   Z-test
+    -   One-sample Z-test
+    -   Two-sample Z-test
+    -   Assumptions and Applications
+-   T-test
+    -   One-sample T-test
+    -   Independent Two-sample T-test
+    -   Paired Sample T-test
+    -   Assumptions and Applications
+-   ANOVA (Analysis of Variance)
+    -   One-way ANOVA
+    -   Two-way ANOVA
+    -   Assumptions and Applications
+
+#### 5. Non-parametric Tests
+
+-   Chi-square Test
+    -   Chi-square Test for Independence
+    -   Chi-square Goodness of Fit Test
+    -   Assumptions and Applications
+-   Mann-Whitney U Test
+    -   Definition and Application
+-   Wilcoxon Signed-Rank Test
+    -   Definition and Application
+-   Kruskal-Wallis Test
+    -   Definition and Application
+
+#### 6. Test Assumptions and Conditions
+
+-   Normality
+-   Homogeneity of Variances
+-   Independence
+-   Handling Violations of Assumptions
+
+#### 7. Power of a Test
+
+-   Definition and Importance
+-   Factors Affecting Power
+-   Calculating and Interpreting Power
+
+#### 8. P-value and Statistical Significance
+
+-   Definition and Interpretation
+-   Misconceptions and Common Pitfalls
+
+#### 9. Effect Size
+
+-   Definition and Importance
+-   Common Measures of Effect Size (Cohen's d, Pearson's r, etc.)
+
+#### 10. Hypothesis Testing in R
+
+-   Conducting Z-tests and T-tests
+-   Performing ANOVA
+-   Running Chi-square Tests
+-   Implementing Non-parametric Tests
+-   Visualizing Test Results
+
+### Summary of Tests
+
+Here's a table summarizing the parametric tests and their non-parametric counterparts, including any missing important tests:
+
+| Parametric Test                  | Use                                                            | Assumptions                                                       | Interpretation                                                           | Non-Parametric Counterpart                   | Use                                                                            | Assumptions                                           | Interpretation                                                              |
+|---------|---------|---------|---------|---------|---------|---------|---------|
+| One-sample T-test                | Test if the mean of a single sample differs from a known mean. | Normality, independence                                           | p-value \< 0.05 indicates significant difference from the known mean.    | One-sample Wilcoxon Signed-Rank Test         | Test if the median of a single sample differs from a known median.             | Symmetric distribution, independence                  | p-value \< 0.05 indicates significant difference from the known median.     |
+| Two-sample T-test (Independent)  | Compare the means of two independent samples.                  | Independence, normality, equal variances                          | p-value \< 0.05 indicates significant difference between means.          | Mann-Whitney U Test (Wilcoxon Rank-Sum Test) | Compare distributions of two independent samples.                              | Independence, ordinal/continuous data, similar shapes | p-value \< 0.05 indicates significant difference in distributions.          |
+| Paired Sample T-test             | Compare means of two related samples.                          | Normality of differences, independence of pairs                   | p-value \< 0.05 indicates significant difference between paired samples. | Wilcoxon Signed-Rank Test                    | Compare distributions of two related samples.                                  | Symmetric differences, independence of pairs          | p-value \< 0.05 indicates significant difference in distributions.          |
+| One-way ANOVA                    | Compare means of three or more groups.                         | Normality, homogeneity of variances, independence                 | p-value \< 0.05 indicates significant difference among group means.      | Kruskal-Wallis Test                          | Compare distributions of three or more independent groups.                     | Independence, ordinal/continuous data, similar shapes | p-value \< 0.05 indicates significant difference among group distributions. |
+| Chi-square Test for Independence | Test for association between two categorical variables.        | Count data, independence, expected frequencies ≥ 5                | p-value \< 0.05 indicates significant association.                       | Fisher's Exact Test                          | Test for association between two categorical variables (small sample sizes).   | Count data, independence, small sample sizes          | p-value \< 0.05 indicates significant association.                          |
+| Pearson Correlation              | Measure linear relationship between two continuous variables.  | Normality, linearity, homoscedasticity                            | p-value \< 0.05 indicates significant correlation.                       | Spearman's Rank Correlation                  | Measure monotonic relationship between two continuous/ordinal variables.       | Ordinal/continuous data, monotonic relationship       | p-value \< 0.05 indicates significant correlation.                          |
+| Two-way ANOVA                    | Compare means of groups split on two factors.                  | Normality, homogeneity of variances, independence                 | p-value \< 0.05 indicates significant interaction or main effects.       | Friedman Test                                | Compare distributions of groups split on two factors.                          | Ordinal data, independence, blocks                    | p-value \< 0.05 indicates significant interaction or main effects.          |
+| Linear Regression                | Predict a continuous outcome based on one or more predictors.  | Linearity, independence, homoscedasticity, normality of residuals | p-value \< 0.05 indicates significant predictors.                        | Non-parametric Regression (e.g., LOESS)      | Predict a continuous outcome without assuming a specific form of relationship. | Assumptions vary based on method used                 | p-value \< 0.05 indicates significant predictors or relationships.          |
+
+#### Practical Examples and Exercises
+
+Certainly! Here is the documentation with the assumptions for each test included:
+
+### 1. One-sample T-test
+
+**Use:** To test if the mean of a single sample is significantly different from a known or hypothesized population mean.
+
+**Assumptions:** - The sample data is normally distributed. - The sample observations are independent.
+
+**Example:**- Suppose we want to test if the average satisfaction score of customers for a new product is significantly different from the target satisfaction score of 5.
+
+**Code:**
+
+```{r}
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate customer satisfaction scores
+satisfaction_scores <- rnorm(30, mean = 5, sd = 2)
+
+# Perform one-sample t-test to test if the mean satisfaction score is significantly different from 5
+t_test_result <- t.test(satisfaction_scores, mu = 5)
+
+# Print the satisfaction scores
+print(satisfaction_scores)
+
+# Print the t-test result
+print(t_test_result)
+```
+
+**Interpretation:**
+
+**Satisfaction Scores:** Generated customer satisfaction scores with a mean of approximately 5.
+
+-   **T-test Result:**
+
+    -   **t:** Test statistic (-0.26299)
+
+    -   **df:** Degrees of freedom (29)
+
+    -   **p-value:** Probability of observing the data if the null hypothesis is true (0.7944)
+
+    -   **95% Confidence Interval:** Range within which the true mean lies with 95% confidence (4.173147 to 5.638438)
+
+    -   **Sample Mean (mean of x):** Average satisfaction score (4.905792)
+
+**Conclusion:** Since the p-value (0.7944) is greater than the common significance level (0.05), we fail to reject the null hypothesis.
+
+This indicates that the average satisfaction score is not significantly different from the target score of 5.
+
+### 2. Two-sample T-test (Independent)
+
+**Use:** To compare the means of two independent samples to see if they are significantly different.
+
+**Assumptions:** - The samples are independent of each other. - The data in each sample is normally distributed. - The variances of the two populations are equal (if using the standard t-test, not Welch's).
+
+Example:- Suppose we want to test if there is a significant difference in average performance scores between employees who received training and those who did not.
+
+**Code:**
+
+```{r}
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate performance scores for two groups
+trained_employees <- rnorm(30, mean = 75, sd = 10)  # Employees who received training
+untrained_employees <- rnorm(30, mean = 70, sd = 10)  # Employees who did not receive training
+
+# Perform two-sample t-test to compare the mean performance scores between trained and untrained employees
+t_test_result <- t.test(trained_employees, untrained_employees)
+
+# Print the performance scores
+print(trained_employees)
+print(untrained_employees)
+
+# Print the t-test result
+print(t_test_result)
+```
+
+**Interpretation:**
+
+-   **Performance Scores:**
+
+    -   **Trained Employees:** Generated performance scores with a mean of approximately 75.
+
+    -   **Untrained Employees:** Generated performance scores with a mean of approximately 70.
+
+-   **T-test Result:**
+
+    -   **t:** Test statistic (1.672)
+
+    -   **df:** Degrees of freedom (56.559)
+
+    -   **p-value:** Probability of observing the data if the null hypothesis is true (0.248)
+
+    -   **95% Confidence Interval:** Range within which the true mean difference lies with 95% confidence (-1.965426 to 7.456584)
+
+    -   **Sample Means (mean of x, mean of y):** Average performance scores for trained employees (74.52896) and untrained employees (71.78338)
+
+**Conclusion:** Since the p-value (0.1104) is greater than the common significance level (0.05), we fail to reject the null hypothesis.
+
+This indicates that there is no significant difference in average performance scores between trained and untrained employees
+
+Note: althought the averages are quite difference, yet, the t-test showed that there is not significant difference. Here is the interpretation for that:
+
+The two-sample t-test takes into account not only the difference in means but also the variability within each group and the sample size. Here are some possible reasons why the t-test might not find a significant difference even if the means appear different:
+
+1.  **Variability within Groups:** If the variability (standard deviation) within each group is high, it can obscure the difference between the group means.
+2.  **Sample Size:** Smaller sample sizes result in less precise estimates of the mean, making it harder to detect a significant difference.
+3.  **p-value and Significance Level:** The p-value might not be less than the significance level (usually 0.05), indicating that the observed difference could be due to random chance.
+
+Let’s take a closer look at the standard deviations and sample sizes in your example. We will also plot the data to visualize the distributions.
+
+### Revised Example: Two-sample T-test with Additional Insights
+
+```{r}
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate performance scores for two groups
+trained_employees <- rnorm(30, mean = 75, sd = 10)  # Employees who received training
+untrained_employees <- rnorm(30, mean = 70, sd = 10)  # Employees who did not receive training
+
+# Print summary statistics
+summary(trained_employees)
+summary(untrained_employees)
+
+# Calculate standard deviations
+sd(trained_employees)
+sd(untrained_employees)
+
+# Perform two-sample t-test to compare the mean performance scores between trained and untrained employees
+t_test_result <- t.test(trained_employees, untrained_employees)
+
+# Print the t-test result
+print(t_test_result)
+
+# Plot the data
+library(ggplot2)
+data <- data.frame(
+  score = c(trained_employees, untrained_employees),
+  group = factor(rep(c("Trained", "Untrained"), each = 30))
+)
+
+ggplot(data, aes(x = group, y = score)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.2) +
+  labs(title = "Performance Scores by Training Status", x = "Group", y = "Performance Score")
+```
+
+**Summary Statistics and Standard Deviations:**
+
+```{r}
+# Summary statistics
+summary(trained_employees)
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 52.27   66.75   74.71   75.10   82.31   96.20 
+
+summary(untrained_employees)
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 55.30   65.04   73.78   70.16   77.65   83.63 
+
+# Standard deviations
+sd(trained_employees)
+# [1] 10.34925
+
+sd(untrained_employees)
+# [1] 9.403503
+```
+
+### Interpretation:
+
+-   **Performance Scores:**
+    -   **Trained Employees:** Mean = 75.10, SD = 10.35
+    -   **Untrained Employees:** Mean = 70.16, SD = 9.40
+-   **T-test Result:**
+    -   **t:** Test statistic (1.6201)
+    -   **df:** Degrees of freedom (57.635)
+    -   **p-value:** Probability of observing the data if the null hypothesis is true (0.1104)
+    -   **95% Confidence Interval:** Range within which the true mean difference lies with 95% confidence (-1.084326 to 9.984326)
+
+**Conclusion:** Although the means appear different, the standard deviations are relatively high (10.35 and 9.40), which means there is substantial variability within each group. The p-value (0.1104) indicates that the observed difference could be due to random chance, and it is not statistically significant at the 0.05 level.
+
+The boxplot visualization also helps to see the overlap in the distributions of the scores between the two groups, reinforcing the result that the difference is not statistically significant.
+
+This revised example shows how variability and sample size can impact the results of a t-test, and why it's essential to consider these factors when interpreting the results.
+
+### 3. Paired Sample T-test
+
+**Use:** To compare the means of two related samples (e.g., before and after measurements on the same subjects).
+
+**Assumptions:** - The differences between the paired observations are normally distributed. - The pairs are independent of each other.
+
+**Example:**- Suppose we want to test if a training program has significantly improved employee productivity scores by comparing their productivity before and after the training.
+
+**Code:**
+
+```{r}
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate productivity scores before and after the training
+productivity_before <- rnorm(30, mean = 5, sd = 2)  # Productivity scores before training
+productivity_after <- productivity_before + rnorm(30, mean = 0.5, sd = 1)  # Productivity scores after training
+
+# Perform paired sample t-test to compare the mean productivity scores before and after training
+t_test_result <- t.test(productivity_before, productivity_after, paired = TRUE)
+
+# Print the productivity scores
+print(productivity_before)
+print(productivity_after)
+
+# Print the t-test result
+print(t_test_result)
+```
+
+**Interpretation:**
+
+-   **Productivity Scores:**
+
+    -   **Before Training:** Generated productivity scores with a mean of approximately 5.
+
+    -   **After Training:** Generated productivity scores that are on average higher than before training.
+
+-   **T-test Result:**
+
+    -   **t:** Test statistic (-4.4489)
+
+    -   **df:** Degrees of freedom (29)
+
+    -   **p-value:** Probability of observing the data if the null hypothesis is true (0.0001169)
+
+    -   **95% Confidence Interval:** Range within which the true mean difference lies with 95% confidence (-0.9901802 to -0.3664964=)
+
+    -   **Mean of the Differences:** Average difference in productivity scores before and after training (-0.6783383)
+
+**Conclusion:** Since the p-value (0.0001169) is less than the common significance level (0.05), we reject the null hypothesis.
+
+This indicates that there is a significant difference in productivity scores before and after the training, with productivity increasing after the training program.
+
+### 4. One-way ANOVA
+
+**Use:** To compare the means of three or more groups to see if at least one mean is different.
+
+**Assumptions:** - The data in each group is normally distributed. - The variances of the populations are equal (homogeneity of variances). - The samples are independent.
+
+**Example:**- Suppose we want to test if there is a significant difference in customer satisfaction scores among three different service plans (Basic, Standard, Premium).
+
+**Code:**
+
+```{r}
+# Load necessary library
+library(dplyr)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate satisfaction scores for three different service plans
+basic_plan <- rnorm(30, mean = 5, sd = 2)  # Basic Plan
+standard_plan <- rnorm(30, mean = 6, sd = 2)  # Standard Plan
+premium_plan <- rnorm(30, mean = 7, sd = 2)  # Premium Plan
+
+# Create a data frame
+data <- data.frame(
+  satisfaction = c(basic_plan, standard_plan, premium_plan),
+  plan = factor(rep(c("Basic", "Standard", "Premium"), each = 30))
+)
+
+# Perform one-way ANOVA
+anova_result <- aov(satisfaction ~ plan, data = data)
+summary(anova_result)
+```
+
+**Interpretation:**
+
+-   **Groups (Service Plans):**
+
+    -   **Basic Plan:** Mean satisfaction score of 5
+
+    -   **Standard Plan:** Mean satisfaction score of 6
+
+    -   **Premium Plan:** Mean satisfaction score of 7
+
+-   **ANOVA Summary:**
+
+    -   **Df:** Degrees of freedom
+
+    -   **Sum Sq:** Sum of squares
+
+    -   **Mean Sq:** Mean squares
+
+    -   **F value:** F statistic
+
+    -   **Pr(\>F):** p-value for the F-test
+
+**Conclusion:**
+
+\- If the p-value is less than the significance level (e.g., 0.05), reject the null hypothesis.
+
+Since the p-value (4.94e-5) is less than the common significance level (0.05), we reject the null hypothesis.
+
+This indicates that there is a significant difference in customer satisfaction scores among the three service plans.
+
+### 5. Chi-square Test for Independence
+
+**Use:** To test if there is a significant association between two categorical variables.
+
+**Assumptions:** - The data is in the form of counts or frequencies. - The observations are independent. - The expected frequency in each cell of the contingency table is at least 5.
+
+**Example:**- Suppose we want to test if there is a significant association between the type of marketing campaign (Email vs. Social Media) and customer response (Purchased vs. Not Purchased).
+
+**Code:**
+
+```{r}
+# Load necessary library
+library(dplyr)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Create a contingency table for marketing campaigns and customer response
+# Rows: Customer Response (Purchased, Not Purchased)
+# Columns: Marketing Campaign (Email, Social Media)
+campaign_data <- matrix(c(20, 30, 50, 80), nrow = 2, byrow = TRUE)
+colnames(campaign_data) <- c("Email", "Social Media")
+rownames(campaign_data) <- c("Purchased", "Not Purchased")
+
+# Print the contingency table
+print(campaign_data)
+
+# Perform chi-squared test
+chi_square_result <- chisq.test(campaign_data)
+
+# Print the test result
+print(chi_square_result)
+```
+
+**Interpretation:**
+
+\- If the p-value is less than the significance level (e.g., 0.05), reject the null hypothesis.
+
+Here, the p-value is 0.9849, so we fail to reject the null hypothesis, indicating no significant association between the groups and categories.
+
+This indicates that there is no significant association between the type of marketing campaign (Email vs. Social Media) and customer response (Purchased vs. Not Purchased).
+
+### 6. Mann-Whitney U Test (Wilcoxon Rank-Sum Test)
+
+**Use:** To compare the distributions of two independent samples when the assumptions for a t-test are not met.
+
+**Assumptions:** - The samples are independent. - The data is ordinal or continuous. - The distributions of the two groups are similar in shape.
+
+**Code:**
+
+```{r}
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate non-normally distributed sales performance scores for two sales teams using the exponential distribution
+team_A_sales <- rexp(30, rate = 1/5)  # Sales performance scores for Team A
+team_B_sales <- rexp(30, rate = 1/6)  # Sales performance scores for Team B
+
+# Perform Wilcoxon Rank-Sum Test to compare the sales performance scores between Team A and Team B
+wilcox_test_result <- wilcox.test(team_A_sales, team_B_sales)
+
+# Print the sales performance scores
+print(team_A_sales)
+print(team_B_sales)
+
+# Print the Wilcoxon Rank-Sum Test result
+print(wilcox_test_result)
+
+```
+
+**Interpretation:**
+
+-   **Sales Performance Scores:**
+
+    -   **Team A:** Generated sales performance scores using the exponential distribution with a rate of 1/5.
+
+    -   **Team B:** Generated sales performance scores using the exponential distribution with a rate of 1/6.
+
+-   **Wilcoxon Rank-Sum Test Result:**
+
+    -   **W:** Test statistic (308)
+
+    -   **p-value:** Probability of observing the data if the null hypothesis is true (0.03577)
+
+**Conclusion:** Since the p-value (0.03577) is less than the common significance level (0.05), we reject the null hypothesis.
+
+This indicates that there is a significant difference in the sales performance scores between Team A and Team B.
+
+**Determine where is the difference?**
+
+To determine which side the difference lies on, we can look at the medians of the two groups and the alternative hypothesis of the Wilcoxon Rank-Sum Test. Here’s how you can interpret the results and determine which group has higher values:
+
+1.  **Check the Medians of Both Groups:** Calculate and compare the medians of the two groups.
+2.  **Interpret the Alternative Hypothesis:** The alternative hypothesis of the Wilcoxon Rank-Sum Test is that the true location shift between the two groups is not equal to zero. If the p-value is significant and the median of one group is higher than the other, you can infer the direction of the difference.
+
+### Example: Determining the Direction of the Difference
+
+```{r}
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate non-normally distributed sales performance scores for two sales teams using the exponential distribution
+team_A_sales <- rexp(30, rate = 1/5)  # Sales performance scores for Team A
+team_B_sales <- rexp(30, rate = 1/6)  # Sales performance scores for Team B
+
+# Perform Wilcoxon Rank-Sum Test to compare the sales performance scores between Team A and Team B
+wilcox_test_result <- wilcox.test(team_A_sales, team_B_sales)
+
+# Print the sales performance scores
+print(team_A_sales)
+print(team_B_sales)
+
+# Print the Wilcoxon Rank-Sum Test result
+print(wilcox_test_result)
+
+# Calculate and print the medians of the two groups
+median_A <- median(team_A_sales)
+median_B <- median(team_B_sales)
+print(paste("Median of Team A:", median_A))
+print(paste("Median of Team B:", median_B))
+```
+
+### Interpretation:
+
+-   **Medians:**
+    -   **Median of Team A:** 3.60249855605114
+    -   **Median of Team B:** 6.21641126927648
+-   **Wilcoxon Rank-Sum Test Result:**
+    -   **W:** Test statistic (308)
+    -   **p-value:** 0.03577
+    -   **Alternative Hypothesis:** True location shift is not equal to 0
+
+**Conclusion:** Since the p-value (0.03577) is less than the significance level (0.05), we reject the null hypothesis, indicating that there is a significant difference in the sales performance scores between Team A and Team B.
+
+Comparing the medians, Team B has a higher median sales performance score (6.216) compared to Team A (3.60). Therefore, Team B performs significantly better than Team A.
+
+This approach helps us determine not only whether there is a significant difference but also which group has higher values based on their medians.
+
+### 7. Wilcoxon Signed-Rank Test
+
+**Use:** To compare the distributions of two related samples when the assumptions for a paired t-test are not met.
+
+**Assumptions:** - The differences between the paired observations are symmetrically distributed. - The pairs are independent.
+
+**Example:**- Suppose we want to test if a new process has significantly improved employee productivity scores by comparing their productivity before and after the implementation of the new process using a non-parametric test (Wilcoxon Signed-Rank Test).
+
+**Code:**
+
+```{r}
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate non-normally distributed productivity scores before and after the implementation of a new process using the exponential distribution
+productivity_before <- rexp(30, rate = 1/5)  # Productivity scores before the new process
+productivity_after <- productivity_before + rexp(30, rate = 1/6)  # Productivity scores after the new process
+
+# Perform Wilcoxon Signed-Rank Test to compare the productivity scores before and after the new process
+wilcox_test_result <- wilcox.test(productivity_before, productivity_after, paired = TRUE)
+
+# Print the productivity scores
+print(productivity_before)
+print(productivity_after)
+
+# Print the Wilcoxon Signed-Rank Test result
+print(wilcox_test_result)
+
+# Calculate and print the medians of the two groups
+median_before <- median(productivity_before)
+median_after <- median(productivity_after)
+print(paste("Median of Productivity Before:", median_before))
+print(paste("Median of Productivity After:", median_after))
+```
+
+**Interpretation:**
+
+-   **Productivity Scores:**
+
+    -   **Before the New Process:** Generated productivity scores using the exponential distribution with a rate of 1/5.
+
+    -   **After the New Process:** Generated productivity scores using the exponential distribution with a rate of 1/6.
+
+-   **Wilcoxon Signed-Rank Test Result:**
+
+    -   **V:** Test statistic (74)
+
+    -   **p-value:** 1.863e-09
+
+    -   **Alternative Hypothesis:** True location shift is not equal to 0
+
+-   **Medians:**
+
+    -   **Median of Productivity Before:** 3.6
+
+    -   **Median of Productivity After:** 8.4
+
+**Conclusion:** Since the p-value (1.863e-09) is less than the common significance level (0.05), we reject the null hypothesis.
+
+This indicates that there is a significant difference in productivity scores before and after the implementation of the new process, with productivity increasing after the new process.
+
+Comparing the medians, the productivity after the new process (3.6) is higher than before (8.4).
+
+### 8. Kruskal-Wallis Test
+
+**Use:** To compare the distributions of three or more independent groups when the assumptions for ANOVA are not met.
+
+**Assumptions:**
+
+\- The samples are independent.
+
+\- The data is ordinal or continuous.
+
+\- The distributions of the groups are similar in shape.
+
+**Example:**- Suppose we want to test if there is a significant difference in customer satisfaction scores among three different service plans (Basic, Standard, and Premium) using a non-parametric test (Kruskal-Wallis Test).
+
+**Code:**
+
+```{r}
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate customer satisfaction scores for three different service plans
+basic_plan <- rnorm(30, mean = 5, sd = 2)     # Satisfaction scores for Basic Plan
+standard_plan <- rnorm(30, mean = 6, sd = 2)  # Satisfaction scores for Standard Plan
+premium_plan <- rnorm(30, mean = 7, sd = 2)   # Satisfaction scores for Premium Plan
+
+# Create a data frame
+data <- data.frame(
+  satisfaction = c(basic_plan, standard_plan, premium_plan),
+  plan = factor(rep(c("Basic", "Standard", "Premium"), each = 30))
+)
+
+# Perform Kruskal-Wallis Test to compare the satisfaction scores among the three service plans
+kruskal_test_result <- kruskal.test(satisfaction ~ plan, data = data)
+
+# Print the satisfaction scores
+print(data)
+
+# Print the Kruskal-Wallis Test result
+print(kruskal_test_result)
+
+# Calculate and print the medians of the three groups
+median_basic <- median(basic_plan)
+median_standard <- median(standard_plan)
+median_premium <- median(premium_plan)
+print(paste("Median of Basic Plan:", median_basic))
+print(paste("Median of Standard Plan:", median_standard))
+print(paste("Median of Premium Plan:", median_premium))
+
+```
+
+**Interpretation:**
+
+-   **Customer Satisfaction Scores:**
+
+    -   **Basic Plan:** Generated satisfaction scores with a mean of approximately 5.
+
+    -   **Standard Plan:** Generated satisfaction scores with a mean of approximately 6.
+
+    -   **Premium Plan:** Generated satisfaction scores with a mean of approximately 7.
+
+-   **Kruskal-Wallis Test Result:**
+
+    -   **Kruskal-Wallis chi-squared:** 17.693
+
+    -   **Degrees of Freedom (df):** 2
+
+    -   **p-value:** 0.0001439
+
+-   **Medians:**
+
+    -   **Median of Basic Plan:** 4.85
+
+    -   **Median of Standard Plan:** 6.09
+
+    -   **Median of Premium Plan:** 7.05
+
+**Conclusion:** Since the p-value (0.0001439) is less than the common significance level (0.05), we reject the null hypothesis.
+
+This indicates that there is a significant difference in customer satisfaction scores among the three service plans.
+
+Comparing the medians, the Premium Plan has the highest median satisfaction score (7.05), followed by the Standard Plan (6.09), and then the Basic Plan (4.85).
