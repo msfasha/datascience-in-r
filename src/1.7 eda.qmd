@@ -1,5 +1,5 @@
 ---
-title: "1.6 EDA"
+title: "1.7 EDA"
 format: html
 editor: visual
 include-before: |
@@ -54,63 +54,118 @@ file_path <- "data//superstore.csv"
 superstore <- read_csv(file_path, show_col_types = FALSE)
 ```
 
+```{r}
+# Load necessary library
+library(dplyr)
+library(tidyr)
+
+# Assuming the dataset is loaded into a variable named `superstore`
+# You can load your dataset using read.csv or other appropriate function
+# superstore <- read.csv("path_to_your_dataset.csv")
+
+# Group by Category and count unique Sub-Category
+subcategory_counts <- superstore %>%
+  group_by(Category) %>%
+  summarise(Subcategory_Count = n_distinct(`Sub-Category`))
+
+# Print the result
+print(subcategory_counts)
+
+# Group by Category and summarize the Sub-Category as a list
+subcategories_by_category <- superstore %>%
+  group_by(Category) %>%
+  summarise(Subcategories = list(unique(`Sub-Category`)))
+
+# Print the result
+print(subcategories_by_category)
+
+subcategories_unnested <- subcategories_by_category %>%
+  unnest(Subcategories)
+
+# Print the result
+print(subcategories_unnested)
+```
+
 **Central Tendency: Average Sales by Category**
 
 **Business Context:** Understanding which product category on average generates the most sales could inform inventory and marketing strategies.
 
-```{r} library(dplyr)  average_sales_by_category <- superstore %>%   group_by(`Category`) %>%   summarise(Average_Sales = mean(`Sales`))  print(average_sales_by_category)}
-```
+```{r}
+library(dplyr)  
+average_sales_by_category <- superstore %>% group_by(`Category`) %>% summarise(Average_Sales = mean(`Sales`))  
+print(average_sales_by_category)
 
-```{r} library(ggplot2) total_sales <- sum(superstore$Sales) sales_by_category <- superstore %>%   group_by(Category) %>%   summarise(Total_Sales = sum(Sales))  ggplot(sales_by_category, aes(x=Category, y=Total_Sales)) +   geom_bar(stat="identity") +   ggtitle("Total Sales by Category")}
+library(ggplot2) 
+total_sales <- sum(superstore$Sales) 
+sales_by_category <- superstore %>% group_by(Category) %>% summarise(Total_Sales = sum(Sales)) 
+ggplot(sales_by_category, aes(x=Category, y=Total_Sales)) +   geom_bar(stat="identity") + ggtitle("Total Sales by Category")
 ```
 
 **Dispersion: Standard Deviation of Sales in Each Region**
 
 **Business Context:** Measuring the variability of sales in each region can help assess the consistency of sales performance geographically.
 
-```{r} sales_dispersion_by_region <- superstore %>%   group_by(`Region`) %>%   summarise(Sales_Standard_Deviation = sd(`Sales`))  print(sales_dispersion_by_region)}
+```{r}
+sales_dispersion_by_region <- superstore %>% group_by(`Region`) %>% summarise(Sales_Standard_Deviation = sd(`Sales`))  
+print(sales_dispersion_by_region)
 ```
 
 **Shape: Skewness of Profit Distribution**
 
 **Business Context:** Assessing the skewness of profit distribution to understand the asymmetry and identify outliers or anomalies in profitability.
 
-```{r} library(e1071)  profit_distribution_shape <- superstore %>%   summarise(Skewness_of_Profit = skewness(`Profit`))  print(profit_distribution_shape)}
+```{r}
+library(e1071)  
+profit_distribution_shape <- superstore %>% summarise(Skewness_of_Profit = skewness(`Profit`))  
+print(profit_distribution_shape)
 ```
 
 **Position: 95th Percentile of Sales**
 
 **Business Context:** Identifying the 95th percentile of sales helps in understanding the upper end of sales values, which can inform the setting of sales targets.
 
-```{r} sales_position_percentile <- superstore %>%   summarise(Sales_95th_Percentile = quantile(`Sales`, 0.95))  print(sales_position_percentile)}
+```{r}
+sales_position_percentile <- superstore %>% summarise(Sales_95th_Percentile = quantile(`Sales`, 0.95))  
+print(sales_position_percentile)
 ```
 
 **Association: Correlation between Discount and Profit**
 
 **Business Context:** Exploring the correlation between discounts and profit to see if higher discounts are related to higher or lower profits.
 
-```{r} discount_profit_association <- superstore %>%   summarise(Correlation = cor(`Discount`, `Profit`))  print(discount_profit_association)}
+```{r}
+discount_profit_association <- superstore %>% summarise(Correlation = cor(`Discount`, `Profit`))  
+print(discount_profit_association)
 ```
 
 **Range of Data: Range of Quantity Sold**
 
 **Business Context:** Knowing the range of quantities sold per transaction can help with stock management and forecasting demand.
 
-```{r} quantity_range <- superstore %>%   summarise(Min_Quantity = min(`Quantity`), Max_Quantity = max(`Quantity`))  print(quantity_range)}
+```{r}
+quantity_range <- superstore %>%   summarise(Min_Quantity = min(`Quantity`), Max_Quantity = max(`Quantity`))  
+print(quantity_range)
 ```
 
 **Frequency Distribution: Most Common Product Sub-Categories**
 
 **Business Context:** Identifying the most common product sub-categories sold can inform which products are most popular and may require more marketing focus.
 
-```{r} library(dplyr)  sub_category_frequency <- superstore %>%   count(`Sub-Category`) %>%   arrange(desc(n))  print(sub_category_frequency)}
+```{r}
+library(dplyr)  
+sub_category_frequency <- superstore %>% count(`Sub-Category`) %>% arrange(desc(n))  
+print(sub_category_frequency)
 ```
 
 **Data Table Usage: Top 10 Profitable Sales Transactions**
 
 **Business Context:** Listing the top 10 most profitable sales transactions to understand which deals have been the most successful.
 
-```{r} top_profitable_sales <- superstore %>%   arrange(desc(`Profit`)) %>%   slice_head(n = 10)  print(top_profitable_sales)}
+```{r}
+top_profitable_sales <- superstore %>%  
+  arrange(desc(`Profit`)) %>%   slice_head(n = 10)  
+
+str(superstore)
 ```
 
 These examples are designed to be directly applicable to the Superstore dataset and serve as a practical application of statistical concepts for business analysis. Remember to load your Superstore data into an R data frame named `superstore` for these examples to work correctly.

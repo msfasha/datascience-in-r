@@ -1,0 +1,989 @@
+---
+title: "1.5 Hypothesis Testing & Statistical Analysis"
+format: html
+editor: visual
+include-before: |
+  <div style="text-align: center;">
+    <img src="images/department_logo.png" width="169" />
+    <img src="images/ioa_logo.png" width="122" />
+    <img src="images/petra_logo.png" width="52" />
+  </div>
+---
+
+## Hypothesis Testing
+
+### 1. One-sample T-test
+
+**Use:** To test if the mean of a single sample is significantly different from a known or hypothesized population mean.
+
+**Assumptions:**
+
+\- The sample data is normally distributed.
+
+\- The sample observations are independent.
+
+***Example:- Suppose we want to test if the average satisfaction score of customers for a new product is significantly different from the target satisfaction score of 5.***
+
+**Experiment Design**
+
+Conducting an experiment to test if the average satisfaction score of customers for a new product is significantly different from a target satisfaction score of 5 involves several scientific steps. Here’s a structured approach:
+
+**Step 1: Define the Hypothesis**
+
+-   **Null Hypothesis ((H_0))**: The mean satisfaction score is equal to 5.
+-   **Alternative Hypothesis ((H_1))**: The mean satisfaction score is not equal to 5.
+
+**Step 2: Design the Experiment**
+
+1.  **Sample Size Determination**: Determine the appropriate sample size to ensure the results are statistically significant. This can be done using power analysis, considering the expected effect size, significance level (alpha), and power (1 - beta).
+
+2.  **Random Sampling**: Select a random sample of customers to avoid bias. Ensure the sample is representative of the population.
+
+3.  **Survey Design**: Create a standardized survey to measure customer satisfaction. Use a reliable and validated scale (e.g., Likert scale from 1 to 7).
+
+4.  **Data Collection**: Administer the survey to the selected sample of customers after they have used the new product for a sufficient period.
+
+**Step 3: Conduct the Experiment**
+
+1.  **Administer the Survey**: Ensure that the data collection process is uniform and unbiased. Use online surveys, interviews, or physical questionnaires as appropriate.
+
+2.  **Collect Data**: Gather the responses, ensuring data integrity and confidentiality.
+
+**Step 4: Analyze the Data**
+
+1.  **Descriptive Statistics**: Calculate the mean, median, standard deviation, and other relevant statistics of the collected data.
+
+2.  **Check Assumptions**: Ensure the data meets the assumptions for a t-test (e.g., normally distributed data, independent samples).
+
+3.  **Conduct the t-test**: Use statistical software (e.g., R) to perform a one-sample t-test to compare the sample mean to the target satisfaction score of 5.
+
+**Step 5: Interpret the Results**
+
+1.  **P-value and Test Statistic**: Evaluate the t-test result, focusing on the t-statistic and p-value.
+    -   If the p-value is less than the significance level (usually 0.05), reject the null hypothesis.
+    -   If the p-value is greater than the significance level, do not reject the null hypothesis.
+2.  **Confidence Interval**: Examine the 95% confidence interval for the mean satisfaction score to understand the range in which the true mean lies.
+
+**Step 6: Report the Findings**
+
+1.  **Document the Process**: Describe the methodology, sample size, data collection process, and statistical analysis in detail.
+
+2.  **Present the Results**: Use tables, graphs, and descriptive text to present the findings clearly. Highlight whether the average satisfaction score is significantly different from 5.
+
+3.  **Draw Conclusions**: Summarize the findings and discuss the implications. If the null hypothesis is rejected, discuss potential reasons and next steps.
+
+**Example Analysis in R**
+
+Here’s an example of how to perform the t-test in R:
+
+``` r
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate customer satisfaction scores (replace this with actual survey data)
+satisfaction_scores <- rnorm(30, mean = 5, sd = 2)
+
+# Perform one-sample t-test
+t_test_result <- t.test(satisfaction_scores, mu = 5)
+
+# Print the t-test result
+print(t_test_result)
+
+# Calculate the critical value for the t-distribution
+alpha <- 0.05
+df <- length(satisfaction_scores) - 1
+critical_value <- qt(1 - alpha/2, df)
+
+# Print the critical value
+cat("Critical value for a two-tailed test with alpha =", alpha, "and df =", df, "is", critical_value, "\n")
+```
+
+**Reporting the Example Analysis**
+
+-   **T-test Result**: The t-statistic is (-0.26299) with a p-value of (0.7944).
+-   **Critical Value**: The critical value for a two-tailed test with alpha (0.05) and (29) degrees of freedom is approximately (2.045).
+-   **Conclusion**: Since the p-value is greater than (0.05), we do not reject the null hypothesis. There is not enough evidence to conclude that the mean satisfaction score is significantly different from (5).
+
+By following these steps, you can ensure that your experiment is conducted in a scientific manner, producing reliable and valid results.
+
+**Code:**
+
+```{r}
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate customer satisfaction scores
+satisfaction_scores <- rnorm(30, mean = 5, sd = 2)
+
+# Print the satisfaction scores
+print(satisfaction_scores)
+
+# Perform one-sample t-test to test if the mean satisfaction score is significantly different from 5
+t_test_result <- t.test(satisfaction_scores, mu = 5)
+
+# Print the t-test result
+print(t_test_result)
+```
+
+**Interpretation:**
+
+**Satisfaction Scores:** Generated customer satisfaction scores with a mean of approximately 5.
+
+-   **T-test Result:**
+
+    -   **t:** Test statistic (-0.26299)
+
+    -   **df:** Degrees of freedom (29)
+
+    -   **p-value:** Probability of observing the data if the null hypothesis is true (0.7944)
+
+    -   **95% Confidence Interval:** Range within which the true mean lies with 95% confidence (4.173147 to 5.638438)
+
+    -   **Sample Mean (mean of x):** Average satisfaction score (4.905792)
+
+**Conclusion:** Since the p-value (0.7944) is greater than the common significance level (0.05), we fail to reject the null hypothesis.
+
+This indicates that the average satisfaction score is not significantly different from the target score of 5.
+
+### 2. Two-sample T-test (Independent)
+
+**Use:** To compare the means of two independent samples to see if they are significantly different.
+
+**Assumptions:**
+
+\- The samples are independent of each other.
+
+\- The data in each sample is normally distributed.
+
+\- The variances of the two populations are equal (if using the standard t-test, not Welch's).
+
+***Example:- Suppose we want to test if there is a significant difference in average performance scores between employees who received training and those who did not.***
+
+**Code:**
+
+```{r}
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate performance scores for two groups
+trained_employees <- rnorm(30, mean = 75, sd = 10)  # Employees who received training
+untrained_employees <- rnorm(30, mean = 70, sd = 10)  # Employees who did not receive training
+
+# Perform two-sample t-test to compare the mean performance scores between trained and untrained employees
+t_test_result <- t.test(trained_employees, untrained_employees)
+
+# Print the performance scores
+print(trained_employees)
+print(untrained_employees)
+
+# Print the t-test result
+print(t_test_result)
+```
+
+**Interpretation:**
+
+-   **Performance Scores:**
+
+    -   **Trained Employees:** Generated performance scores with a mean of approximately 75.
+
+    -   **Untrained Employees:** Generated performance scores with a mean of approximately 70.
+
+-   **T-test Result:**
+
+    -   **t:** Test statistic (1.672)
+
+    -   **df:** Degrees of freedom (56.559)
+
+    -   **p-value:** Probability of observing the data if the null hypothesis is true (0.248)
+
+    -   **95% Confidence Interval:** Range within which the true mean difference lies with 95% confidence (-1.965426 to 7.456584)
+
+    -   **Sample Means (mean of x, mean of y):** Average performance scores for trained employees (74.52896) and untrained employees (71.78338)
+
+**Conclusion:** Since the p-value (0.1104) is greater than the common significance level (0.05), we fail to reject the null hypothesis.
+
+This indicates that there is no significant difference in average performance scores between trained and untrained employees
+
+### 3. Paired Sample T-test
+
+**Use:** To compare the means of two related samples (e.g., before and after measurements on the same subjects).
+
+**Assumptions:** - The differences between the paired observations are normally distributed. - The pairs are independent of each other.
+
+***Example:- Suppose we want to test if a training program has significantly improved employee productivity scores by comparing their productivity before and after the training.***
+
+**Code:**
+
+```{r}
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate productivity scores before and after the training
+productivity_before <- rnorm(30, mean = 5, sd = 2)  # Productivity scores before training
+productivity_after <- productivity_before + rnorm(30, mean = 0.5, sd = 1)  # Productivity scores after training
+
+# Perform paired sample t-test to compare the mean productivity scores before and after training
+t_test_result <- t.test(productivity_before, productivity_after, paired = TRUE)
+
+# Print the productivity scores
+print(productivity_before)
+print(productivity_after)
+
+# Print the t-test result
+print(t_test_result)
+```
+
+**Interpretation:**
+
+-   **Productivity Scores:**
+
+    -   **Before Training:** Generated productivity scores with a mean of approximately 5.
+
+    -   **After Training:** Generated productivity scores that are on average higher than before training.
+
+-   **T-test Result:**
+
+    -   **t:** Test statistic (-4.4489)
+
+    -   **df:** Degrees of freedom (29)
+
+    -   **p-value:** Probability of observing the data if the null hypothesis is true (0.0001169)
+
+    -   **95% Confidence Interval:** Range within which the true mean difference lies with 95% confidence (-0.9901802 to -0.3664964=)
+
+    -   **Mean of the Differences:** Average difference in productivity scores before and after training (-0.6783383)
+
+**Conclusion:** Since the p-value (0.0001169) is less than the common significance level (0.05), we reject the null hypothesis.
+
+This indicates that there is a significant difference in productivity scores before and after the training, with productivity increasing after the training program.
+
+### 4. One-way ANOVA
+
+**Use:** To compare the means of three or more groups to see if at least one mean is different.
+
+**Assumptions:**
+
+\- The data in each group is normally distributed.
+
+\- The variances of the populations are equal (homogeneity of variances).
+
+\- The samples are independent.
+
+***Example:- Suppose we want to test if there is a significant difference in customer satisfaction scores among three different service plans (Basic, Standard, Premium).***
+
+**Code:**
+
+```{r}
+# Load necessary library
+library(dplyr)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate satisfaction scores for three different service plans
+basic_plan <- rnorm(30, mean = 5, sd = 2)  # Basic Plan
+standard_plan <- rnorm(30, mean = 6, sd = 2)  # Standard Plan
+premium_plan <- rnorm(30, mean = 7, sd = 2)  # Premium Plan
+
+# Create a data frame
+data <- data.frame(
+  satisfaction = c(basic_plan, standard_plan, premium_plan),
+  plan = factor(rep(c("Basic", "Standard", "Premium"), each = 30))
+)
+
+# Perform one-way ANOVA
+anova_result <- aov(satisfaction ~ plan, data = data)
+summary(anova_result)
+```
+
+**Interpretation:**
+
+-   **Groups (Service Plans):**
+
+    -   **Basic Plan:** Mean satisfaction score of 5
+
+    -   **Standard Plan:** Mean satisfaction score of 6
+
+    -   **Premium Plan:** Mean satisfaction score of 7
+
+-   **ANOVA Summary:**
+
+    -   **Df:** Degrees of freedom
+
+    -   **Sum Sq:** Sum of squares
+
+    -   **Mean Sq:** Mean squares
+
+    -   **F value:** F statistic
+
+    -   **Pr(\>F):** p-value for the F-test
+
+**Conclusion:**
+
+\- If the p-value is less than the significance level (e.g., 0.05), reject the null hypothesis.
+
+Since the p-value (4.94e-5) is less than the common significance level (0.05), we reject the null hypothesis.
+
+This indicates that there is a significant difference in customer satisfaction scores among the three service plans.
+
+### 5. Chi-square Test for Independence
+
+**Use:** To test if there is a significant association between two categorical variables.
+
+**Assumptions:** - The data is in the form of counts or frequencies. - The observations are independent. - The expected frequency in each cell of the contingency table is at least 5.
+
+***Example:- Suppose we want to test if there is a significant association between the type of marketing campaign (Email vs. Social Media) and customer response (Purchased vs. Not Purchased).***
+
+**Code:**
+
+```{r}
+# Load necessary library
+library(dplyr)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Create a contingency table for marketing campaigns and customer response
+# Rows: Customer Response (Purchased, Not Purchased)
+# Columns: Marketing Campaign (Email, Social Media)
+campaign_data <- matrix(c(20, 30, 50, 80), nrow = 2, byrow = TRUE)
+colnames(campaign_data) <- c("Email", "Social Media")
+rownames(campaign_data) <- c("Purchased", "Not Purchased")
+
+# Print the contingency table
+print(campaign_data)
+
+# Perform chi-squared test
+chi_square_result <- chisq.test(campaign_data)
+
+# Print the test result
+print(chi_square_result)
+```
+
+**Interpretation:**
+
+\- If the p-value is less than the significance level (e.g., 0.05), reject the null hypothesis.
+
+Here, the p-value is 0.9849, so we fail to reject the null hypothesis, indicating no significant association between the groups and categories.
+
+This indicates that there is no significant association between the type of marketing campaign (Email vs. Social Media) and customer response (Purchased vs. Not Purchased).
+
+------------------------------------------------------------------------
+
+## Statistical Analysis
+
+### 1. Correlation Analysis Using the `mtcars` Dataset
+
+#### Introduction:
+
+Correlation analysis measures the strength and direction of the relationship between two variables. For instance, you can analyze the correlation between mpg (miles per gallon) and hp (horsepower), or wt (weight) and qsec (1/4 mile time).
+
+#### R Code:
+
+```{r}
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(GGally)
+
+# Select relevant numeric columns from mtcars dataset
+numeric_data <- mtcars %>% select(mpg, hp, wt, qsec)
+
+# Calculate correlation matrix
+correlation_matrix <- cor(numeric_data)
+
+# Visualize the correlation matrix
+ggcorr(numeric_data, label = TRUE)
+```
+
+The `ggcorr()` function is part of the GGally package in R, which extends ggplot2 for easy creation of complex plots. GGally is particularly useful for visualizing relationships between multiple variables in a dataset.
+
+The `ggcorr()` function is used to visualize a correlation matrix. It plots the correlation coefficients between variables, offering an intuitive graphical representation of how variables are related in terms of linear correlation.
+
+The image shows a correlation matrix for the variables mpg, hp, wt, and qsec. Here’s an interpretation of the correlation coefficients presented in the plot:
+
+#### mpg (Miles per Gallon):
+
+-   **hp (Horsepower)**: There is a negative correlation of -0.78 between mpg and hp. This indicates a strong negative relationship, meaning as horsepower increases, mpg tends to decrease.
+-   **wt (Weight)**: The correlation between mpg and wt is -0.87. This suggests a strong negative relationship, indicating that heavier cars tend to have lower mpg.
+-   **qsec (1/4 Mile Time)**: There is a positive correlation of 0.42 between mpg and qsec. This indicates a moderate positive relationship, meaning cars with higher mpg tend to have longer quarter-mile times.
+
+#### hp (Horsepower):
+
+-   **wt (Weight)**: There is a positive correlation of 0.66 between hp and wt. This indicates a strong positive relationship, meaning cars with more horsepower tend to be heavier.
+-   **qsec (1/4 Mile Time)**: The correlation between hp and qsec is -0.71. This suggests a strong negative relationship, indicating that cars with higher horsepower tend to have shorter quarter-mile times.
+
+#### wt (Weight):
+
+-   **qsec (1/4 Mile Time)**: There is a positive correlation of 0.17 between wt and qsec. This indicates a very weak positive relationship, suggesting a slight tendency for heavier cars to have longer quarter-mile times.
+
+#### Key Insights:
+
+-   **mpg and hp**: The strong negative correlation (-0.78) indicates that as horsepower increases, fuel efficiency (mpg) tends to decrease significantly, which is expected since more powerful engines often consume more fuel.
+-   **mpg and wt**: The strong negative correlation (-0.87) suggests that heavier cars tend to be less fuel-efficient.
+-   **hp and wt**: The strong positive correlation (0.66) indicates that more powerful cars are generally heavier.
+-   **hp and qsec**: The strong negative correlation (-0.71) shows that cars with higher horsepower tend to have better (shorter) quarter-mile times.
+
+#### Color Scale:
+
+The color scale on the right indicates the strength and direction of the correlation: - **Red indicates positive correlations.** - **Blue indicates negative correlations.** - The intensity of the color corresponds to the strength of the correlation, with darker colors indicating stronger correlations.
+
+This correlation matrix helps to understand the relationships between key variables in the `mtcars` dataset and can guide further analysis or automotive performance assessments.
+
+### 2. Regression Analysis: Linear Regression Example using `mtcars` Dataset
+
+#### Introduction:
+
+-   Linear regression models the relationship between a dependent variable and one or more independent variables. In this example, we will use the `mtcars` dataset to predict miles per gallon (mpg) based on horsepower (hp) and weight (wt).
+
+#### R Code:
+
+```{r}
+# Load necessary libraries 
+library(dplyr) 
+library(ggplot2)
+
+# Fit a linear regression model to predict mpg based on hp and wt
+regression_model <- lm(mpg ~ hp + wt, data = mtcars)  
+# Summarize the regression model 
+summary(regression_model)  
+
+# Plot the regression results 
+ggplot(mtcars, aes(x = hp, y = mpg)) +   
+  geom_point() +   
+  geom_smooth(method = "lm") +   
+  labs(title = "Linear Regression: MPG vs. HP", x = "Horsepower (hp)", y = "Miles per Gallon (mpg)")
+```
+
+The results of the linear regression and the corresponding plot can be interpreted as follows:
+
+#### Regression Results:
+
+**Model Summary:**
+
+**Residuals:**
+
+The distribution of residuals provides insights into the model's fit. The range shows some variation, indicating potential outliers.
+
+**Coefficients:**
+
+**Intercept:**
+
+-   Estimate: 37.227
+-   Std. Error: 1.598
+-   t value: 23.296
+-   Pr(\>\|t\|): \< 2e-16 (highly significant)
+
+**Horsepower (hp):**
+
+-   Estimate: -0.031
+-   Std. Error: 0.009
+-   t value: -3.520
+-   Pr(\>\|t\|): 0.00145 (significant)
+
+**Weight (wt):**
+
+-   Estimate: -3.877
+-   Std. Error: 0.632
+-   t value: -6.138
+-   Pr(\>\|t\|): 1.12e-06 (highly significant)
+
+**Significance Codes:**
+
+The significance codes indicate the level of significance for each predictor.
+
+Both horsepower and weight are significant predictors of miles per gallon (mpg) (p-values \< 0.01).
+
+**Model Fit:**
+
+-   Residual standard error: 2.593 on 29 degrees of freedom
+-   Multiple R-squared: 0.8264
+-   Adjusted R-squared: 0.8148
+-   F-statistic: 71.41 on 2 and 29 DF
+-   p-value: \< 2.2e-16 (highly significant overall model)
+
+#### Interpretation:
+
+**Intercept:**
+
+The intercept of 37.227 suggests that when both horsepower and weight are zero, the expected miles per gallon is 37.227.
+
+**Horsepower (hp):**
+
+The coefficient for horsepower is -0.031. This indicates that for each unit increase in horsepower, mpg decreases by approximately 0.031 units, holding weight constant. The negative coefficient and significant p-value suggest a strong inverse relationship between horsepower and mpg.
+
+**Weight (wt):**
+
+The coefficient for weight is -3.877. This indicates that for each additional unit of weight, mpg decreases by approximately 3.877 units, holding horsepower constant. The negative coefficient and highly significant p-value suggest a strong inverse relationship between weight and mpg.
+
+**Model Fit:**
+
+The Multiple R-squared value of 0.8264 indicates that approximately 82.64% of the variability in mpg is explained by the model. This is relatively high, suggesting that the model is a good fit.
+
+The F-statistic and its p-value indicate that the overall model is significant, meaning at least one of the predictors (horsepower or weight) significantly contributes to the model.
+
+#### Plot Interpretation:
+
+The plot of mpg vs. horsepower with a linear regression line (using `geom_smooth()`) provides a visual representation of the relationship between mpg and horsepower. The line slopes downward, indicating an inverse relationship.
+
+#### Conclusion:
+
+The regression analysis shows that both horsepower and weight are significant predictors of mpg. Higher horsepower and weight have a negative impact on mpg. The model explains a significant portion of the variability in mpg, indicating that these factors play a substantial role in determining miles per gallon.
+
+### 3. Logistic Regression Example using `mtcars` Dataset
+
+#### Introduction:
+
+-   Logistic regression models the relationship between a binary dependent variable and one or more independent variables. In this example, we will use the `mtcars` dataset to predict the likelihood of a car having an automatic (am = 0) or manual (am = 1) transmission based on horsepower (hp) and weight (wt).
+
+#### R Code:
+
+```{r}
+# Load necessary libraries 
+library(dplyr) 
+library(ggplot2)
+library(caret)  # For confusion matrix
+library(pROC)   # For AUC
+
+# Convert 'am' to a factor for logistic regression
+mtcars$am <- as.factor(mtcars$am)
+
+# Fit a logistic regression model to predict transmission based on hp and wt
+logistic_model <- glm(am ~ hp + wt, data = mtcars, family = binomial)  
+# Summarize the logistic regression model 
+summary(logistic_model)  
+
+# Make predictions on the training set
+predicted_probabilities <- predict(logistic_model, type = "response")
+predicted_classes <- ifelse(predicted_probabilities > 0.5, "1", "0")
+
+# Confusion Matrix
+conf_matrix <- confusionMatrix(factor(predicted_classes), mtcars$am)
+print(conf_matrix)
+
+# Accuracy
+accuracy <- conf_matrix$overall['Accuracy']
+print(paste("Accuracy:", accuracy))
+
+# ROC Curve and AUC
+roc_curve <- roc(mtcars$am, predicted_probabilities)
+auc_value <- auc(roc_curve)
+print(paste("AUC:", auc_value))
+
+# Plot ROC Curve
+plot(roc_curve, col = "blue", main = "ROC Curve")
+```
+
+The results of the logistic regression and the corresponding evaluations can be interpreted as follows:
+
+#### Logistic Regression Results:
+
+**Model Summary:**
+
+**Coefficients:**
+
+**Intercept:**
+
+-   Estimate: 18.86630
+-   Std. Error: 7.44356
+-   z value: 2.535
+-   Pr(\>\|z\|): 0.01126 (significant)
+
+**Horsepower (hp):**
+
+-   Estimate: 0.03626
+-   Std. Error: 0.01773
+-   z value: 2.044
+-   Pr(\>\|z\|): 0.04091 (significant)
+
+**Weight (wt):**
+
+-   Estimate: -8.08348
+-   Std. Error: 3.06868
+-   z value: -2.634
+-   Pr(\>\|z\|): 0.00843 (highly significant)
+
+**Significance Codes:**
+
+The significance codes indicate the level of significance for each predictor.
+
+Both horsepower and weight are significant predictors of transmission type (p-values \< 0.05).
+
+#### Evaluation Metrics:
+
+**Confusion Matrix:** - The confusion matrix provides a summary of prediction results on a classification problem. It shows the number of correct and incorrect predictions broken down by each class.
+
+**Accuracy:** - Accuracy is the proportion of true results (both true positives and true negatives) among the total number of cases examined. It provides an overall measure of the model's predictive power.
+
+**ROC Curve and AUC:** - The ROC (Receiver Operating Characteristic) curve is a graphical plot that illustrates the diagnostic ability of a binary classifier system. The AUC (Area Under the Curve) measures the entire two-dimensional area underneath the entire ROC curve. A higher AUC indicates better model performance.
+
+#### Example Results Interpretation:
+
+Suppose the confusion matrix, accuracy, and AUC results are as follows:
+
+**Confusion Matrix:**
+
+```         
+          Reference
+Prediction  0  1
+        0 10  2
+        1  1 19
+```
+
+**Accuracy:**
+
+```         
+Accuracy: 0.935
+```
+
+**AUC:**
+
+```         
+AUC: 0.965
+```
+
+**Interpretation:**
+
+-   **Confusion Matrix:**
+    -   True Negatives (TN): 10
+    -   False Positives (FP): 1
+    -   False Negatives (FN): 2
+    -   True Positives (TP): 19
+-   **Accuracy:**
+    -   The model correctly predicts the transmission type 93.5% of the time.
+-   **AUC:**
+    -   An AUC of 0.965 indicates excellent model performance, meaning the model has a high ability to distinguish between the two classes (automatic vs. manual transmission).
+
+These metrics provide a comprehensive evaluation of the logistic regression model's performance, helping to understand its predictive power and reliability.
+
+### 4. Clustering: K-Means Clustering Example
+
+#### Introduction:
+
+K-means clustering partitions the data into k clusters, where each data point belongs to the cluster with the nearest mean. This technique can be used to group customers based on purchasing behavior.
+
+#### R Code:
+
+```{r}
+# Install necessary packages
+if (!requireNamespace("factoextra", quietly = TRUE)) {
+  install.packages("factoextra")
+}
+
+# Load necessary libraries
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(cluster)
+library(factoextra)
+
+# Load the dataset
+superstore <- read_csv("data\\superstore.csv")
+
+# Select relevant columns and scale the data   
+customer_data <- superstore %>% group_by(`Customer ID`) %>%  
+  summarise(Total_Sales = sum(Sales), Total_Orders = n()) %>%   
+  ungroup()
+
+scaled_data <- scale(customer_data %>% select(Total_Sales, Total_Orders))
+
+# Perform k-means clustering with 3 clusters  
+set.seed(123) 
+kmeans_result <- kmeans(scaled_data, centers = 3, nstart = 25)
+
+# Add cluster assignment to the original data  
+customer_data$Cluster <- as.factor(kmeans_result$cluster)
+
+# Visualize the clusters  
+ggplot(customer_data, aes(x = Total_Sales, y = Total_Orders, color = Cluster)) +  
+  geom_point() + 
+  labs(title = "K-Means Clustering: Customers", x = "Total Sales", y = "Total Orders")
+
+# Evaluate the clustering using silhouette analysis
+silhouette_score <- silhouette(kmeans_result$cluster, dist(scaled_data))
+
+# Plot silhouette analysis with improved clarity using fviz_silhouette
+fviz_silhouette(silhouette_score) +
+  labs(title = "Silhouette Plot for K-Means Clustering") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+The results of the K-means clustering and the corresponding plots can be interpreted as follows:
+
+### K-Means Clustering Results:
+
+**Cluster Centers:**
+
+```{r}
+print(kmeans_result$centers)
+```
+
+The cluster centers provide the mean values of each feature for the clusters.
+
+**Within-cluster Sum of Squares:**
+
+```{r}
+print(kmeans_result$tot.withinss)
+```
+
+This value indicates how tightly the clusters are packed. Lower values suggest better-defined clusters.
+
+### Evaluation Metrics:
+
+**Silhouette Analysis:** To evaluate the clustering performance, we use silhouette analysis, which measures how similar each data point is to its own cluster compared to other clusters.
+
+```{r}
+# Compute the silhouette width for each data point
+silhouette_width <- silhouette(kmeans_result$cluster, dist(scaled_data))
+
+# Plot silhouette analysis
+plot(silhouette_width, main = "Silhouette Plot for K-Means Clustering")
+```
+
+**Silhouette Plot:** The silhouette plot provides a visual representation of the silhouette width for each data point. Values near 1 indicate that the data points are well clustered, values near 0 indicate that the data points are on or very close to the decision boundary between two neighboring clusters, and negative values indicate that those data points might have been assigned to the wrong cluster.
+
+### Interpretation:
+
+**Clusters:**
+
+**Cluster 1 (Red):** - Customers in this cluster tend to have higher total sales, with values ranging from approximately 5,000 to 25,000. The number of orders for these customers varies widely but tends to be higher on average, often above 15 orders.
+
+**Cluster 2 (Green):** - This cluster represents customers with relatively low total sales (up to around 5,000) and a smaller number of total orders (generally less than 10 orders). These customers represent the lower sales and lower order frequency segment.
+
+**Cluster 3 (Blue):** - Customers in this cluster fall between the other two clusters in terms of total sales (up to around 10,000) and have a moderate number of total orders, typically ranging between 10 and 20 orders.
+
+**Cluster Characteristics:**
+
+-   **Cluster 1:** High-value customers who make significant purchases (high total sales) and place many orders. These might be your most valuable customers in terms of revenue.
+-   **Cluster 2:** Lower-value customers who contribute less to total sales and place fewer orders. These customers may represent occasional buyers or those with low engagement.
+-   **Cluster 3:** Medium-value customers who have moderate sales and order frequency. These customers are likely moderately engaged and contribute a significant, but not the highest, portion of sales.
+
+**Business Implications:**
+
+**Targeting and Marketing:**
+
+-   **Cluster 1:** These high-value customers should be prioritized for loyalty programs, special offers, and personalized marketing to retain and further engage them.
+-   **Cluster 2:** Efforts might be made to convert these low-value customers into higher-value ones, perhaps through targeted promotions or incentives to increase their purchase frequency and order size.
+-   **Cluster 3:** These medium-value customers could benefit from strategies aimed at boosting their engagement and moving them into the high-value cluster.
+
+**Visualization Insights:**
+
+-   The clear separation between clusters suggests that the K-means algorithm has effectively grouped customers based on their sales and ordering behavior.
+-   The distribution of points within each cluster provides a visual indication of the variability in customer behavior within each segment.
+
+**Silhouette Analysis:**
+
+-   The silhouette plot shows that most data points have a high silhouette width, indicating well-defined clusters.
+-   Cluster 3 has the highest average silhouette width of 0.54, suggesting it is the best-defined cluster.
+-   Cluster 2 has the lowest average silhouette width of 0.22, indicating some points may be misclassified or lie between clusters.
+-   A high average silhouette width of 0.44 suggests that the clustering structure is appropriate.
+
+### Conclusion:
+
+The K-means clustering analysis has segmented customers into three distinct groups based on their total sales and total orders. Each cluster represents a different level of customer value and engagement, providing insights that can guide targeted marketing strategies, customer relationship management, and business decision-making to optimize sales and customer satisfaction. The silhouette analysis confirms that the clustering structure is well-defined and appropriate.
+
+### 5. Principal Component Analysis (PCA)
+
+**Introduction**: - Principal Component Analysis (PCA) reduces the dimensionality of our dataset while preserving as much variability as possible, which can help in visualizing high-dimensional data.
+
+**R Code**:
+
+```{r}
+# Load necessary libraries 
+library(dplyr) 
+library(ggplot2) 
+library(FactoMineR)
+library(factoextra)  
+
+# Select numeric columns for PCA 
+numeric_data <- superstore %>%  select(Sales, Profit, Discount, Quantity)  
+
+# Perform PCA 
+pca_result <- PCA(numeric_data, graph = FALSE)  
+
+# Visualize PCA 
+fviz_pca_var(pca_result, col.var = "contrib", gradient.cols = c("blue", "red"))
+```
+
+The image displays the results of a Principal Component Analysis (PCA) on selected numeric columns (`Sales`, `Profit`, `Discount`, `Quantity`) from the dataset.
+
+Here is the interpretation of the PCA plot:
+
+### Interpretation of the PCA Plot:
+
+1.  **Principal Components (Dimensions)**:
+    -   **Dim1 (PC1)**: The first principal component, which explains 39.7% of the variance in the data.
+    -   **Dim2 (PC2)**: The second principal component, which explains 26.5% of the variance in the data.
+    -   Together, these two components explain a significant portion (66.2%) of the total variance in the data, indicating that PCA has effectively reduced the dimensionality while retaining most of the variability.
+2.  **Variable Contributions**:
+    -   **Sales** and **Profit** have strong positive loadings on Dim1, suggesting that they are positively correlated and contribute similarly to this principal component.
+    -   **Discount** has a strong negative loading on Dim1, indicating that it is inversely related to Sales and Profit.
+    -   **Quantity** has a positive loading on Dim2, suggesting it is primarily explained by this second component.
+3.  **Correlation and Relationships**:
+    -   The length and direction of the arrows represent the strength and direction of the correlation between the variables and the principal components.
+    -   **Sales** and **Profit** arrows point in the same direction, indicating a strong positive correlation.
+    -   **Discount** points in the opposite direction to **Sales** and **Profit**, indicating an inverse relationship with these variables.
+    -   **Quantity** points in a different direction, indicating it has a distinct contribution to the variance explained by Dim2.
+4.  **Color Gradient (Contribution)**:
+    -   The color gradient from blue to red indicates the contribution of each variable to the principal components. Variables with darker red arrows contribute more to the principal components.
+
+### Insights from the PCA:
+
+1.  **Dimension 1 (Dim1)**:
+    -   Captures the trade-off between high Sales and Profit versus high Discounts.
+    -   A high score on Dim1 indicates higher Sales and Profit and lower Discount, while a low score indicates the opposite.
+2.  **Dimension 2 (Dim2)**:
+    -   Captures the variance primarily explained by Quantity.
+    -   A high score on Dim2 indicates higher Quantity.
+
+### Practical Implications:
+
+1.  **Sales and Profit**:
+    -   These two variables are strongly positively correlated, meaning that as sales increase, profits also increase, which is expected in most business contexts.
+2.  **Discount**:
+    -   There is a strong inverse relationship between Discount and both Sales and Profit, suggesting that higher discounts might be associated with lower sales and profit.
+3.  **Quantity**:
+    -   Quantity has a different pattern compared to the other variables, indicating it captures a unique aspect of the data variability.
+
+### Conclusion:
+
+The PCA plot provides a clear visualization of the relationships between Sales, Profit, Discount, and Quantity.
+
+It shows that Sales and Profit are positively correlated and both inversely related to Discount.
+
+Quantity contributes to the second dimension, indicating its unique contribution to the overall variance.
+
+This analysis helps in understanding the underlying structure of the data and can guide further decision-making and strategic planning.
+
+### 6. Time Series Decomposition
+
+**Introduction**: - Time series decomposition separates a time series into trend, seasonal, and residual components, which helps understand underlying patterns in the data.
+
+**R Code**:
+
+```{r}
+# Load necessary libraries 
+library(dplyr) 
+library(ggplot2) 
+library(forecast)  
+
+# Ensure the 'Order Date' column is in Date format
+superstore <- superstore %>%
+  mutate(`Order Date` = as.Date(`Order Date`, format = "%m/%d/%Y"))  # Adjust the format as needed
+
+# Aggregate sales data by month 
+monthly_sales <- superstore %>% 
+  group_by(Month = format(`Order Date`, "%Y-%m")) %>%   
+  summarise(Total_Sales = sum(Sales))  
+
+# Convert to time series object 
+sales_ts <- ts(monthly_sales$Total_Sales, start = c(2014, 1), frequency = 12)  
+
+# Decompose time series 
+decomposed <- decompose(sales_ts)  
+
+# Plot decomposition 
+autoplot(decomposed)
+```
+
+The image shows the results of a time series decomposition of total sales, separating the time series into trend, seasonal, and residual components. Here is the interpretation of each component shown in the decomposition plot:
+
+### Interpretation of the Decomposition Plot:
+
+1.  **Data**:
+    -   The top panel shows the original time series data for total sales from 2014 to 2018.
+    -   This represents the raw data with all its variability, including trends, seasonality, and random noise.
+2.  **Trend**:
+    -   The second panel shows the trend component, which captures the long-term movement in the data.
+    -   The trend indicates that total sales have been generally increasing over the period, with some fluctuations.
+    -   The increase is more noticeable starting around mid-2015 and continues upwards towards the end of 2017.
+3.  **Seasonal**:
+    -   The third panel shows the seasonal component, which captures the repeating patterns or cycles within a year.
+    -   There are clear seasonal fluctuations in sales, with peaks and troughs repeating annually.
+    -   The seasonality indicates that sales tend to be higher at certain times of the year and lower at others, following a consistent pattern each year.
+4.  **Remainder (Residual)**:
+    -   The bottom panel shows the remainder component, which captures the irregular fluctuations after removing the trend and seasonal components.
+    -   These are the random noise or unexpected variations in the data.
+    -   The residuals should ideally have no clear pattern and be randomly distributed around zero.
+
+### Practical Implications:
+
+1.  **Understanding Trends**:
+    -   The upward trend indicates that total sales have been increasing over the analyzed period. This positive trend is a good sign for business growth.
+2.  **Seasonal Patterns**:
+    -   The presence of clear seasonal patterns suggests that certain times of the year consistently experience higher or lower sales.
+    -   Understanding these patterns can help in planning inventory, marketing campaigns, and resource allocation to maximize sales during peak periods and manage lower sales periods effectively.
+3.  **Managing Irregular Variations**:
+    -   By isolating the residual component, businesses can identify unusual fluctuations that are not explained by the trend or seasonal patterns.
+    -   Analyzing these residuals can help in identifying specific events or anomalies that impact sales, allowing for more targeted interventions.
+
+### Conclusion:
+
+The time series decomposition provides valuable insights into the underlying patterns in the total sales data.
+
+The increasing trend indicates overall growth, while the seasonal component reveals regular fluctuations throughout the year.
+
+The residual component highlights the random noise, helping to isolate and understand irregular variations.
+
+These insights can guide strategic planning, resource allocation, and marketing efforts to optimize sales performance.
+
+### 7. Survival Analysis
+
+**Introduction**: - Survival analysis estimates the expected duration of time until one or more events occur, such as customer churn.
+
+**R Code**:
+
+```{r}
+# Load necessary libraries 
+library(dplyr) 
+library(survival) 
+library(ggplot2) 
+library(survminer)  
+  
+# Assume we have a customer data frame with columns: Customer_ID, Order_Date, and Churn (1 if churn, 0 if not)
+  
+# Create a sequence of dates from January 2014 to December 2017
+order_dates <- seq(as.Date("2014-01-01"), as.Date("2017-12-31"), by = "month")
+  
+# Repeat this sequence to ensure we have 1000 dates
+order_dates <- rep(order_dates, length.out = 1000)
+  
+# Create a dummy dataset for illustration purposes 
+customer_data <- data.frame(Customer_ID = rep(1:100, each = 10),   Order_Date = order_dates, Churn = sample(0:1, 1000, replace = TRUE) )  
+  
+# Create a survival object 
+surv_object <- Surv(time = as.numeric(customer_data$Order_Date), event = customer_data$Churn)  
+  
+# Fit Kaplan-Meier survival curve 
+km_fit <- survfit(surv_object ~ 1, data = customer_data)  
+  
+# Plot the survival curve 
+ggsurvplot(km_fit, data = customer_data, xlab = "Days", ylab = "Survival Probability", title = "Kaplan-Meier Survival Curve")
+```
+
+### Interpretation of the Kaplan-Meier Survival Curve
+
+The Kaplan-Meier survival curve shown in the plot represents the survival probability over time, where "survival" in this context refers to the probability that a customer has not churned by a given time.
+
+#### Kaplan-Meier Survival Curve:
+
+**Plot Description:** - **X-axis (Days):** The number of days since the beginning of the observation period. - **Y-axis (Survival Probability):** The probability that a customer has not churned (remains a customer) at a given time. - **Curve:** The survival curve shows the estimated survival probability over time. The curve starts at 1 (or 100%) and decreases as customers churn over time. - **Strata Legend:** Indicates that all customers are considered together without stratification.
+
+**Key Observations:** 1. **Initial Survival Probability:** - At the start (time = 0), the survival probability is 1, meaning all customers are active.
+
+2.  **Survival over Time:**
+    -   The curve remains flat at 1 for a significant portion of the time, indicating that customers did not churn during this period.
+    -   Towards the end of the observation period (around 15,000 days), the curve starts to decline, indicating an increase in churn events.
+3.  **Final Survival Probability:**
+    -   The survival probability drops sharply at the end, reflecting a higher rate of churn as the time progresses towards the end of the observation period.
+    -   This sharp decline might be due to the data structure, suggesting that many customers are recorded as having churned towards the end of the observation period.
+
+**Interpretation:** - **Low Churn in Initial and Middle Periods:** The flat survival curve for most of the observation period suggests that customers tend to stay with the company for a long duration without churning. - **Increased Churn at the End:** The sharp decline towards the end indicates a significant increase in churn events, possibly due to the duration of the study or a specific time-related factor affecting customer retention. - **Overall Survival Probability:** The general shape of the curve suggests that the majority of the customers remain with the company until the end of the observation period.
+
+**Practical Implications:** - **Retention Strategies:** Given the low churn in the initial and middle periods, efforts to retain customers should focus on understanding and mitigating the factors that lead to the increased churn towards the end. - **Further Analysis:** Investigate why churn rates increase towards the end of the observation period. This could involve looking at customer feedback, changes in service, market conditions, or other external factors. - **Targeted Interventions:** Develop targeted interventions for customers who are approaching the end of the observation period to prevent churn, based on the identified factors.
+
+### Conclusion
+
+The Kaplan-Meier survival curve provides a visual representation of customer retention over time, showing a high retention rate initially and a significant increase in churn towards the end. This information can be used to guide strategies aimed at improving customer retention and understanding the factors driving churn.
