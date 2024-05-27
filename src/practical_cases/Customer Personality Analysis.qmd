@@ -1,0 +1,131 @@
+---
+title: "Customer Personality Analysis"
+format: html
+editor: visual
+url: https://www.kaggle.com/code/hasibalmuzdadid/customer-personality-analysis-segmentation
+---
+
+### Importing Libraries
+
+In R, you need to install and load necessary libraries. Here are the equivalent libraries in R:
+
+``` r
+# Install necessary packages
+install.packages(c("dplyr", "ggplot2", "factoextra", "cluster", "corrplot"))
+
+# Load libraries
+library(dplyr)
+library(ggplot2)
+library(factoextra)
+library(cluster)
+library(corrplot)
+```
+
+### Loading and Exploring the Dataset
+
+Assuming the dataset is in a CSV file named "customer_data.csv":
+
+``` r
+# Load the dataset
+customer_data <- read.csv("customer_data.csv")
+
+# View the structure of the dataset
+str(customer_data)
+
+# Summary statistics of the dataset
+summary(customer_data)
+```
+
+### Data Preprocessing
+
+Handling missing values and converting date columns:
+
+``` r
+# Drop rows with missing Income values
+customer_data <- customer_data[!is.na(customer_data$Income), ]
+
+# Convert Dt_Customer to Date type
+customer_data$Dt_Customer <- as.Date(customer_data$Dt_Customer, format = "%Y-%m-%d")
+
+# Encode categorical variables
+customer_data$Education <- as.factor(customer_data$Education)
+customer_data$Marital_Status <- as.factor(customer_data$Marital_Status)
+```
+
+### Basic Data Exploration
+
+Visualizing distributions and correlations:
+
+``` r
+# Age distribution
+ggplot(customer_data, aes(x = Year_Birth)) +
+  geom_histogram(binwidth = 5, fill = "blue", color = "black") +
+  labs(title = "Distribution of Customer's Age", x = "Year of Birth", y = "Count")
+
+# Income distribution
+ggplot(customer_data, aes(x = Income)) +
+  geom_histogram(binwidth = 5000, fill = "green", color = "black") +
+  labs(title = "Distribution of Customer's Income", x = "Income", y = "Count")
+
+# Correlation plot
+num_data <- customer_data %>% select_if(is.numeric)
+corr_matrix <- cor(num_data)
+corrplot(corr_matrix, method = "circle")
+```
+
+### Dimensionality Reduction
+
+Using PCA for dimensionality reduction:
+
+``` r
+# Scale numeric data
+num_data_scaled <- scale(num_data)
+
+# PCA
+pca <- prcomp(num_data_scaled, center = TRUE, scale. = TRUE)
+
+# Plot PCA
+fviz_pca_ind(pca, title = "PCA of Customer Data")
+```
+
+### Customer Segmentation
+
+Using KMeans clustering:
+
+``` r
+# Determine the optimal number of clusters using the Elbow method
+fviz_nbclust(num_data_scaled, kmeans, method = "wss")
+
+# Perform KMeans clustering
+set.seed(123)
+kmeans_result <- kmeans(num_data_scaled, centers = 4, nstart = 25)
+
+# Add cluster assignments to the original data
+customer_data$Cluster <- as.factor(kmeans_result$cluster)
+
+# Plot clusters
+fviz_cluster(kmeans_result, data = num_data_scaled, geom = "point", ellipse.type = "convex")
+```
+
+### Profiling Clusters
+
+Analyzing cluster profiles:
+
+``` r
+# Summary of clusters
+customer_data %>%
+  group_by(Cluster) %>%
+  summarise(
+    Avg_Income = mean(Income, na.rm = TRUE),
+    Avg_Spending = mean(MntWines + MntFruits + MntMeatProducts + MntFishProducts + MntSweetProducts + MntGoldProds, na.rm = TRUE),
+    Avg_Age = mean(2024 - Year_Birth, na.rm = TRUE),
+    Count = n()
+  )
+
+# Plot clusters based on income and spending
+ggplot(customer_data, aes(x = Income, y = MntWines + MntFruits + MntMeatProducts + MntFishProducts + MntSweetProducts + MntGoldProds, color = Cluster)) +
+  geom_point() +
+  labs(title = "Customer Segmentation Based on Income and Spending", x = "Income", y = "Total Spending")
+```
+
+These examples show how to perform similar tasks using R instead of Python. Adjust the dataset paths and variable names as needed to match your data. If you need further assistance with specific parts of the analysis or additional visualizations, feel free to ask!
