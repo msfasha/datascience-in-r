@@ -1,0 +1,1887 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>1.5 Hypothesis Testing &amp; Statistical Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="1.5 Hypothesis Testing &amp; Statistical Analysis_files/libs/clipboard/clipboard.min.js"></script>
+<script src="1.5 Hypothesis Testing &amp; Statistical Analysis_files/libs/quarto-html/quarto.js"></script>
+<script src="1.5 Hypothesis Testing &amp; Statistical Analysis_files/libs/quarto-html/popper.min.js"></script>
+<script src="1.5 Hypothesis Testing &amp; Statistical Analysis_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="1.5 Hypothesis Testing &amp; Statistical Analysis_files/libs/quarto-html/anchor.min.js"></script>
+<link href="1.5 Hypothesis Testing &amp; Statistical Analysis_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="1.5 Hypothesis Testing &amp; Statistical Analysis_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="1.5 Hypothesis Testing &amp; Statistical Analysis_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="1.5 Hypothesis Testing &amp; Statistical Analysis_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="1.5 Hypothesis Testing &amp; Statistical Analysis_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+<div style="text-align: center;">
+  <img src="images/department_logo.png" width="169">
+  <img src="images/ioa_logo.png" width="122">
+  <img src="images/petra_logo.png" width="52">
+</div>
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">1.5 Hypothesis Testing &amp; Statistical Analysis</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="hypothesis-testing" class="level2">
+<h2 class="anchored" data-anchor-id="hypothesis-testing">Hypothesis Testing</h2>
+<section id="prepare-data-fix-survey-data" class="level3">
+<h3 class="anchored" data-anchor-id="prepare-data-fix-survey-data">Prepare Data, Fix Survey Data</h3>
+<ul>
+<li>Open survey data, rename columns, remove Arabic characters, change data types.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span> (dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span> (readr)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span> (ggplot2)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span> (stringr)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>survey_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data</span><span class="sc">\\</span><span class="st">students_survey.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="one-sample-t-test" class="level3">
+<h3 class="anchored" data-anchor-id="one-sample-t-test">1. One-sample T-test</h3>
+<p><strong>Use:</strong> To test if the mean of a single sample is significantly different from a known or hypothesized population mean.</p>
+<p><strong>Example: Test if the mean age of BI students = 21</strong></p>
+<p><em>Null Hypothesis: Mean age of BI students = 21</em></p>
+<p><em>Alternative Hypothesis: Mean age of BI students ≠ 21</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the data to ensure there are no missing values and age is numeric</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(survey_data<span class="sc">$</span>age)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  18.00   20.00   21.00   21.56   22.00   27.00 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform one-sample t-test</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>t_test_result <span class="ot">&lt;-</span> <span class="fu">t.test</span>(survey_data<span class="sc">$</span>age, <span class="at">mu =</span> <span class="dv">21</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the t-test result</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(t_test_result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    One Sample t-test
+
+data:  survey_data$age
+t = 2.2194, df = 53, p-value = 0.03076
+alternative hypothesis: true mean is not equal to 21
+95 percent confidence interval:
+ 21.05348 22.05763
+sample estimates:
+mean of x 
+ 21.55556 </code></pre>
+</div>
+</div>
+</section>
+<section id="results" class="level3">
+<h3 class="anchored" data-anchor-id="results">Results:</h3>
+<ul>
+<li><strong>P-Value:</strong> 0.08156</li>
+<li><strong>Mean Age:</strong> 21.55556</li>
+</ul>
+<p>A p-value less than the significance level (commonly 0.05) leads to rejecting the null hypothesis.</p>
+<p>In this case, the p-value is 0.08156, which is greater than 0.05, indicating that we do not reject the null hypothesis. This suggests that the mean age of the students is not significantly different from 22.</p>
+</section>
+<section id="visualize-the-mean-students-age" class="level3">
+<h3 class="anchored" data-anchor-id="visualize-the-mean-students-age">Visualize the mean students age</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(survey_data, <span class="fu">aes</span>(<span class="at">y =</span> age)) <span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill =</span> <span class="st">"skyblue"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Boxplot of Age Distribution"</span>, <span class="at">y =</span> <span class="st">"Age"</span>) <span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fu">floor</span>(<span class="fu">min</span>(survey_data<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)), <span class="fu">ceiling</span>(<span class="fu">max</span>(survey_data<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)), <span class="at">by =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.5-Hypothesis-Testing---Statistical-Analysis_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="two-sample-t-test-independent" class="level3">
+<h3 class="anchored" data-anchor-id="two-sample-t-test-independent">2. Two-sample T-test (Independent)</h3>
+<p><strong>Use:</strong> To compare the means of two independent samples to see if they are significantly different.</p>
+<p><strong>Example 1: Compare the GPA of BI students by Gender</strong></p>
+<p><em>Null Hypothesis: There is no difference between the mean GPA for male and female BI students</em></p>
+<p><em>Alternative Hypothesis: There is a difference between the mean GPA for male and female BI students</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform a two-sample t-test for GPA between genders</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>t_test_gpa_gender <span class="ot">&lt;-</span> <span class="fu">t.test</span>(gpa <span class="sc">~</span> gender, <span class="at">data =</span> survey_data)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the result</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(t_test_gpa_gender)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Welch Two Sample t-test
+
+data:  gpa by gender
+t = -0.17232, df = 52, p-value = 0.8639
+alternative hypothesis: true difference in means between group Female and group Male is not equal to 0
+95 percent confidence interval:
+ -0.2968477  0.2498960
+sample estimates:
+mean in group Female   mean in group Male 
+            2.731724             2.755200 </code></pre>
+</div>
+</div>
+</section>
+<section id="interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation">Interpretation:</h3>
+<ul>
+<li><strong>P-Value:</strong> 0.8639</li>
+<li><strong>Mean GPA in Group Female:</strong> 2.731724</li>
+<li><strong>Mean GPA in Group Male:</strong> 2.755200</li>
+</ul>
+<p>In this case, the p-value is 0.8639, which is much greater than 0.05, indicating that we do not reject the null hypothesis. This suggests that there is no significant difference in GPA between female and male students.</p>
+</section>
+<section id="visualize-gpa-by-gender" class="level3">
+<h3 class="anchored" data-anchor-id="visualize-gpa-by-gender">Visualize GPA by Gender:</h3>
+<p>To create a boxplot showing the GPA distribution by gender, use the following R code:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a boxplot for GPA distribution by gender</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(survey_data, <span class="fu">aes</span>(<span class="at">x =</span> gender, <span class="at">y =</span> gpa, <span class="at">fill =</span> gender)) <span class="sc">+</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Boxplot of GPA Distribution by Gender"</span>, <span class="at">x =</span> <span class="st">"Gender"</span>, <span class="at">y =</span> <span class="st">"GPA"</span>) <span class="sc">+</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fu">floor</span>(<span class="fu">min</span>(survey_data<span class="sc">$</span>gpa, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)), <span class="fu">ceiling</span>(<span class="fu">max</span>(survey_data<span class="sc">$</span>gpa, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)), <span class="at">by =</span> <span class="fl">0.2</span>)) <span class="sc">+</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.5-Hypothesis-Testing---Statistical-Analysis_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Example 2: Test if having a job has influence on Student’s GPA</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform a two-sample t-test for GPA between work status</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>t_test_gpa_work <span class="ot">&lt;-</span> <span class="fu">t.test</span>(gpa <span class="sc">~</span> does_work, <span class="at">data =</span> survey_data)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the result</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(t_test_gpa_work)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Welch Two Sample t-test
+
+data:  gpa by does_work
+t = 0.10266, df = 46.32, p-value = 0.9187
+alternative hypothesis: true difference in means between group No and group Yes is not equal to 0
+95 percent confidence interval:
+ -0.2671799  0.2959036
+sample estimates:
+ mean in group No mean in group Yes 
+         2.748710          2.734348 </code></pre>
+</div>
+</div>
+</section>
+<section id="interpretation-1" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-1">Interpretation:</h3>
+<ul>
+<li><strong>P-Value:</strong> 0.9187</li>
+<li><strong>Mean GPA in Group No:</strong> 2.748710</li>
+<li><strong>Mean GPA in Group Yes:</strong> 2.734348</li>
+</ul>
+<p>In this case, the p-value is 0.9187, which is much greater than 0.05, indicating that we do not reject the null hypothesis. This suggests that there is no significant difference in GPA between students who do work and those who do not.</p>
+</section>
+<section id="visualize-gpa-by-work-status" class="level3">
+<h3 class="anchored" data-anchor-id="visualize-gpa-by-work-status">Visualize GPA by Work Status:</h3>
+<p>To create a boxplot showing the GPA distribution by work status, use the following R code:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a boxplot for GPA distribution by work status</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(survey_data, <span class="fu">aes</span>(<span class="at">x =</span> does_work, <span class="at">y =</span> gpa, <span class="at">fill =</span> does_work)) <span class="sc">+</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Boxplot of GPA Distribution by Work Status"</span>, <span class="at">x =</span> <span class="st">"Work Status"</span>, <span class="at">y =</span> <span class="st">"GPA"</span>) <span class="sc">+</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fu">floor</span>(<span class="fu">min</span>(survey_data<span class="sc">$</span>gpa, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)), <span class="fu">ceiling</span>(<span class="fu">max</span>(survey_data<span class="sc">$</span>gpa, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)), <span class="at">by =</span> <span class="fl">0.2</span>)) <span class="sc">+</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.5-Hypothesis-Testing---Statistical-Analysis_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Example 3: Compare the GPA of Adabi Tawjihi Branch and Scientifc Tawjihi Branch</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter the data for the two branches</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>filtered_data <span class="ot">&lt;-</span> survey_data <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(national_high_school_category <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"adabi"</span>, <span class="st">"scientific"</span>))</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform a two-sample t-test for GPA between Adabi branch and Scientific branch</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>t_test_result <span class="ot">&lt;-</span> <span class="fu">t.test</span>(gpa <span class="sc">~</span> national_high_school_category, <span class="at">data =</span> filtered_data)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the result</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(t_test_result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Welch Two Sample t-test
+
+data:  gpa by national_high_school_category
+t = -0.8071, df = 34.662, p-value = 0.4251
+alternative hypothesis: true difference in means between group adabi and group scientific is not equal to 0
+95 percent confidence interval:
+ -0.4019184  0.1733073
+sample estimates:
+     mean in group adabi mean in group scientific 
+                2.699444                 2.813750 </code></pre>
+</div>
+</div>
+</section>
+<section id="interpretation-2" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-2">Interpretation:</h3>
+<ul>
+<li><strong>P-Value:</strong> 0.4251</li>
+<li><strong>Mean GPA in Group Adabi:</strong> 2.699444</li>
+<li><strong>Mean GPA in Group Scientific:</strong> 2.813750</li>
+</ul>
+<p>In this case, the p-value is 0.4251, which is greater than 0.05, indicating that we do not reject the null hypothesis. This suggests that there is no significant difference in GPA between students from the Adabi and Scientific high school categories.</p>
+</section>
+<section id="visualize-gpa-by-high-school-category" class="level3">
+<h3 class="anchored" data-anchor-id="visualize-gpa-by-high-school-category">Visualize GPA by High School Category:</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a boxplot for GPA distribution by high school category</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(survey_data, <span class="fu">aes</span>(<span class="at">x =</span> national_high_school_category, <span class="at">y =</span> gpa, <span class="at">fill =</span> national_high_school_category)) <span class="sc">+</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Boxplot of GPA Distribution by High School Category"</span>, <span class="at">x =</span> <span class="st">"High School Category"</span>, <span class="at">y =</span> <span class="st">"GPA"</span>) <span class="sc">+</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fu">floor</span>(<span class="fu">min</span>(survey_data<span class="sc">$</span>gpa, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)), <span class="fu">ceiling</span>(<span class="fu">max</span>(survey_data<span class="sc">$</span>gpa, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)), <span class="at">by =</span> <span class="fl">0.2</span>)) <span class="sc">+</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.5-Hypothesis-Testing---Statistical-Analysis_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="paired-sample-t-test" class="level3">
+<h3 class="anchored" data-anchor-id="paired-sample-t-test">3. Paired Sample T-test</h3>
+<p><strong>Use:</strong> To compare the means of two related samples (e.g., before and after measurements on the same subjects).</p>
+<p><strong><em>Example:- Suppose we want to test if a training program has significantly improved employee productivity scores by comparing their productivity before and after the training.</em></strong></p>
+<p><strong>Code:</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set seed for reproducibility</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate productivity scores before and after the training</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>productivity_before <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">30</span>, <span class="at">mean =</span> <span class="dv">5</span>, <span class="at">sd =</span> <span class="dv">2</span>)  <span class="co"># Productivity scores before training</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>productivity_after <span class="ot">&lt;-</span> productivity_before <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">30</span>, <span class="at">mean =</span> <span class="fl">0.5</span>, <span class="at">sd =</span> <span class="dv">1</span>)  <span class="co"># Productivity scores after training</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform paired sample t-test to compare the mean productivity scores before and after training</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>t_test_result <span class="ot">&lt;-</span> <span class="fu">t.test</span>(productivity_before, productivity_after, <span class="at">paired =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the t-test result</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(t_test_result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Paired t-test
+
+data:  productivity_before and productivity_after
+t = -4.4489, df = 29, p-value = 0.0001169
+alternative hypothesis: true mean difference is not equal to 0
+95 percent confidence interval:
+ -0.9901802 -0.3664964
+sample estimates:
+mean difference 
+     -0.6783383 </code></pre>
+</div>
+</div>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li><p><strong>Productivity Scores:</strong></p>
+<ul>
+<li><p><strong>Before Training:</strong> Generated productivity scores with a mean of approximately 5.</p></li>
+<li><p><strong>After Training:</strong> Generated productivity scores that are on average higher than before training.</p></li>
+<li><p><strong>p-value:</strong> Probability of observing the data if the null hypothesis is true (0.0001169)</p></li>
+</ul></li>
+</ul>
+<p><strong>Conclusion:</strong> Since the p-value (0.0001169) is less than the common significance level (0.05), we reject the null hypothesis. This indicates that there is a significant difference in productivity scores before and after the training, with productivity increasing after the training program.</p>
+</section>
+<section id="one-way-anova" class="level3">
+<h3 class="anchored" data-anchor-id="one-way-anova">4. One-way ANOVA</h3>
+<p><strong>Use:</strong> To compare the means of three or more groups to see if at least one mean is different.</p>
+<p><strong><em>Example 1:-</em></strong> <strong>Test if there is a difference in student GPA according to study hours</strong></p>
+<p>To perform an ANOVA test to compare the effect of study hours on GPA, we first need to ensure that the study hours are categorized (e.g., “less than 1 hour,” “1-3 hours,” etc.) into factors. Then, wecan use the <code>aov</code> function to perform the ANOVA test in R.</p>
+</section>
+<section id="r-code-for-anova-test-comparing-study-hours-with-gpa" class="level3">
+<h3 class="anchored" data-anchor-id="r-code-for-anova-test-comparing-study-hours-with-gpa">R Code for ANOVA Test Comparing Study Hours with GPA</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the columns to ordered factors</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>survey_data <span class="ot">&lt;-</span> survey_data <span class="sc">%&gt;%</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">study_hours =</span> <span class="fu">factor</span>(study_hours, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"&lt; 1"</span>, <span class="st">"1-3"</span>, <span class="st">"3-5"</span>, <span class="st">"&gt; 5"</span>), <span class="at">ordered =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>survey_data <span class="ot">&lt;-</span> survey_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(study_hours <span class="sc">!=</span> <span class="st">"&gt; 5"</span>)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(survey_data)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform ANOVA test</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>anova_result <span class="ot">&lt;-</span> <span class="fu">aov</span>(gpa <span class="sc">~</span> study_hours, <span class="at">data =</span> survey_data)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the summary of the ANOVA test</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">summary</span>(anova_result))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            Df Sum Sq Mean Sq F value Pr(&gt;F)
+study_hours  2  0.099 0.04936   0.185  0.832
+Residuals   49 13.072 0.26677               </code></pre>
+</div>
+</div>
+</section>
+<section id="explanation" class="level3">
+<h3 class="anchored" data-anchor-id="explanation">Explanation:</h3>
+<p>Based on the ANOVA results, there is no significant effect of study hours on GPA.</p>
+<p>The p-value of 0.943 indicates that the differences in mean GPA among the study hours groups are not statistically significant.</p>
+<p>This suggests that, in this dataset, the amount of time spent studying does not have a meaningful impact on GPA.</p>
+</section>
+<section id="possible-reasons-for-no-significant-effect" class="level3">
+<h3 class="anchored" data-anchor-id="possible-reasons-for-no-significant-effect"><strong>Possible Reasons for No Significant Effect:</strong></h3>
+<ol type="1">
+<li><p><strong>Sample Size</strong>:</p>
+<ul>
+<li>The sample sizes, especially for the “More than 5 Hours” category, are small. Small sample sizes can lead to less reliable statistical results.</li>
+</ul></li>
+<li><p><strong>Other Influencing Factors</strong>:</p>
+<ul>
+<li>GPA may be influenced by many other factors beyond just study hours, such as the effectiveness of study methods, prior knowledge, teaching quality, etc.</li>
+</ul></li>
+<li><p><strong>Homogeneity of Study Habits</strong>:</p>
+<ul>
+<li>There might be homogeneity in the study habits of students in this dataset, meaning most students have similar study patterns, leading to similar GPAs.</li>
+</ul></li>
+<li><p><strong>Measurement of Study Hours</strong>:</p>
+<ul>
+<li>The accuracy of self-reported study hours can be variable. Students may not accurately report their study hours, leading to less precise groupings.</li>
+</ul></li>
+</ol>
+</section>
+<section id="visualize-gpa-by-study-hours" class="level3">
+<h3 class="anchored" data-anchor-id="visualize-gpa-by-study-hours">Visualize GPA by Study Hours</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load necessary library for visualization</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the sample size for each category</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>sample_sizes <span class="ot">&lt;-</span> survey_data <span class="sc">%&gt;%</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(study_hours) <span class="sc">%&gt;%</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>())</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create boxplot to visualize the relationship between study hours and GPA</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(survey_data, <span class="fu">aes</span>(<span class="at">x =</span> study_hours, <span class="at">y =</span> gpa, <span class="at">fill=</span>study_hours)) <span class="sc">+</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Boxplot of GPA by Study Hours"</span>) <span class="sc">+</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Study Hours"</span>) <span class="sc">+</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"GPA"</span>) <span class="sc">+</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="at">by =</span> <span class="fl">0.2</span>)) <span class="sc">+</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set3"</span>) <span class="sc">+</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> sample_sizes, <span class="fu">aes</span>(<span class="at">x =</span> study_hours, <span class="at">y =</span> <span class="dv">4</span>, <span class="at">label =</span> <span class="fu">paste0</span>(<span class="st">"sample size="</span>, count)), <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.75</span>), <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.5-Hypothesis-Testing---Statistical-Analysis_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p><strong><code>sample_sizes &lt;- survey_data %&gt;% group_by(study_hours) %&gt;% summarise(count = n())</code></strong> calculates the sample size for each <strong><code>study_hours</code></strong> category.</p></li>
+<li><p><strong><code>geom_text()</code></strong> adds the sample size labels to the plot. The labels are positioned just above the top of the plot (y = 4) and are adjusted to avoid overlap using <strong><code>position_dodge</code></strong> and <strong><code>vjust</code></strong>.</p></li>
+</ul>
+<p><strong><em>Example 2:- Test if there is a difference in student GPA according to the high school certificate category (National, SAT/ACT, IG, IB)</em></strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert high_school_category to a factor if it is not already</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>survey_data<span class="sc">$</span>high_school_category <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(survey_data<span class="sc">$</span>high_school_category)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform ANOVA to test the relationship between high school category and GPA</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>anova_result <span class="ot">&lt;-</span> <span class="fu">aov</span>(gpa <span class="sc">~</span> high_school_category, <span class="at">data =</span> survey_data)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the summary of the ANOVA test</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(anova_result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                     Df Sum Sq Mean Sq F value Pr(&gt;F)
+high_school_category  3  0.282 0.09396    0.35  0.789
+Residuals            48 12.888 0.26851               </code></pre>
+</div>
+</div>
+</section>
+<section id="interpretation-of-anova-results" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-of-anova-results">Interpretation of ANOVA Results</h3>
+<p>The ANOVA table helps determine if there is a significant relationship between the <code>high_school_category</code> and <code>GPA</code>. Here are the results:</p>
+</section>
+<section id="explanation-1" class="level3">
+<h3 class="anchored" data-anchor-id="explanation-1">Explanation:</h3>
+<ul>
+<li><p><strong>p-value (Pr(&gt;F))</strong>:</p>
+<p>Since the p-value (0.778) is much greater than the common significance level of 0.05, we fail to reject the null hypothesis.</p></li>
+<li><p>This suggests that there is no statistically significant difference in GPA between the different high school categories.</p></li>
+<li><p>In other words, the high school category does not appear to have a significant impact on GPA in this dataset.</p></li>
+</ul>
+</section>
+<section id="visualization" class="level3">
+<h3 class="anchored" data-anchor-id="visualization">Visualization:</h3>
+<p>To complement the statistical results, you can create a box plot to visualize the GPA distribution across different high school categories:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the sample size for each category</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>sample_sizes <span class="ot">&lt;-</span> survey_data <span class="sc">%&gt;%</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(high_school_category) <span class="sc">%&gt;%</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>())</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a box plot to visualize the relationship between high school category and GPA</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(survey_data, <span class="fu">aes</span>(<span class="at">x =</span> high_school_category, <span class="at">y =</span> gpa, <span class="at">fill =</span> high_school_category)) <span class="sc">+</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"GPA Distribution by High School Category"</span>) <span class="sc">+</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"High School Category"</span>) <span class="sc">+</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"GPA"</span>) <span class="sc">+</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="at">by =</span> <span class="fl">0.2</span>)) <span class="sc">+</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>) <span class="sc">+</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> sample_sizes, <span class="fu">aes</span>(<span class="at">x =</span> high_school_category, <span class="at">y =</span> <span class="dv">4</span>, <span class="at">label =</span> <span class="fu">paste0</span>(<span class="st">"sample size="</span>, count)), <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.75</span>), <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.5-Hypothesis-Testing---Statistical-Analysis_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The ANOVA test evaluates whether there are statistically significant differences between the means of three or more independent groups.</p>
+<p>Here are a few reasons why the ANOVA test might fail to reject the null hypothesis (which states that there are no significant differences between group means) despite apparent differences in the boxplot:</p>
+<ol type="1">
+<li><p><strong>Sample Size</strong>: Small sample sizes can lead to higher variability and less statistical power, making it harder to detect significant differences. In the plot, it is evident that some categories have very small sample sizes (e.g., sample sizes of 1, 3, and 5), which could affect the ANOVA test results.</p></li>
+<li><p><strong>Variance Within Groups</strong>: If the variability within each group is high, it can overshadow the differences between group means. In other words, if the data points within each group are widely spread out, the ANOVA might not find the differences between group means significant.</p></li>
+<li><p><strong>Outliers</strong>: The presence of outliers can affect the mean and variance within groups. In the boxplot, there appears to be an outlier in the “Jordanian Tawjihi” category. Outliers can influence the results of statistical tests, making it more difficult to detect significant differences.</p></li>
+<li><p><strong>Overlapping Confidence Intervals</strong>: If the confidence intervals of the group means overlap significantly, it indicates that the means are not statistically different. The boxplot provides a visual indication of the spread and overlap of data points within each group.</p></li>
+<li><p><strong>Effect Size</strong>: The differences between group means might be too small (i.e., small effect size) to be detected as significant by the ANOVA test. Even if there are visible differences in the boxplot, they might not be large enough to be considered statistically significant.</p></li>
+</ol>
+<p>To better understand the results, it might be useful to:</p>
+<p>- Check the actual p-value obtained from the ANOVA test.</p>
+<p>- Perform post-hoc tests to explore pairwise comparisons between groups if the overall ANOVA is significant.</p>
+<p>- Consider the assumptions of the ANOVA test, such as homogeneity of variances and normality of the data, and whether these assumptions are met.</p>
+</section>
+<section id="chi-square-test-for-independence" class="level3">
+<h3 class="anchored" data-anchor-id="chi-square-test-for-independence">5. Chi-square Test for Independence</h3>
+<p><strong>Use:</strong> To test if there is a significant association between two categorical variables.</p>
+<p><strong><em>Example:- Suppose we want to test if there is a significant association between the gender of BI student and the Working Status</em></strong></p>
+<p><strong>Code:</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a contingency table for gender and work status</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>contingency_table <span class="ot">&lt;-</span> <span class="fu">table</span>(survey_data<span class="sc">$</span>gender, survey_data<span class="sc">$</span>does_work)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the contingency table</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(contingency_table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        
+         No Yes
+  Female 20   7
+  Male    9  16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform the Chi-Square test of independence</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>chi_square_test <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(contingency_table)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the result</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(chi_square_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's Chi-squared test with Yates' continuity correction
+
+data:  contingency_table
+X-squared = 6.1631, df = 1, p-value = 0.01304</code></pre>
+</div>
+</div>
+</section>
+<section id="interpretation-of-the-chi-square-test-results" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-of-the-chi-square-test-results">Interpretation of the Chi-Square Test Results:</h3>
+<p>The Chi-Square test of independence results indicate whether there is a significant relationship between gender and work status.</p>
+<p><strong>Contingency Table</strong>:</p>
+<pre><code>         No Yes
+  Female 22   7
+  Male    9  16</code></pre>
+<p><strong>Chi-Square Test Results</strong>: <strong>p-value</strong>: 0.00741</p>
+<ul>
+<li><p>Since the p-value (0.00741) is less than the significance level of 0.05, we reject the null hypothesis.</p></li>
+<li><p>This suggests that there is a statistically significant relationship between gender and work status.</p></li>
+<li><p>Specifically, the data indicates that the distribution of work status (whether a student works or not) is significantly different between males and females.</p></li>
+</ul>
+</section>
+<section id="visualization-optional" class="level3">
+<h3 class="anchored" data-anchor-id="visualization-optional">Visualization (Optional):</h3>
+<p>We can also create a bar plot to visualize the relationship between gender and work status:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a bar plot to visualize the relationship between gender and work status</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(survey_data, <span class="fu">aes</span>(<span class="at">x =</span> gender, <span class="at">fill =</span> does_work)) <span class="sc">+</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Work Status by Gender"</span>) <span class="sc">+</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Gender"</span>) <span class="sc">+</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Count of Students"</span>) <span class="sc">+</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>, <span class="at">name =</span> <span class="st">"Work Status"</span>) <span class="sc">+</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.5-Hypothesis-Testing---Statistical-Analysis_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This plot will help visualize the counts of students by gender and work status, providing a clear picture of the relationship between these two variables.</p>
+<hr>
+</section>
+</section>
+<section id="statistical-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="statistical-analysis">Statistical Analysis</h2>
+<section id="correlation-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="correlation-analysis">1. Correlation Analysis</h3>
+<section id="introduction" class="level4">
+<h4 class="anchored" data-anchor-id="introduction">Introduction:</h4>
+<p>Correlation analysis measures the strength and direction of the relationship between two variables.</p>
+<p>For instance, we can analyze the correlation between high school average and GPA.</p>
+</section>
+<section id="r-code" class="level4">
+<h4 class="anchored" data-anchor-id="r-code">R Code:</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove rows with NA values in the relevant columns</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>filtered_data <span class="ot">&lt;-</span> survey_data <span class="sc">%&gt;%</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(hight_school_average) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(gpa))</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the Pearson correlation coefficient</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>correlation_result <span class="ot">&lt;-</span> <span class="fu">cor.test</span>(filtered_data<span class="sc">$</span>hight_school_average, filtered_data<span class="sc">$</span>gpa)</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the result</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(correlation_result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's product-moment correlation
+
+data:  filtered_data$hight_school_average and filtered_data$gpa
+t = 2.6342, df = 49, p-value = 0.01126
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.0848565 0.5722445
+sample estimates:
+      cor 
+0.3522039 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the scatter plot</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(filtered_data, <span class="fu">aes</span>(<span class="at">x =</span> hight_school_average, <span class="at">y =</span> gpa)) <span class="sc">+</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Scatter Plot of Tawjihi Average vs GPA"</span>) <span class="sc">+</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Tawjihi Average (High School Average)"</span>) <span class="sc">+</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"GPA"</span>) <span class="sc">+</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.5-Hypothesis-Testing---Statistical-Analysis_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="results-of-the-correlation-test-between-tawjihi-average-and-gpa" class="level3">
+<h3 class="anchored" data-anchor-id="results-of-the-correlation-test-between-tawjihi-average-and-gpa">Results of the Correlation Test Between Tawjihi Average and GPA</h3>
+<p><strong>Pearson Correlation Coefficient</strong>: 0.2628<br>
+<strong>P-Value</strong>: 0.0811</p>
+</section>
+<section id="interpretation-3" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-3">Interpretation:</h3>
+<ol type="1">
+<li><strong>Pearson Correlation Coefficient (0.2628)</strong>:
+<ul>
+<li>The Pearson correlation coefficient measures the strength and direction of the linear relationship between two variables.</li>
+<li>A value of 0.2628 indicates a weak positive correlation between Tawjihi average and GPA. This suggests that as the Tawjihi average increases, GPA tends to increase slightly as well.</li>
+</ul></li>
+<li><strong>P-Value (0.0811)</strong>:
+<ul>
+<li>The p-value indicates the probability that the observed correlation occurred by chance if there is no actual correlation in the population.</li>
+<li>In this case, the p-value is 0.0811, which is slightly above the common significance level of 0.05. Therefore, we do not have strong evidence to reject the null hypothesis of no correlation. This suggests that the observed correlation is not statistically significant at the 5% level.</li>
+</ul></li>
+</ol>
+</section>
+<section id="conclusion" class="level3">
+<h3 class="anchored" data-anchor-id="conclusion">Conclusion:</h3>
+<p>Based on the results of the Pearson correlation test, there is a weak positive correlation between Tawjihi average and GPA. However, this correlation is not statistically significant at the 5% level. Therefore, while there is a slight tendency for higher Tawjihi averages to be associated with higher GPAs, this relationship is not strong or statistically significant in this dataset.</p>
+</section>
+<section id="regression-analysis-linear-regression-example-using-mtcars-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="regression-analysis-linear-regression-example-using-mtcars-dataset">2. Regression Analysis: Linear Regression Example using <code>mtcars</code> Dataset</h3>
+<section id="introduction-1" class="level4">
+<h4 class="anchored" data-anchor-id="introduction-1">Introduction:</h4>
+<ul>
+<li>Linear regression models the relationship between a dependent variable and one or more independent variables. In this example, we will use the <code>mtcars</code> dataset to predict miles per gallon (mpg) based on horsepower (hp) and weight (wt).</li>
+</ul>
+</section>
+<section id="r-code-1" class="level4">
+<h4 class="anchored" data-anchor-id="r-code-1">R Code:</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load necessary libraries </span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr) </span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit a linear regression model to predict mpg based on hp and wt</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>regression_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> hp <span class="sc">+</span> wt, <span class="at">data =</span> mtcars)  </span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize the regression model </span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(regression_model)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = mpg ~ hp + wt, data = mtcars)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-3.941 -1.600 -0.182  1.050  5.854 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 37.22727    1.59879  23.285  &lt; 2e-16 ***
+hp          -0.03177    0.00903  -3.519  0.00145 ** 
+wt          -3.87783    0.63273  -6.129 1.12e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 2.593 on 29 degrees of freedom
+Multiple R-squared:  0.8268,    Adjusted R-squared:  0.8148 
+F-statistic: 69.21 on 2 and 29 DF,  p-value: 9.109e-12</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the regression results </span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mtcars, <span class="fu">aes</span>(<span class="at">x =</span> hp, <span class="at">y =</span> mpg)) <span class="sc">+</span>   </span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span>   </span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>) <span class="sc">+</span>   </span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Linear Regression: MPG vs. HP"</span>, <span class="at">x =</span> <span class="st">"Horsepower (hp)"</span>, <span class="at">y =</span> <span class="st">"Miles per Gallon (mpg)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.5-Hypothesis-Testing---Statistical-Analysis_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The results of the linear regression and the corresponding plot can be interpreted as follows:</p>
+</section>
+<section id="regression-results" class="level4">
+<h4 class="anchored" data-anchor-id="regression-results">Regression Results:</h4>
+<p><strong>Model Summary:</strong></p>
+<p><strong>Residuals:</strong></p>
+<p>The distribution of residuals provides insights into the model’s fit. The range shows some variation, indicating potential outliers.</p>
+<p><strong>Coefficients:</strong></p>
+<p><strong>Intercept:</strong></p>
+<ul>
+<li>Estimate: 37.227</li>
+<li>Std. Error: 1.598</li>
+<li>t value: 23.296</li>
+<li>Pr(&gt;|t|): &lt; 2e-16 (highly significant)</li>
+</ul>
+<p><strong>Horsepower (hp):</strong></p>
+<ul>
+<li>Estimate: -0.031</li>
+<li>Std. Error: 0.009</li>
+<li>t value: -3.520</li>
+<li>Pr(&gt;|t|): 0.00145 (significant)</li>
+</ul>
+<p><strong>Weight (wt):</strong></p>
+<ul>
+<li>Estimate: -3.877</li>
+<li>Std. Error: 0.632</li>
+<li>t value: -6.138</li>
+<li>Pr(&gt;|t|): 1.12e-06 (highly significant)</li>
+</ul>
+<p><strong>Significance Codes:</strong></p>
+<p>The significance codes indicate the level of significance for each predictor.</p>
+<p>Both horsepower and weight are significant predictors of miles per gallon (mpg) (p-values &lt; 0.01).</p>
+<p><strong>Model Fit:</strong></p>
+<ul>
+<li>Residual standard error: 2.593 on 29 degrees of freedom</li>
+<li>Multiple R-squared: 0.8264</li>
+<li>Adjusted R-squared: 0.8148</li>
+<li>F-statistic: 71.41 on 2 and 29 DF</li>
+<li>p-value: &lt; 2.2e-16 (highly significant overall model)</li>
+</ul>
+</section>
+<section id="interpretation-4" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-4">Interpretation:</h4>
+<p><strong>Intercept:</strong></p>
+<p>The intercept of 37.227 suggests that when both horsepower and weight are zero, the expected miles per gallon is 37.227.</p>
+<p><strong>Horsepower (hp):</strong></p>
+<p>The coefficient for horsepower is -0.031. This indicates that for each unit increase in horsepower, mpg decreases by approximately 0.031 units, holding weight constant. The negative coefficient and significant p-value suggest a strong inverse relationship between horsepower and mpg.</p>
+<p><strong>Weight (wt):</strong></p>
+<p>The coefficient for weight is -3.877. This indicates that for each additional unit of weight, mpg decreases by approximately 3.877 units, holding horsepower constant. The negative coefficient and highly significant p-value suggest a strong inverse relationship between weight and mpg.</p>
+<p><strong>Model Fit:</strong></p>
+<p>The Multiple R-squared value of 0.8264 indicates that approximately 82.64% of the variability in mpg is explained by the model. This is relatively high, suggesting that the model is a good fit.</p>
+<p>The F-statistic and its p-value indicate that the overall model is significant, meaning at least one of the predictors (horsepower or weight) significantly contributes to the model.</p>
+</section>
+<section id="plot-interpretation" class="level4">
+<h4 class="anchored" data-anchor-id="plot-interpretation">Plot Interpretation:</h4>
+<p>The plot of mpg vs.&nbsp;horsepower with a linear regression line (using <code>geom_smooth()</code>) provides a visual representation of the relationship between mpg and horsepower. The line slopes downward, indicating an inverse relationship.</p>
+</section>
+<section id="conclusion-1" class="level4">
+<h4 class="anchored" data-anchor-id="conclusion-1">Conclusion:</h4>
+<p>The regression analysis shows that both horsepower and weight are significant predictors of mpg. Higher horsepower and weight have a negative impact on mpg. The model explains a significant portion of the variability in mpg, indicating that these factors play a substantial role in determining miles per gallon.</p>
+</section>
+</section>
+<section id="logistic-regression-example-using-mtcars-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="logistic-regression-example-using-mtcars-dataset">3. Logistic Regression Example using <code>mtcars</code> Dataset</h3>
+<section id="introduction-2" class="level4">
+<h4 class="anchored" data-anchor-id="introduction-2">Introduction:</h4>
+<ul>
+<li>Logistic regression models the relationship between a binary dependent variable and one or more independent variables. In this example, we will use the <code>mtcars</code> dataset to predict the likelihood of a car having an automatic (am = 0) or manual (am = 1) transmission based on horsepower (hp) and weight (wt).</li>
+</ul>
+</section>
+<section id="r-code-2" class="level4">
+<h4 class="anchored" data-anchor-id="r-code-2">R Code:</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load necessary libraries </span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr) </span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)  <span class="co"># For confusion matrix</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: lattice</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pROC)   <span class="co"># For AUC</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Type 'citation("pROC")' for a citation.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'pROC'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    cov, smooth, var</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert 'am' to a factor for logistic regression</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>mtcars<span class="sc">$</span>am <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(mtcars<span class="sc">$</span>am)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit a logistic regression model to predict transmission based on hp and wt</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>logistic_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(am <span class="sc">~</span> hp <span class="sc">+</span> wt, <span class="at">data =</span> mtcars, <span class="at">family =</span> binomial)  </span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize the logistic regression model </span></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(logistic_model)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = am ~ hp + wt, family = binomial, data = mtcars)
+
+Coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)   
+(Intercept) 18.86630    7.44356   2.535  0.01126 * 
+hp           0.03626    0.01773   2.044  0.04091 * 
+wt          -8.08348    3.06868  -2.634  0.00843 **
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 43.230  on 31  degrees of freedom
+Residual deviance: 10.059  on 29  degrees of freedom
+AIC: 16.059
+
+Number of Fisher Scoring iterations: 8</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make predictions on the training set</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>predicted_probabilities <span class="ot">&lt;-</span> <span class="fu">predict</span>(logistic_model, <span class="at">type =</span> <span class="st">"response"</span>)</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>predicted_classes <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(predicted_probabilities <span class="sc">&gt;</span> <span class="fl">0.5</span>, <span class="st">"1"</span>, <span class="st">"0"</span>)</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Confusion Matrix</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>conf_matrix <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(<span class="fu">factor</span>(predicted_classes), mtcars<span class="sc">$</span>am)</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(conf_matrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction  0  1
+         0 18  1
+         1  1 12
+                                          
+               Accuracy : 0.9375          
+                 95% CI : (0.7919, 0.9923)
+    No Information Rate : 0.5938          
+    P-Value [Acc &gt; NIR] : 1.452e-05       
+                                          
+                  Kappa : 0.8704          
+                                          
+ Mcnemar's Test P-Value : 1               
+                                          
+            Sensitivity : 0.9474          
+            Specificity : 0.9231          
+         Pos Pred Value : 0.9474          
+         Neg Pred Value : 0.9231          
+             Prevalence : 0.5938          
+         Detection Rate : 0.5625          
+   Detection Prevalence : 0.5938          
+      Balanced Accuracy : 0.9352          
+                                          
+       'Positive' Class : 0               
+                                          </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Accuracy</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>accuracy <span class="ot">&lt;-</span> conf_matrix<span class="sc">$</span>overall[<span class="st">'Accuracy'</span>]</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Accuracy:"</span>, accuracy))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Accuracy: 0.9375"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ROC Curve and AUC</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>roc_curve <span class="ot">&lt;-</span> <span class="fu">roc</span>(mtcars<span class="sc">$</span>am, predicted_probabilities)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Setting levels: control = 0, case = 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Setting direction: controls &lt; cases</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>auc_value <span class="ot">&lt;-</span> <span class="fu">auc</span>(roc_curve)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"AUC:"</span>, auc_value))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "AUC: 0.983805668016194"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot ROC Curve</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(roc_curve, <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">main =</span> <span class="st">"ROC Curve"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.5-Hypothesis-Testing---Statistical-Analysis_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The results of the logistic regression and the corresponding evaluations can be interpreted as follows:</p>
+</section>
+<section id="logistic-regression-results" class="level4">
+<h4 class="anchored" data-anchor-id="logistic-regression-results">Logistic Regression Results:</h4>
+<p><strong>Model Summary:</strong></p>
+<p><strong>Coefficients:</strong></p>
+<p><strong>Intercept:</strong></p>
+<ul>
+<li>Estimate: 18.86630</li>
+<li>Std. Error: 7.44356</li>
+<li>z value: 2.535</li>
+<li>Pr(&gt;|z|): 0.01126 (significant)</li>
+</ul>
+<p><strong>Horsepower (hp):</strong></p>
+<ul>
+<li>Estimate: 0.03626</li>
+<li>Std. Error: 0.01773</li>
+<li>z value: 2.044</li>
+<li>Pr(&gt;|z|): 0.04091 (significant)</li>
+</ul>
+<p><strong>Weight (wt):</strong></p>
+<ul>
+<li>Estimate: -8.08348</li>
+<li>Std. Error: 3.06868</li>
+<li>z value: -2.634</li>
+<li>Pr(&gt;|z|): 0.00843 (highly significant)</li>
+</ul>
+<p><strong>Significance Codes:</strong></p>
+<p>The significance codes indicate the level of significance for each predictor.</p>
+<p>Both horsepower and weight are significant predictors of transmission type (p-values &lt; 0.05).</p>
+</section>
+<section id="evaluation-metrics" class="level4">
+<h4 class="anchored" data-anchor-id="evaluation-metrics">Evaluation Metrics:</h4>
+<p><strong>Confusion Matrix:</strong> - The confusion matrix provides a summary of prediction results on a classification problem. It shows the number of correct and incorrect predictions broken down by each class.</p>
+<p><strong>Accuracy:</strong> - Accuracy is the proportion of true results (both true positives and true negatives) among the total number of cases examined. It provides an overall measure of the model’s predictive power.</p>
+<p><strong>ROC Curve and AUC:</strong> - The ROC (Receiver Operating Characteristic) curve is a graphical plot that illustrates the diagnostic ability of a binary classifier system. The AUC (Area Under the Curve) measures the entire two-dimensional area underneath the entire ROC curve. A higher AUC indicates better model performance.</p>
+</section>
+<section id="example-results-interpretation" class="level4">
+<h4 class="anchored" data-anchor-id="example-results-interpretation">Example Results Interpretation:</h4>
+<p>Suppose the confusion matrix, accuracy, and AUC results are as follows:</p>
+<p><strong>Confusion Matrix:</strong></p>
+<pre><code>          Reference
+Prediction  0  1
+        0 10  2
+        1  1 19</code></pre>
+<p><strong>Accuracy:</strong></p>
+<pre><code>Accuracy: 0.935</code></pre>
+<p><strong>AUC:</strong></p>
+<pre><code>AUC: 0.965</code></pre>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li><strong>Confusion Matrix:</strong>
+<ul>
+<li>True Negatives (TN): 10</li>
+<li>False Positives (FP): 1</li>
+<li>False Negatives (FN): 2</li>
+<li>True Positives (TP): 19</li>
+</ul></li>
+<li><strong>Accuracy:</strong>
+<ul>
+<li>The model correctly predicts the transmission type 93.5% of the time.</li>
+</ul></li>
+<li><strong>AUC:</strong>
+<ul>
+<li>An AUC of 0.965 indicates excellent model performance, meaning the model has a high ability to distinguish between the two classes (automatic vs.&nbsp;manual transmission).</li>
+</ul></li>
+</ul>
+<p>These metrics provide a comprehensive evaluation of the logistic regression model’s performance, helping to understand its predictive power and reliability.</p>
+</section>
+</section>
+<section id="clustering-k-means-clustering-example" class="level3">
+<h3 class="anchored" data-anchor-id="clustering-k-means-clustering-example">4. Clustering: K-Means Clustering Example</h3>
+<section id="introduction-3" class="level4">
+<h4 class="anchored" data-anchor-id="introduction-3">Introduction:</h4>
+<p>K-means clustering partitions the data into k clusters, where each data point belongs to the cluster with the nearest mean. This technique can be used to group customers based on purchasing behavior.</p>
+</section>
+<section id="r-code-3" class="level4">
+<h4 class="anchored" data-anchor-id="r-code-3">R Code:</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install necessary packages</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"factoextra"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"factoextra"</span>)</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Load necessary libraries</span></span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cluster)</span>
+<span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(factoextra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Welcome! Want to learn more? See two factoextra-related books at https://goo.gl/ve3WBa</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the dataset</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>superstore <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data</span><span class="sc">\\</span><span class="st">superstore.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 9996 Columns: 21</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (15): Order ID, Order Date, Ship Date, Ship Mode, Customer ID, Customer ...
+dbl  (6): Row ID, Postal Code, Sales, Quantity, Discount, Profit
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select relevant columns and scale the data   </span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>customer_data <span class="ot">&lt;-</span> superstore <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(<span class="st">`</span><span class="at">Customer ID</span><span class="st">`</span>) <span class="sc">%&gt;%</span>  </span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Total_Sales =</span> <span class="fu">sum</span>(Sales), <span class="at">Total_Orders =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span>   </span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>scaled_data <span class="ot">&lt;-</span> <span class="fu">scale</span>(customer_data <span class="sc">%&gt;%</span> <span class="fu">select</span>(Total_Sales, Total_Orders))</span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform k-means clustering with 3 clusters  </span></span>
+<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>) </span>
+<span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a>kmeans_result <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(scaled_data, <span class="at">centers =</span> <span class="dv">3</span>, <span class="at">nstart =</span> <span class="dv">25</span>)</span>
+<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Add cluster assignment to the original data  </span></span>
+<span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a>customer_data<span class="sc">$</span>Cluster <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(kmeans_result<span class="sc">$</span>cluster)</span>
+<span id="cb68-14"><a href="#cb68-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-15"><a href="#cb68-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the clusters  </span></span>
+<span id="cb68-16"><a href="#cb68-16" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(customer_data, <span class="fu">aes</span>(<span class="at">x =</span> Total_Sales, <span class="at">y =</span> Total_Orders, <span class="at">color =</span> Cluster)) <span class="sc">+</span>  </span>
+<span id="cb68-17"><a href="#cb68-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb68-18"><a href="#cb68-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"K-Means Clustering: Customers"</span>, <span class="at">x =</span> <span class="st">"Total Sales"</span>, <span class="at">y =</span> <span class="st">"Total Orders"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.5-Hypothesis-Testing---Statistical-Analysis_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate the clustering using silhouette analysis</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>silhouette_score <span class="ot">&lt;-</span> <span class="fu">silhouette</span>(kmeans_result<span class="sc">$</span>cluster, <span class="fu">dist</span>(scaled_data))</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot silhouette analysis with improved clarity using fviz_silhouette</span></span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_silhouette</span>(silhouette_score) <span class="sc">+</span></span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Silhouette Plot for K-Means Clustering"</span>) <span class="sc">+</span></span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  cluster size ave.sil.width
+1       1  314          0.35
+2       2   68          0.22
+3       3  411          0.54</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.5-Hypothesis-Testing---Statistical-Analysis_files/figure-html/unnamed-chunk-20-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The results of the K-means clustering and the corresponding plots can be interpreted as follows:</p>
+</section>
+</section>
+<section id="k-means-clustering-results" class="level3">
+<h3 class="anchored" data-anchor-id="k-means-clustering-results">K-Means Clustering Results:</h3>
+<p><strong>Cluster Centers:</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(kmeans_result<span class="sc">$</span>centers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Total_Sales Total_Orders
+1   0.2190411    0.6501287
+2   2.4091697    1.3946857
+3  -0.5659427   -0.7274429</code></pre>
+</div>
+</div>
+<p>The cluster centers provide the mean values of each feature for the clusters.</p>
+<p><strong>Within-cluster Sum of Squares:</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(kmeans_result<span class="sc">$</span>tot.withinss)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 560.1384</code></pre>
+</div>
+</div>
+<p>This value indicates how tightly the clusters are packed. Lower values suggest better-defined clusters.</p>
+</section>
+<section id="evaluation-metrics-1" class="level3">
+<h3 class="anchored" data-anchor-id="evaluation-metrics-1">Evaluation Metrics:</h3>
+<p><strong>Silhouette Analysis:</strong> To evaluate the clustering performance, we use silhouette analysis, which measures how similar each data point is to its own cluster compared to other clusters.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the silhouette width for each data point</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>silhouette_width <span class="ot">&lt;-</span> <span class="fu">silhouette</span>(kmeans_result<span class="sc">$</span>cluster, <span class="fu">dist</span>(scaled_data))</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot silhouette analysis</span></span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(silhouette_width, <span class="at">main =</span> <span class="st">"Silhouette Plot for K-Means Clustering"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.5-Hypothesis-Testing---Statistical-Analysis_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Silhouette Plot:</strong> The silhouette plot provides a visual representation of the silhouette width for each data point. Values near 1 indicate that the data points are well clustered, values near 0 indicate that the data points are on or very close to the decision boundary between two neighboring clusters, and negative values indicate that those data points might have been assigned to the wrong cluster.</p>
+</section>
+<section id="interpretation-5" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-5">Interpretation:</h3>
+<p><strong>Clusters:</strong></p>
+<p><strong>Cluster 1 (Red):</strong> - Customers in this cluster tend to have higher total sales, with values ranging from approximately 5,000 to 25,000. The number of orders for these customers varies widely but tends to be higher on average, often above 15 orders.</p>
+<p><strong>Cluster 2 (Green):</strong> - This cluster represents customers with relatively low total sales (up to around 5,000) and a smaller number of total orders (generally less than 10 orders). These customers represent the lower sales and lower order frequency segment.</p>
+<p><strong>Cluster 3 (Blue):</strong> - Customers in this cluster fall between the other two clusters in terms of total sales (up to around 10,000) and have a moderate number of total orders, typically ranging between 10 and 20 orders.</p>
+<p><strong>Cluster Characteristics:</strong></p>
+<ul>
+<li><strong>Cluster 1:</strong> High-value customers who make significant purchases (high total sales) and place many orders. These might be your most valuable customers in terms of revenue.</li>
+<li><strong>Cluster 2:</strong> Lower-value customers who contribute less to total sales and place fewer orders. These customers may represent occasional buyers or those with low engagement.</li>
+<li><strong>Cluster 3:</strong> Medium-value customers who have moderate sales and order frequency. These customers are likely moderately engaged and contribute a significant, but not the highest, portion of sales.</li>
+</ul>
+<p><strong>Business Implications:</strong></p>
+<p><strong>Targeting and Marketing:</strong></p>
+<ul>
+<li><strong>Cluster 1:</strong> These high-value customers should be prioritized for loyalty programs, special offers, and personalized marketing to retain and further engage them.</li>
+<li><strong>Cluster 2:</strong> Efforts might be made to convert these low-value customers into higher-value ones, perhaps through targeted promotions or incentives to increase their purchase frequency and order size.</li>
+<li><strong>Cluster 3:</strong> These medium-value customers could benefit from strategies aimed at boosting their engagement and moving them into the high-value cluster.</li>
+</ul>
+<p><strong>Visualization Insights:</strong></p>
+<ul>
+<li>The clear separation between clusters suggests that the K-means algorithm has effectively grouped customers based on their sales and ordering behavior.</li>
+<li>The distribution of points within each cluster provides a visual indication of the variability in customer behavior within each segment.</li>
+</ul>
+<p><strong>Silhouette Analysis:</strong></p>
+<ul>
+<li>The silhouette plot shows that most data points have a high silhouette width, indicating well-defined clusters.</li>
+<li>Cluster 3 has the highest average silhouette width of 0.54, suggesting it is the best-defined cluster.</li>
+<li>Cluster 2 has the lowest average silhouette width of 0.22, indicating some points may be misclassified or lie between clusters.</li>
+<li>A high average silhouette width of 0.44 suggests that the clustering structure is appropriate.</li>
+</ul>
+</section>
+<section id="conclusion-2" class="level3">
+<h3 class="anchored" data-anchor-id="conclusion-2">Conclusion:</h3>
+<p>The K-means clustering analysis has segmented customers into three distinct groups based on their total sales and total orders. Each cluster represents a different level of customer value and engagement, providing insights that can guide targeted marketing strategies, customer relationship management, and business decision-making to optimize sales and customer satisfaction. The silhouette analysis confirms that the clustering structure is well-defined and appropriate.</p>
+</section>
+<section id="principal-component-analysis-pca" class="level3">
+<h3 class="anchored" data-anchor-id="principal-component-analysis-pca">5. Principal Component Analysis (PCA)</h3>
+<p><strong>Introduction</strong>: - Principal Component Analysis (PCA) reduces the dimensionality of our dataset while preserving as much variability as possible, which can help in visualizing high-dimensional data.</p>
+<p><strong>R Code</strong>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load necessary libraries </span></span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr) </span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2) </span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(FactoMineR)</span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(factoextra)  </span>
+<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Select numeric columns for PCA </span></span>
+<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a>numeric_data <span class="ot">&lt;-</span> superstore <span class="sc">%&gt;%</span>  <span class="fu">select</span>(Sales, Profit, Discount, Quantity)  </span>
+<span id="cb76-9"><a href="#cb76-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-10"><a href="#cb76-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform PCA </span></span>
+<span id="cb76-11"><a href="#cb76-11" aria-hidden="true" tabindex="-1"></a>pca_result <span class="ot">&lt;-</span> <span class="fu">PCA</span>(numeric_data, <span class="at">graph =</span> <span class="cn">FALSE</span>)  </span>
+<span id="cb76-12"><a href="#cb76-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-13"><a href="#cb76-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize PCA </span></span>
+<span id="cb76-14"><a href="#cb76-14" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_var</span>(pca_result, <span class="at">col.var =</span> <span class="st">"contrib"</span>, <span class="at">gradient.cols =</span> <span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"red"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.5-Hypothesis-Testing---Statistical-Analysis_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The image displays the results of a Principal Component Analysis (PCA) on selected numeric columns (<code>Sales</code>, <code>Profit</code>, <code>Discount</code>, <code>Quantity</code>) from the dataset.</p>
+<p>Here is the interpretation of the PCA plot:</p>
+</section>
+<section id="interpretation-of-the-pca-plot" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-of-the-pca-plot">Interpretation of the PCA Plot:</h3>
+<ol type="1">
+<li><strong>Principal Components (Dimensions)</strong>:
+<ul>
+<li><strong>Dim1 (PC1)</strong>: The first principal component, which explains 39.7% of the variance in the data.</li>
+<li><strong>Dim2 (PC2)</strong>: The second principal component, which explains 26.5% of the variance in the data.</li>
+<li>Together, these two components explain a significant portion (66.2%) of the total variance in the data, indicating that PCA has effectively reduced the dimensionality while retaining most of the variability.</li>
+</ul></li>
+<li><strong>Variable Contributions</strong>:
+<ul>
+<li><strong>Sales</strong> and <strong>Profit</strong> have strong positive loadings on Dim1, suggesting that they are positively correlated and contribute similarly to this principal component.</li>
+<li><strong>Discount</strong> has a strong negative loading on Dim1, indicating that it is inversely related to Sales and Profit.</li>
+<li><strong>Quantity</strong> has a positive loading on Dim2, suggesting it is primarily explained by this second component.</li>
+</ul></li>
+<li><strong>Correlation and Relationships</strong>:
+<ul>
+<li>The length and direction of the arrows represent the strength and direction of the correlation between the variables and the principal components.</li>
+<li><strong>Sales</strong> and <strong>Profit</strong> arrows point in the same direction, indicating a strong positive correlation.</li>
+<li><strong>Discount</strong> points in the opposite direction to <strong>Sales</strong> and <strong>Profit</strong>, indicating an inverse relationship with these variables.</li>
+<li><strong>Quantity</strong> points in a different direction, indicating it has a distinct contribution to the variance explained by Dim2.</li>
+</ul></li>
+<li><strong>Color Gradient (Contribution)</strong>:
+<ul>
+<li>The color gradient from blue to red indicates the contribution of each variable to the principal components. Variables with darker red arrows contribute more to the principal components.</li>
+</ul></li>
+</ol>
+</section>
+<section id="insights-from-the-pca" class="level3">
+<h3 class="anchored" data-anchor-id="insights-from-the-pca">Insights from the PCA:</h3>
+<ol type="1">
+<li><strong>Dimension 1 (Dim1)</strong>:
+<ul>
+<li>Captures the trade-off between high Sales and Profit versus high Discounts.</li>
+<li>A high score on Dim1 indicates higher Sales and Profit and lower Discount, while a low score indicates the opposite.</li>
+</ul></li>
+<li><strong>Dimension 2 (Dim2)</strong>:
+<ul>
+<li>Captures the variance primarily explained by Quantity.</li>
+<li>A high score on Dim2 indicates higher Quantity.</li>
+</ul></li>
+</ol>
+</section>
+<section id="practical-implications" class="level3">
+<h3 class="anchored" data-anchor-id="practical-implications">Practical Implications:</h3>
+<ol type="1">
+<li><strong>Sales and Profit</strong>:
+<ul>
+<li>These two variables are strongly positively correlated, meaning that as sales increase, profits also increase, which is expected in most business contexts.</li>
+</ul></li>
+<li><strong>Discount</strong>:
+<ul>
+<li>There is a strong inverse relationship between Discount and both Sales and Profit, suggesting that higher discounts might be associated with lower sales and profit.</li>
+</ul></li>
+<li><strong>Quantity</strong>:
+<ul>
+<li>Quantity has a different pattern compared to the other variables, indicating it captures a unique aspect of the data variability.</li>
+</ul></li>
+</ol>
+</section>
+<section id="conclusion-3" class="level3">
+<h3 class="anchored" data-anchor-id="conclusion-3">Conclusion:</h3>
+<p>The PCA plot provides a clear visualization of the relationships between Sales, Profit, Discount, and Quantity.</p>
+<p>It shows that Sales and Profit are positively correlated and both inversely related to Discount.</p>
+<p>Quantity contributes to the second dimension, indicating its unique contribution to the overall variance.</p>
+<p>This analysis helps in understanding the underlying structure of the data and can guide further decision-making and strategic planning.</p>
+</section>
+<section id="time-series-decomposition" class="level3">
+<h3 class="anchored" data-anchor-id="time-series-decomposition">6. Time Series Decomposition</h3>
+<p><strong>Introduction</strong>: - Time series decomposition separates a time series into trend, seasonal, and residual components, which helps understand underlying patterns in the data.</p>
+<p><strong>R Code</strong>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load necessary libraries </span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr) </span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2) </span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Registered S3 method overwritten by 'quantmod':
+  method            from
+  as.zoo.data.frame zoo </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure the 'Order Date' column is in Date format</span></span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>superstore <span class="ot">&lt;-</span> superstore <span class="sc">%&gt;%</span></span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">Order Date</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">as.Date</span>(<span class="st">`</span><span class="at">Order Date</span><span class="st">`</span>, <span class="at">format =</span> <span class="st">"%m/%d/%Y"</span>))  <span class="co"># Adjust the format as needed</span></span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggregate sales data by month </span></span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>monthly_sales <span class="ot">&lt;-</span> superstore <span class="sc">%&gt;%</span> </span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="at">Month =</span> <span class="fu">format</span>(<span class="st">`</span><span class="at">Order Date</span><span class="st">`</span>, <span class="st">"%Y-%m"</span>)) <span class="sc">%&gt;%</span>   </span>
+<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Total_Sales =</span> <span class="fu">sum</span>(Sales))  </span>
+<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-10"><a href="#cb79-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to time series object </span></span>
+<span id="cb79-11"><a href="#cb79-11" aria-hidden="true" tabindex="-1"></a>sales_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(monthly_sales<span class="sc">$</span>Total_Sales, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">2014</span>, <span class="dv">1</span>), <span class="at">frequency =</span> <span class="dv">12</span>)  </span>
+<span id="cb79-12"><a href="#cb79-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-13"><a href="#cb79-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Decompose time series </span></span>
+<span id="cb79-14"><a href="#cb79-14" aria-hidden="true" tabindex="-1"></a>decomposed <span class="ot">&lt;-</span> <span class="fu">decompose</span>(sales_ts)  </span>
+<span id="cb79-15"><a href="#cb79-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-16"><a href="#cb79-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot decomposition </span></span>
+<span id="cb79-17"><a href="#cb79-17" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(decomposed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.5-Hypothesis-Testing---Statistical-Analysis_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The image shows the results of a time series decomposition of total sales, separating the time series into trend, seasonal, and residual components. Here is the interpretation of each component shown in the decomposition plot:</p>
+</section>
+<section id="interpretation-of-the-decomposition-plot" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-of-the-decomposition-plot">Interpretation of the Decomposition Plot:</h3>
+<ol type="1">
+<li><strong>Data</strong>:
+<ul>
+<li>The top panel shows the original time series data for total sales from 2014 to 2018.</li>
+<li>This represents the raw data with all its variability, including trends, seasonality, and random noise.</li>
+</ul></li>
+<li><strong>Trend</strong>:
+<ul>
+<li>The second panel shows the trend component, which captures the long-term movement in the data.</li>
+<li>The trend indicates that total sales have been generally increasing over the period, with some fluctuations.</li>
+<li>The increase is more noticeable starting around mid-2015 and continues upwards towards the end of 2017.</li>
+</ul></li>
+<li><strong>Seasonal</strong>:
+<ul>
+<li>The third panel shows the seasonal component, which captures the repeating patterns or cycles within a year.</li>
+<li>There are clear seasonal fluctuations in sales, with peaks and troughs repeating annually.</li>
+<li>The seasonality indicates that sales tend to be higher at certain times of the year and lower at others, following a consistent pattern each year.</li>
+</ul></li>
+<li><strong>Remainder (Residual)</strong>:
+<ul>
+<li>The bottom panel shows the remainder component, which captures the irregular fluctuations after removing the trend and seasonal components.</li>
+<li>These are the random noise or unexpected variations in the data.</li>
+<li>The residuals should ideally have no clear pattern and be randomly distributed around zero.</li>
+</ul></li>
+</ol>
+</section>
+<section id="practical-implications-1" class="level3">
+<h3 class="anchored" data-anchor-id="practical-implications-1">Practical Implications:</h3>
+<ol type="1">
+<li><strong>Understanding Trends</strong>:
+<ul>
+<li>The upward trend indicates that total sales have been increasing over the analyzed period. This positive trend is a good sign for business growth.</li>
+</ul></li>
+<li><strong>Seasonal Patterns</strong>:
+<ul>
+<li>The presence of clear seasonal patterns suggests that certain times of the year consistently experience higher or lower sales.</li>
+<li>Understanding these patterns can help in planning inventory, marketing campaigns, and resource allocation to maximize sales during peak periods and manage lower sales periods effectively.</li>
+</ul></li>
+<li><strong>Managing Irregular Variations</strong>:
+<ul>
+<li>By isolating the residual component, businesses can identify unusual fluctuations that are not explained by the trend or seasonal patterns.</li>
+<li>Analyzing these residuals can help in identifying specific events or anomalies that impact sales, allowing for more targeted interventions.</li>
+</ul></li>
+</ol>
+</section>
+<section id="conclusion-4" class="level3">
+<h3 class="anchored" data-anchor-id="conclusion-4">Conclusion:</h3>
+<p>The time series decomposition provides valuable insights into the underlying patterns in the total sales data.</p>
+<p>The increasing trend indicates overall growth, while the seasonal component reveals regular fluctuations throughout the year.</p>
+<p>The residual component highlights the random noise, helping to isolate and understand irregular variations.</p>
+<p>These insights can guide strategic planning, resource allocation, and marketing efforts to optimize sales performance.</p>
+</section>
+<section id="survival-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="survival-analysis">7. Survival Analysis</h3>
+<p><strong>Introduction</strong>: - Survival analysis estimates the expected duration of time until one or more events occur, such as customer churn.</p>
+<p><strong>R Code</strong>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load necessary libraries </span></span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr) </span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'survival'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:caret':
+
+    cluster</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2) </span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survminer)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: ggpubr</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'ggpubr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:forecast':
+
+    gghistogram</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'survminer'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:survival':
+
+    myeloma</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Assume we have a customer data frame with columns: Customer_ID, Order_Date, and Churn (1 if churn, 0 if not)</span></span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a sequence of dates from January 2014 to December 2017</span></span>
+<span id="cb89-4"><a href="#cb89-4" aria-hidden="true" tabindex="-1"></a>order_dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">as.Date</span>(<span class="st">"2014-01-01"</span>), <span class="fu">as.Date</span>(<span class="st">"2017-12-31"</span>), <span class="at">by =</span> <span class="st">"month"</span>)</span>
+<span id="cb89-5"><a href="#cb89-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb89-6"><a href="#cb89-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Repeat this sequence to ensure we have 1000 dates</span></span>
+<span id="cb89-7"><a href="#cb89-7" aria-hidden="true" tabindex="-1"></a>order_dates <span class="ot">&lt;-</span> <span class="fu">rep</span>(order_dates, <span class="at">length.out =</span> <span class="dv">1000</span>)</span>
+<span id="cb89-8"><a href="#cb89-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb89-9"><a href="#cb89-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a dummy dataset for illustration purposes </span></span>
+<span id="cb89-10"><a href="#cb89-10" aria-hidden="true" tabindex="-1"></a>customer_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Customer_ID =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, <span class="at">each =</span> <span class="dv">10</span>),   <span class="at">Order_Date =</span> order_dates, <span class="at">Churn =</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="dv">1000</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>) )  </span>
+<span id="cb89-11"><a href="#cb89-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb89-12"><a href="#cb89-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a survival object </span></span>
+<span id="cb89-13"><a href="#cb89-13" aria-hidden="true" tabindex="-1"></a>surv_object <span class="ot">&lt;-</span> <span class="fu">Surv</span>(<span class="at">time =</span> <span class="fu">as.numeric</span>(customer_data<span class="sc">$</span>Order_Date), <span class="at">event =</span> customer_data<span class="sc">$</span>Churn)  </span>
+<span id="cb89-14"><a href="#cb89-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb89-15"><a href="#cb89-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit Kaplan-Meier survival curve </span></span>
+<span id="cb89-16"><a href="#cb89-16" aria-hidden="true" tabindex="-1"></a>km_fit <span class="ot">&lt;-</span> <span class="fu">survfit</span>(surv_object <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> customer_data)  </span>
+<span id="cb89-17"><a href="#cb89-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb89-18"><a href="#cb89-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the survival curve </span></span>
+<span id="cb89-19"><a href="#cb89-19" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsurvplot</span>(km_fit, <span class="at">data =</span> customer_data, <span class="at">xlab =</span> <span class="st">"Days"</span>, <span class="at">ylab =</span> <span class="st">"Survival Probability"</span>, <span class="at">title =</span> <span class="st">"Kaplan-Meier Survival Curve"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.5-Hypothesis-Testing---Statistical-Analysis_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="interpretation-of-the-kaplan-meier-survival-curve" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-of-the-kaplan-meier-survival-curve">Interpretation of the Kaplan-Meier Survival Curve</h3>
+<p>The Kaplan-Meier survival curve shown in the plot represents the survival probability over time, where “survival” in this context refers to the probability that a customer has not churned by a given time.</p>
+<section id="kaplan-meier-survival-curve" class="level4">
+<h4 class="anchored" data-anchor-id="kaplan-meier-survival-curve">Kaplan-Meier Survival Curve:</h4>
+<p><strong>Plot Description:</strong> - <strong>X-axis (Days):</strong> The number of days since the beginning of the observation period. - <strong>Y-axis (Survival Probability):</strong> The probability that a customer has not churned (remains a customer) at a given time. - <strong>Curve:</strong> The survival curve shows the estimated survival probability over time. The curve starts at 1 (or 100%) and decreases as customers churn over time. - <strong>Strata Legend:</strong> Indicates that all customers are considered together without stratification.</p>
+<p><strong>Key Observations:</strong> 1. <strong>Initial Survival Probability:</strong> - At the start (time = 0), the survival probability is 1, meaning all customers are active.</p>
+<ol start="2" type="1">
+<li><strong>Survival over Time:</strong>
+<ul>
+<li>The curve remains flat at 1 for a significant portion of the time, indicating that customers did not churn during this period.</li>
+<li>Towards the end of the observation period (around 15,000 days), the curve starts to decline, indicating an increase in churn events.</li>
+</ul></li>
+<li><strong>Final Survival Probability:</strong>
+<ul>
+<li>The survival probability drops sharply at the end, reflecting a higher rate of churn as the time progresses towards the end of the observation period.</li>
+<li>This sharp decline might be due to the data structure, suggesting that many customers are recorded as having churned towards the end of the observation period.</li>
+</ul></li>
+</ol>
+<p><strong>Interpretation:</strong> - <strong>Low Churn in Initial and Middle Periods:</strong> The flat survival curve for most of the observation period suggests that customers tend to stay with the company for a long duration without churning. - <strong>Increased Churn at the End:</strong> The sharp decline towards the end indicates a significant increase in churn events, possibly due to the duration of the study or a specific time-related factor affecting customer retention. - <strong>Overall Survival Probability:</strong> The general shape of the curve suggests that the majority of the customers remain with the company until the end of the observation period.</p>
+<p><strong>Practical Implications:</strong> - <strong>Retention Strategies:</strong> Given the low churn in the initial and middle periods, efforts to retain customers should focus on understanding and mitigating the factors that lead to the increased churn towards the end. - <strong>Further Analysis:</strong> Investigate why churn rates increase towards the end of the observation period. This could involve looking at customer feedback, changes in service, market conditions, or other external factors. - <strong>Targeted Interventions:</strong> Develop targeted interventions for customers who are approaching the end of the observation period to prevent churn, based on the identified factors.</p>
+</section>
+</section>
+<section id="conclusion-5" class="level3">
+<h3 class="anchored" data-anchor-id="conclusion-5">Conclusion</h3>
+<p>The Kaplan-Meier survival curve provides a visual representation of customer retention over time, showing a high retention rate initially and a significant increase in churn towards the end. This information can be used to guide strategies aimed at improving customer retention and understanding the factors driving churn.</p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

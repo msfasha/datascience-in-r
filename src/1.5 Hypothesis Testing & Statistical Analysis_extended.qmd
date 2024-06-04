@@ -19,16 +19,176 @@ include-before: |
 ```{r}
 library (dplyr)
 library (readr)
+library (readxl)
 library (ggplot2)
 library (stringr)
 library(tidyr)
 
-survey_data <- read_csv("data\\students_survey.csv", show_col_types = FALSE)
+survey_data <- read_excel("data\\students_survey.xlsx")
+
+colnames(survey_data) <- c("id","start_time","end_time","academic_year","gender","age","distance","course_name","course_branch","high_school_category","national_high_school_category","hight_school_average","study_hours","sleep_hours","mid_exam_score","gpa","does_work","fulltime_parttime","private_employed","satisfaction_at_university")
+
+# Define a function to remove Arabic characters
+remove_arabic <- function(x) {
+  str_replace_all(x, "[\u0600-\u06FF]", "")
+}
+
+# Apply the function to all columns
+survey_data <- survey_data %>%
+  mutate(across(everything(), ~remove_arabic(as.character(.))))
+
+# Replace empty strings with NA in all columns
+survey_data <- survey_data %>%
+  mutate(across(everything(), ~na_if(., "")))
+
+survey_data <- survey_data %>% mutate(across(everything(), ~na_if(trimws(.), "")))
+
+
+# Convert the columns to ordered factors
+survey_data <- survey_data %>%
+  mutate(
+    private_employed = str_replace_all(private_employed,"Employed by others - ","employed"),
+    private_employed = str_replace_all(private_employed,"Self employed -  
+","private"),
+    national_high_school_category = str_replace_all(national_high_school_category,"Adabi branch -","adabi"),
+    national_high_school_category = str_replace_all(national_high_school_category,"Scientific Branch -","scientific"),
+    course_branch = str_replace_all(course_branch,"Branch 1 -  1","1"),
+    course_branch = str_replace_all(course_branch,"Branch 2 -  2","2"),
+    distance = str_replace_all(distance,"5 -10 KM -  10  20","5-10km"),
+    distance = str_replace_all(distance,"5 -10 KM -  5  10","5-10km"),
+    distance = str_replace_all(distance,"Less than 5 KM -   5","<5km"),
+    distance = str_replace_all(distance,"10 - 20 KM -  10  20","10-20km"),
+    distance = str_replace_all(distance,"More than 20 KM -   20",">20km"),
+    course_name = if_else(str_detect(course_name, "BI Methods and Models"), "BI Methods and Models", course_name),
+    course_name = if_else(str_detect(course_name, "Descriptive Statistics for Business -   ;"), "Descriptive Statistics", course_name),
+    course_name = str_replace_all(course_name,"Special Topics -  ;","Special Topics"),
+    high_school_category = str_replace_all(high_school_category,"Jordanian Tawjihi -","Jordanian Tawjihi"),
+    study_hours = if_else(study_hours == "5", "> 5", study_hours),
+    study_hours = replace_na(study_hours, "< 1")
+  )
+
+# Clean numeric columns to ensure no non-numeric characters remain
+clean_numeric <- function(x) {
+  x <- str_replace_all(x, "[^0-9.]", "") # Remove non-numeric characters except '.'
+  x[x == ""] <- NA                       # Replace empty strings with NA
+  as.numeric(x)
+}
+
+# Convert char columns to numeric with cleaning
+survey_data <- survey_data %>%
+  mutate(
+    age = clean_numeric(age),
+    hight_school_average = clean_numeric(hight_school_average),
+    gpa = clean_numeric(gpa),
+    mid_exam_score = clean_numeric(mid_exam_score),
+  )
+
+# Convert the columns to ordered factors
+survey_data <- survey_data %>%
+  mutate(study_hours = factor(study_hours, levels = c("< 1", "1-3", "3-5", "> 5"), ordered = TRUE))
+
+write.csv(survey_data,"data\\students_survey.csv",row.names = FALSE,  fileEncoding = "UTF-8")
+
+str(survey_data)
 ```
+
+**View the data**
+
+```{r}
+View(survey_data)
+```
+
+Explaining the statement **`dplyr::mutate(across(everything(), ~remove_arabic(as.character(.))))`** step by step:
+
+### **`dplyr::mutate()`**
+
+-   **`mutate()`** is a function from the **`dplyr`** package that is used to create or transform columns in a data frame.
+
+-   It allows you to apply transformations to one or more columns and add the results as new columns or overwrite the existing ones.
+
+### **`across(everything(), ...)`**
+
+-   **`across()`** is a helper function that is used inside **`mutate()`** (and some other **`dplyr`** functions) to apply a function to multiple columns.
+
+-   **`everything()`** is a selection helper from the **`dplyr`** package that selects all columns in the data frame. It means that the function specified inside **`across()`** will be applied to every column in the data frame.
+
+### **`~remove_arabic(as.character(.))`**
+
+-   The tilde **`~`** creates an anonymous function (a function without a name) that can be used inline.
+
+-   **`remove_arabic`** is the function we defined to remove Arabic characters from a string.
+
+-   **`as.character(.)`** converts the input (which will be each column in turn) to a character vector. The dot **`.`** represents the current column being processed.
+
+-   **`remove_arabic(as.character(.))`** ensures that each column is treated as a character vector before applying the **`remove_arabic`** function to remove Arabic characters.
+
+### **Putting it all together**
+
+-   **`dplyr::mutate(across(everything(), ~remove_arabic(as.character(.))))`** modifies the data frame by applying the **`remove_arabic`** function to every column.
+
+-   **`across(everything(), ~remove_arabic(as.character(.)))`** specifies that the transformation should be applied to all columns (**`everything()`**), and for each column, it will be converted to a character vector (**`as.character(.)`**) and then passed to the **`remove_arabic`** function.
+
+-   The result of **`remove_arabic(as.character(.))`** is then used to replace the original column values in the data frame.
 
 ### 1. One-sample T-test
 
 **Use:** To test if the mean of a single sample is significantly different from a known or hypothesized population mean.
+
+**Assumptions:**
+
+\- The sample data is normally distributed.
+
+\- The sample observations are independent.
+
+***Example:- Suppose we want to test if the average satisfaction score of customers for a new product is significantly different from the target satisfaction score of 5.***
+
+**Experiment Design**
+
+Conducting an experiment to test if the average satisfaction score of customers for a new product is significantly different from a target satisfaction score of 5 involves several scientific steps. Here’s a structured approach:
+
+**Step 1: Define the Hypothesis**
+
+-   **Null Hypothesis ((H_0))**: The mean satisfaction score is equal to 5.
+-   **Alternative Hypothesis ((H_1))**: The mean satisfaction score is not equal to 5.
+
+**Step 2: Design the Experiment**
+
+1.  **Sample Size Determination**: Determine the appropriate sample size to ensure the results are statistically significant. This can be done using power analysis, considering the expected effect size, significance level (alpha), and power (1 - beta).
+
+2.  **Random Sampling**: Select a random sample of customers to avoid bias. Ensure the sample is representative of the population.
+
+3.  **Survey Design**: Create a standardized survey to measure customer satisfaction. Use a reliable and validated scale (e.g., Likert scale from 1 to 7).
+
+4.  **Data Collection**: Administer the survey to the selected sample of customers after they have used the new product for a sufficient period.
+
+**Step 3: Conduct the Experiment**
+
+1.  **Administer the Survey**: Ensure that the data collection process is uniform and unbiased. Use online surveys, interviews, or physical questionnaires as appropriate.
+
+2.  **Collect Data**: Gather the responses, ensuring data integrity and confidentiality.
+
+**Step 4: Analyze the Data**
+
+1.  **Descriptive Statistics**: Calculate the mean, median, standard deviation, and other relevant statistics of the collected data.
+
+2.  **Check Assumptions**: Ensure the data meets the assumptions for a t-test (e.g., normally distributed data, independent samples).
+
+3.  **Conduct the t-test**: Use statistical software (e.g., R) to perform a one-sample t-test to compare the sample mean to the target satisfaction score of 5.
+
+**Step 5: Interpret the Results**
+
+1.  **P-value and Test Statistic**: Evaluate the t-test result, focusing on the t-statistic and p-value.
+    -   If the p-value is less than the significance level (usually 0.05), reject the null hypothesis.
+    -   If the p-value is greater than the significance level, do not reject the null hypothesis.
+2.  **Confidence Interval**: Examine the 95% confidence interval for the mean satisfaction score to understand the range in which the true mean lies.
+
+**Step 6: Report the Findings**
+
+1.  **Document the Process**: Describe the methodology, sample size, data collection process, and statistical analysis in detail.
+
+2.  **Present the Results**: Use tables, graphs, and descriptive text to present the findings clearly. Highlight whether the average satisfaction score is significantly different from 5.
+
+3.  **Draw Conclusions**: Summarize the findings and discuss the implications. If the null hypothesis is rejected, discuss potential reasons and next steps.
 
 **Example: Test if the mean age of BI students = 21**
 
@@ -41,7 +201,7 @@ survey_data <- read_csv("data\\students_survey.csv", show_col_types = FALSE)
 summary(survey_data$age)
 
 # Perform one-sample t-test
-t_test_result <- t.test(survey_data$age, mu = 21)
+t_test_result <- t.test(survey_data$age, mu = 22)
 
 # Print the t-test result
 print(t_test_result)
@@ -49,12 +209,37 @@ print(t_test_result)
 
 ### Results:
 
+-   **T-Test Statistic:** -1.7755
 -   **P-Value:** 0.08156
 -   **Mean Age:** 21.55556
+
+### Interpretation:
+
+**T-Test Statistic (-1.7755):**
+
+This value represents how many standard deviations the sample mean is from the hypothesized population mean (22 years).
+
+A larger absolute value of the t-statistic indicates a greater difference between the sample mean and the population mean under the null hypothesis.
+
+**P-Value (0.08156):**
+
+The p-value indicates the probability of obtaining a t-statistic at least as extreme as the one observed, assuming that the null hypothesis is true.
 
 A p-value less than the significance level (commonly 0.05) leads to rejecting the null hypothesis.
 
 In this case, the p-value is 0.08156, which is greater than 0.05, indicating that we do not reject the null hypothesis. This suggests that the mean age of the students is not significantly different from 22.
+
+**Mean Age (21.55556):**
+
+The average age of the students in the sample is approximately 21.56 years.
+
+**Standard Deviation:**
+
+(The standard deviation needs to be calculated or provided to complete this section)
+
+### Conclusion:
+
+Based on the results of the one-sample t-test, we do not reject the null hypothesis that the mean age of the students is 22. The mean age of the students is not significantly different from 22, with an average age of approximately 21.56 years.
 
 ### Visualize the mean students age
 
@@ -70,6 +255,14 @@ ggplot(survey_data, aes(y = age)) +
 
 **Use:** To compare the means of two independent samples to see if they are significantly different.
 
+**Assumptions:**
+
+\- The samples are independent of each other.
+
+\- The data in each sample is normally distributed.
+
+\- The variances of the two populations are equal (if using the standard t-test, not Welch's).
+
 **Example 1: Compare the GPA of BI students by Gender**
 
 *Null Hypothesis: There is no difference between the mean GPA for male and female BI students*
@@ -84,13 +277,29 @@ t_test_gpa_gender <- t.test(gpa ~ gender, data = survey_data)
 print(t_test_gpa_gender)
 ```
 
+### 
+
 ### Interpretation:
 
+-   **T-Test Statistic:** -0.17232
 -   **P-Value:** 0.8639
 -   **Mean GPA in Group Female:** 2.731724
 -   **Mean GPA in Group Male:** 2.755200
+-   **95% Confidence Interval:** -0.2968477 to 0.2498960
+
+**T-Test Statistic (-0.17232):** This value indicates the number of standard deviations the difference in sample means is from the hypothesized difference in population means (which is 0 under the null hypothesis).
+
+**P-Value (0.8639):** The p-value indicates the probability of obtaining a t-statistic at least as extreme as the one observed, assuming that the null hypothesis is true. A p-value greater than the significance level (commonly 0.05) means we fail to reject the null hypothesis.
 
 In this case, the p-value is 0.8639, which is much greater than 0.05, indicating that we do not reject the null hypothesis. This suggests that there is no significant difference in GPA between female and male students.
+
+**Mean GPA:** - Female: 2.731724 - Male: 2.755200
+
+The average GPAs are very close, supporting the result that there is no significant difference between the two groups.
+
+### Conclusion:
+
+Based on the results of the Welch Two Sample t-test, we do not reject the null hypothesis that there is no difference in mean GPA between female and male students. The mean GPA of female students is approximately 2.73, and the mean GPA of male students is approximately 2.76, with no significant difference between the two groups.
 
 ### Visualize GPA by Gender:
 
@@ -119,11 +328,25 @@ print(t_test_gpa_work)
 
 ### Interpretation:
 
+-   **T-Test Statistic:** 0.10266
 -   **P-Value:** 0.9187
 -   **Mean GPA in Group No:** 2.748710
 -   **Mean GPA in Group Yes:** 2.734348
+-   **95% Confidence Interval:** -0.2671799 to 0.2959036
+
+**T-Test Statistic (0.10266):** This value indicates the number of standard deviations the difference in sample means is from the hypothesized difference in population means (which is 0 under the null hypothesis).
+
+**P-Value (0.9187):** The p-value indicates the probability of obtaining a t-statistic at least as extreme as the one observed, assuming that the null hypothesis is true. A p-value greater than the significance level (commonly 0.05) means we fail to reject the null hypothesis.
 
 In this case, the p-value is 0.9187, which is much greater than 0.05, indicating that we do not reject the null hypothesis. This suggests that there is no significant difference in GPA between students who do work and those who do not.
+
+**Mean GPA:** - Group No: 2.748710 - Group Yes: 2.734348
+
+The average GPAs are very close, supporting the result that there is no significant difference between the two groups.
+
+### Conclusion:
+
+Based on the results of the Welch Two Sample t-test, we do not reject the null hypothesis that there is no difference in mean GPA between students who do work and those who do not. The mean GPA of students who do not work is approximately 2.75, and the mean GPA of students who do work is approximately 2.73, with no significant difference between the two groups.
 
 ### Visualize GPA by Work Status:
 
@@ -156,11 +379,25 @@ print(t_test_result)
 
 ### Interpretation:
 
+-   **T-Test Statistic:** -0.8071
 -   **P-Value:** 0.4251
 -   **Mean GPA in Group Adabi:** 2.699444
 -   **Mean GPA in Group Scientific:** 2.813750
+-   **95% Confidence Interval:** -0.4019184 to 0.1733073
+
+**T-Test Statistic (-0.8071):** This value represents how many standard deviations the difference in sample means is from the hypothesized difference in population means (which is 0 under the null hypothesis).
+
+**P-Value (0.4251):** The p-value indicates the probability of obtaining a t-statistic at least as extreme as the one observed, assuming that the null hypothesis is true. A p-value greater than the significance level (commonly 0.05) means we fail to reject the null hypothesis.
 
 In this case, the p-value is 0.4251, which is greater than 0.05, indicating that we do not reject the null hypothesis. This suggests that there is no significant difference in GPA between students from the Adabi and Scientific high school categories.
+
+**Mean GPA:** - Group Adabi: 2.699444 - Group Scientific: 2.813750
+
+The average GPAs are relatively close, supporting the result that there is no significant difference between the two groups.
+
+### Conclusion:
+
+Based on the results of the Welch Two Sample t-test, we do not reject the null hypothesis that there is no difference in mean GPA between students from the Adabi and Scientific high school categories. The mean GPA of students from the Adabi category is approximately 2.70, and the mean GPA of students from the Scientific category is approximately 2.81, with no significant difference between the two groups.
 
 ### Visualize GPA by High School Category:
 
@@ -175,9 +412,52 @@ ggplot(survey_data, aes(x = national_high_school_category, y = gpa, fill = natio
   theme_minimal()
 ```
 
+**Plotting the relation**
+
+```{r}
+# Calculate the sample size for each category
+sample_sizes <- survey_data %>%
+  group_by(national_high_school_category) %>%
+  summarise(count = n())
+
+# Create a bar chart
+ggplot(survey_data, aes(x = national_high_school_category)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  geom_text(data = sample_sizes, aes(x = national_high_school_category, y = count + 1, label = count), 
+            vjust = -0.5, size = 5) +
+  ggtitle("Number of Students in Adabi and Scientific Branches") +
+  xlab("National High School Category") +
+  ylab("Count of Students") +
+  theme_minimal() +
+  ylim(0, max(sample_sizes$count) + 5)  # Increase the upper limit of y-axis
+
+
+# Create boxplot to visualize the relationship between study hours and GPA
+ggplot(survey_data, aes(x = national_high_school_category, y = gpa)) +
+ geom_boxplot() +
+  ggtitle("GPA Distribution by National High School Category") +
+  xlab("National High School Category") +
+  ylab("GPA") +
+  scale_y_continuous(breaks = seq(1, 4, by = 0.2)) +
+  scale_fill_brewer(palette = "Set2") +
+  theme_minimal() +
+  geom_text(data = sample_sizes, aes(x = national_high_school_category, y = 4, label = paste0("sample size=", count)), position = position_dodge(width = 0.75), vjust = 1, size = 3)
+
+```
+
+**Adjusting the y-coordinate**:
+
+-   **`aes(x = national_high_school_category, y = count + 1, label = count)`**: This moves the text labels slightly above the top of the bars by adding 1 to the count.
+
+**Setting the y-axis limit**:
+
+-   **`ylim(0, max(sample_sizes$count) + 5)`**: This increases the upper limit of the y-axis to ensure there is enough space above the bars for the text labels.
+
 ### 3. Paired Sample T-test
 
 **Use:** To compare the means of two related samples (e.g., before and after measurements on the same subjects).
+
+**Assumptions:** - The differences between the paired observations are normally distributed. - The pairs are independent of each other.
 
 ***Example:- Suppose we want to test if a training program has significantly improved employee productivity scores by comparing their productivity before and after the training.***
 
@@ -194,6 +474,10 @@ productivity_after <- productivity_before + rnorm(30, mean = 0.5, sd = 1)  # Pro
 # Perform paired sample t-test to compare the mean productivity scores before and after training
 t_test_result <- t.test(productivity_before, productivity_after, paired = TRUE)
 
+# Print the productivity scores
+print(productivity_before)
+print(productivity_after)
+
 # Print the t-test result
 print(t_test_result)
 ```
@@ -206,13 +490,33 @@ print(t_test_result)
 
     -   **After Training:** Generated productivity scores that are on average higher than before training.
 
+-   **T-test Result:**
+
+    -   **t:** Test statistic (-4.4489)
+
+    -   **df:** Degrees of freedom (29)
+
     -   **p-value:** Probability of observing the data if the null hypothesis is true (0.0001169)
 
-**Conclusion:** Since the p-value (0.0001169) is less than the common significance level (0.05), we reject the null hypothesis. This indicates that there is a significant difference in productivity scores before and after the training, with productivity increasing after the training program.
+    -   **95% Confidence Interval:** Range within which the true mean difference lies with 95% confidence (-0.9901802 to -0.3664964=)
+
+    -   **Mean of the Differences:** Average difference in productivity scores before and after training (-0.6783383)
+
+**Conclusion:** Since the p-value (0.0001169) is less than the common significance level (0.05), we reject the null hypothesis.
+
+This indicates that there is a significant difference in productivity scores before and after the training, with productivity increasing after the training program.
 
 ### 4. One-way ANOVA
 
 **Use:** To compare the means of three or more groups to see if at least one mean is different.
+
+**Assumptions:**
+
+\- The data in each group is normally distributed.
+
+\- The variances of the populations are equal (homogeneity of variances).
+
+\- The samples are independent.
 
 ***Example 1:-*** **Test if there is a difference in student GPA according to study hours**
 
@@ -221,12 +525,15 @@ To perform an ANOVA test to compare the effect of study hours on GPA, we first n
 ### R Code for ANOVA Test Comparing Study Hours with GPA
 
 ```{r}
-# Convert the columns to ordered factors
-survey_data <- survey_data %>%
-  mutate(study_hours = factor(study_hours, levels = c("< 1", "1-3", "3-5", "> 5"), ordered = TRUE))
+# Define the levels in the desired order
+study_hours_levels <- c("Less than 1 hour", "1-3 hours", "3-5 Hours", "More than 5 hours")
 
-survey_data <- survey_data %>% filter(study_hours != "> 5")
-View(survey_data)
+# Convert study_hours to an ordered factor
+survey_data$study_hours <- factor(survey_data$study_hours, levels = study_hours_levels, ordered = TRUE)
+
+# Check the levels to confirm the order
+#levels(survey_data$study_hours)
+#summary(survey_data$study_hours)
 
 # Perform ANOVA test
 anova_result <- aov(gpa ~ study_hours, data = survey_data)
@@ -237,11 +544,7 @@ print(summary(anova_result))
 
 ### Explanation:
 
-Based on the ANOVA results, there is no significant effect of study hours on GPA.
-
-The p-value of 0.943 indicates that the differences in mean GPA among the study hours groups are not statistically significant.
-
-This suggests that, in this dataset, the amount of time spent studying does not have a meaningful impact on GPA.
+Based on the ANOVA results, there is no significant effect of study hours on GPA. The p-value of 0.993 indicates that the differences in mean GPA among the study hours groups are not statistically significant. This suggests that, in this dataset, the amount of time spent studying does not have a meaningful impact on GPA.
 
 ### **Possible Reasons for No Significant Effect:**
 
@@ -273,7 +576,7 @@ sample_sizes <- survey_data %>%
   summarise(count = n())
 
 # Create boxplot to visualize the relationship between study hours and GPA
-ggplot(survey_data, aes(x = study_hours, y = gpa, fill=study_hours)) +
+ggplot(survey_data, aes(x = study_hours, y = gpa)) +
   geom_boxplot() +
   ggtitle("Boxplot of GPA by Study Hours") +
   xlab("Study Hours") +
@@ -305,15 +608,33 @@ summary(anova_result)
 
 The ANOVA table helps determine if there is a significant relationship between the `high_school_category` and `GPA`. Here are the results:
 
+**ANOVA Table**:
+
+```         
+                          Df  Sum Sq Mean Sq F value Pr(>F)
+high_school_category      3  0.196 0.06524   0.239  0.869
+Residuals                43 11.762 0.27354
+```
+
 ### Explanation:
 
--   **p-value (Pr(\>F))**:
+1.  **Degrees of Freedom (Df)**:
+    -   **high_school_category**: 3 (number of categories minus 1).
+    -   **Residuals**: 43 (total number of observations minus the number of categories).
+2.  **Sum of Squares (Sum Sq)**:
+    -   **high_school_category**: 0.196
+    -   **Residuals**: 11.762
+3.  **Mean Squares (Mean Sq)**:
+    -   **high_school_category**: 0.06524 (Sum Sq / Df)
+    -   **Residuals**: 0.27354 (Sum Sq / Df)
+4.  **F value**:
+    -   The F value is 0.239, calculated as the ratio of the mean square for `high_school_category` to the mean square for the residuals (0.06524 / 0.27354).
+5.  **p-value (Pr(\>F))**:
+    -   The p-value is 0.869, indicating the probability of observing an F value at least as extreme as 0.239 under the null hypothesis (that there is no difference in GPA between the high school categories).
 
-    Since the p-value (0.778) is much greater than the common significance level of 0.05, we fail to reject the null hypothesis.
+### Conclusion:
 
--   This suggests that there is no statistically significant difference in GPA between the different high school categories.
-
--   In other words, the high school category does not appear to have a significant impact on GPA in this dataset.
+Since the p-value (0.869) is much greater than the common significance level of 0.05, we fail to reject the null hypothesis. This suggests that there is no statistically significant difference in GPA between the different high school categories. In other words, the high school category does not appear to have a significant impact on GPA in this dataset.
 
 ### Visualization:
 
@@ -337,37 +658,43 @@ ggplot(survey_data, aes(x = high_school_category, y = gpa, fill = high_school_ca
   geom_text(data = sample_sizes, aes(x = high_school_category, y = 4, label = paste0("sample size=", count)), position = position_dodge(width = 0.75), vjust = 1, size = 3)
 ```
 
-The ANOVA test evaluates whether there are statistically significant differences between the means of three or more independent groups.
+### Explanation of the Box Plot Code:
 
-Here are a few reasons why the ANOVA test might fail to reject the null hypothesis (which states that there are no significant differences between group means) despite apparent differences in the boxplot:
+1.  **Loading Libraries**:
+    -   `library(dplyr)` for data manipulation.
+    -   `library(ggplot2)` for visualization.
+    -   `library(readxl)` for reading Excel files.
+2.  **Loading Data**:
+    -   `read_excel("students_survey.xlsx")` loads the Excel file into an R data frame.
+3.  **Convert High School Category to Factor**:
+    -   Ensure the `national_high_school_category` column is a factor using `as.factor`.
+4.  **Create Box Plot**:
+    -   `geom_boxplot()` creates the box plot to visualize the distribution of GPA for each high school category.
+    -   `scale_fill_brewer(palette = "Set3")` applies a color palette.
+    -   `ggtitle`, `xlab`, and `ylab` add the title and axis labels.
+    -   `theme_minimal()` provides a clean and minimalistic theme for the plot.
 
-1.  **Sample Size**: Small sample sizes can lead to higher variability and less statistical power, making it harder to detect significant differences. In the plot, it is evident that some categories have very small sample sizes (e.g., sample sizes of 1, 3, and 5), which could affect the ANOVA test results.
+### Running the Code:
 
-2.  **Variance Within Groups**: If the variability within each group is high, it can overshadow the differences between group means. In other words, if the data points within each group are widely spread out, the ANOVA might not find the differences between group means significant.
+1.  Copy the box plot code.
+2.  Open RStudio or any R environment.
+3.  Paste the code into the R script editor.
+4.  Run the script.
 
-3.  **Outliers**: The presence of outliers can affect the mean and variance within groups. In the boxplot, there appears to be an outlier in the "Jordanian Tawjihi" category. Outliers can influence the results of statistical tests, making it more difficult to detect significant differences.
-
-4.  **Overlapping Confidence Intervals**: If the confidence intervals of the group means overlap significantly, it indicates that the means are not statistically different. The boxplot provides a visual indication of the spread and overlap of data points within each group.
-
-5.  **Effect Size**: The differences between group means might be too small (i.e., small effect size) to be detected as significant by the ANOVA test. Even if there are visible differences in the boxplot, they might not be large enough to be considered statistically significant.
-
-To better understand the results, it might be useful to:
-
-\- Check the actual p-value obtained from the ANOVA test.
-
-\- Perform post-hoc tests to explore pairwise comparisons between groups if the overall ANOVA is significant.
-
-\- Consider the assumptions of the ANOVA test, such as homogeneity of variances and normality of the data, and whether these assumptions are met.
+This will generate a box plot showing the GPA distribution for each high school category, providing a visual representation to complement the ANOVA results. If you need further assistance or additional customizations, feel free to ask!
 
 ### 5. Chi-square Test for Independence
 
 **Use:** To test if there is a significant association between two categorical variables.
 
-***Example:- Suppose we want to test if there is a significant association between the gender of BI student and the Working Status***
+**Assumptions:** - The data is in the form of counts or frequencies. - The observations are independent. - The expected frequency in each cell of the contingency table is at least 5.
+
+***Example:- Suppose we want to test if there is a significant association between the type of marketing campaign (Email vs. Social Media) and customer response (Purchased vs. Not Purchased).***
 
 **Code:**
 
 ```{r}
+
 # Create a contingency table for gender and work status
 contingency_table <- table(survey_data$gender, survey_data$does_work)
 
@@ -379,6 +706,7 @@ chi_square_test <- chisq.test(contingency_table)
 
 # Print the result
 print(chi_square_test)
+
 ```
 
 ### Interpretation of the Chi-Square Test Results:
@@ -388,18 +716,29 @@ The Chi-Square test of independence results indicate whether there is a signific
 **Contingency Table**:
 
 ```         
-         No Yes
-  Female 22   7
-  Male    9  16
+         No  Yes
+Female   20    6
+Male      9   12
 ```
 
-**Chi-Square Test Results**: **p-value**: 0.00741
+**Chi-Square Test Results**: - **X-squared**: 4.3545 - **Degrees of Freedom (df)**: 1 - **p-value**: 0.03691
 
--   Since the p-value (0.00741) is less than the significance level of 0.05, we reject the null hypothesis.
+### Explanation:
 
--   This suggests that there is a statistically significant relationship between gender and work status.
+1.  **Contingency Table**:
+    -   The table shows the counts of individuals by gender and whether they work or not.
+    -   For example, there are 20 females who do not work and 6 females who do work.
+2.  **Chi-Square Statistic (X-squared = 4.3545)**:
+    -   The Chi-Square statistic measures the discrepancy between the observed counts and the counts expected if there were no relationship between gender and work status.
+3.  **Degrees of Freedom (df = 1)**:
+    -   Degrees of freedom for a Chi-Square test of independence is calculated as (number of rows - 1) \* (number of columns - 1). In this case, (2 - 1) \* (2 - 1) = 1.
+4.  **p-value (0.03691)**:
+    -   The p-value indicates the probability of observing a Chi-Square statistic as extreme as, or more extreme than, the observed value under the null hypothesis (no relationship between gender and work status).
+    -   A p-value less than 0.05 typically indicates that we reject the null hypothesis. In this case, the p-value is 0.03691, which is less than 0.05.
 
--   Specifically, the data indicates that the distribution of work status (whether a student works or not) is significantly different between males and females.
+### Conclusion:
+
+Since the p-value (0.03691) is less than the significance level of 0.05, we reject the null hypothesis. This suggests that there is a statistically significant relationship between gender and work status. Specifically, the data indicates that the distribution of work status (whether a student works or not) is significantly different between males and females.
 
 ### Visualization (Optional):
 
@@ -428,7 +767,7 @@ This plot will help visualize the counts of students by gender and work status, 
 
 Correlation analysis measures the strength and direction of the relationship between two variables.
 
-For instance, we can analyze the correlation between high school average and GPA.
+For instance, we can analyze the correlation between hjigh school average and GPA.
 
 #### R Code:
 
