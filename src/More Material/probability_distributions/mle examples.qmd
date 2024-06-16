@@ -1,0 +1,204 @@
+---
+title: "MLE Examples"
+format: html
+editor: visual
+---
+
+Maximum Likelihood Estimation (MLE) and Kernel Density Estimation (KDE) are both statistical methods used to understand and model data, but they serve different purposes and are used in different contexts.
+
+### Maximum Likelihood Estimation (MLE)
+
+**Purpose:** MLE is used to estimate the parameters of a predefined statistical model. The goal is to find the parameter values that maximize the likelihood of observing the given data.
+
+**Method:** - Choose a parametric model for the data (e.g., normal, exponential). - Define the likelihood function for the model. - Maximize the likelihood function to find the parameter estimates.
+
+**Example Use Case:** Estimating the mean and variance of a normally distributed dataset.
+
+### Kernel Density Estimation (KDE)
+
+**Purpose:** KDE is a non-parametric way to estimate the probability density function (PDF) of a random variable. The goal is to estimate the distribution of the data without assuming any specific parametric form.
+
+**Method:** - Choose a kernel function (e.g., Gaussian, Epanechnikov). - Choose a bandwidth parameter that determines the smoothness of the density estimate. - Compute the KDE by averaging the kernel functions centered at each data point.
+
+**Example Use Case:** Visualizing the distribution of a dataset to understand its shape, such as identifying multimodal distributions.
+
+### Relationship Between MLE and KDE
+
+1.  **Parameter Estimation vs. Density Estimation:**
+    -   **MLE:** Focuses on estimating parameters for a specific parametric distribution.
+    -   **KDE:** Provides a smooth estimate of the data’s density without assuming a specific parametric form.
+2.  **Assumptions:**
+    -   **MLE:** Requires choosing a specific distribution model.
+    -   **KDE:** Does not require a specific distribution model; it is more flexible and can adapt to the shape of the data.
+3.  **Complexity:**
+    -   **MLE:** Can be simpler if the correct model is chosen and the model is relatively simple.
+    -   **KDE:** Can be more complex computationally, especially with large datasets, as it involves calculating distances between all pairs of points.
+4.  **Application Context:**
+    -   **MLE:** Useful when you have a good reason to assume a particular distribution for the data and you need to estimate its parameters.
+    -   **KDE:** Useful for exploratory data analysis to visualize the distribution of data, especially when the form of the distribution is unknown.
+
+### Example in R
+
+Let's consider a dataset and demonstrate both MLE (for a normal distribution) and KDE.
+
+``` r
+# Load necessary library
+library(MASS)
+
+# Sample data
+data <- c(2.1, 2.3, 2.9, 3.2, 2.8, 2.5, 3.0, 2.7)
+
+# MLE for normal distribution
+neg_log_likelihood <- function(params) {
+  mu <- params[1]
+  sigma <- params[2]
+  n <- length(data)
+  likelihood <- -sum(-0.5 * log(2 * pi * sigma^2) - ((data - mu)^2) / (2 * sigma^2))
+  return(likelihood)
+}
+
+initial_guess <- c(mean(data), sd(data))
+result <- optim(initial_guess, neg_log_likelihood, method = "L-BFGS-B", lower = c(-Inf, 1e-6))
+mu_mle <- result$par[1]
+sigma_mle <- result$par[2]
+
+print(paste("MLE for mu:", mu_mle))
+print(paste("MLE for sigma:", sigma_mle))
+
+# KDE
+kde <- density(data)
+
+# Plotting
+plot(kde, main="KDE and Normal Distribution MLE")
+curve(dnorm(x, mean=mu_mle, sd=sigma_mle), add=TRUE, col="red")
+legend("topright", legend=c("KDE", "Normal MLE"), col=c("black", "red"), lty=1)
+```
+
+### Explanation
+
+1.  **MLE:**
+    -   We define a negative log-likelihood function for the normal distribution.
+    -   We use `optim` to minimize the negative log-likelihood and find the MLE estimates for the mean and standard deviation.
+2.  **KDE:**
+    -   We use the `density` function to compute the KDE of the data.
+3.  **Plotting:**
+    -   We plot the KDE and overlay the MLE-based normal distribution for comparison.
+
+This example demonstrates how MLE and KDE can be used to model and understand the distribution of data, highlighting their different approaches and use cases.
+
+------------------------------------------------------------------------
+
+solve the same code examples using kde showing how can we use the generated pdf in making inferences
+
+Certainly! Below are the steps and R code to perform Kernel Density Estimation (KDE) and use the generated probability density function (PDF) for making inferences.
+
+### Kernel Density Estimation (KDE) in R
+
+**Purpose:** KDE is used to estimate the PDF of a random variable in a non-parametric way. It can help visualize the distribution of data and make inferences about the likelihood of certain values.
+
+### KDE Example and Inference in R
+
+Let's start with the KDE computation and then show how to use the resulting PDF for inferences.
+
+``` r
+# Load necessary library
+library(MASS)
+
+# Sample data
+data <- c(2.1, 2.3, 2.9, 3.2, 2.8, 2.5, 3.0, 2.7)
+
+# Perform KDE
+kde <- density(data)
+
+# Plot KDE
+plot(kde, main="Kernel Density Estimation", xlab="Value", ylab="Density")
+```
+
+### Using the KDE for Inferences
+
+1.  **Finding the Mode:** The mode is the value with the highest density.
+
+    ``` r
+    mode_value <- kde$x[which.max(kde$y)]
+    print(paste("Mode of the distribution:", mode_value))
+    ```
+
+2.  **Probability in a Range:** Estimate the probability that a value falls within a specific range, e.g., between 2.5 and 3.0.
+
+    ``` r
+    # Function to compute area under KDE curve within a range
+    kde_area <- function(kde, lower, upper) {
+      # Subset the points within the range
+      in_range <- kde$x >= lower & kde$x <= upper
+      x_in_range <- kde$x[in_range]
+      y_in_range <- kde$y[in_range]
+      # Compute the area using the trapezoidal rule
+      area <- sum(diff(x_in_range) * (head(y_in_range, -1) + tail(y_in_range, -1)) / 2)
+      return(area)
+    }
+
+    prob_range <- kde_area(kde, 2.5, 3.0)
+    print(paste("Probability of value between 2.5 and 3.0:", prob_range))
+    ```
+
+3.  **Cumulative Distribution Function (CDF):** Estimate the probability that a value is less than or equal to a given threshold, e.g., 2.8.
+
+    ``` r
+    prob_less_than <- kde_area(kde, -Inf, 2.8)
+    print(paste("Probability of value less than or equal to 2.8:", prob_less_than))
+    ```
+
+### Full R Code
+
+Here is the complete R code combining all the steps:
+
+``` r
+# Load necessary library
+library(MASS)
+
+# Sample data
+data <- c(2.1, 2.3, 2.9, 3.2, 2.8, 2.5, 3.0, 2.7)
+
+# Perform KDE
+kde <- density(data)
+
+# Plot KDE
+plot(kde, main="Kernel Density Estimation", xlab="Value", ylab="Density")
+
+# Find the mode
+mode_value <- kde$x[which.max(kde$y)]
+print(paste("Mode of the distribution:", mode_value))
+
+# Function to compute area under KDE curve within a range
+kde_area <- function(kde, lower, upper) {
+  # Subset the points within the range
+  in_range <- kde$x >= lower & kde$x <= upper
+  x_in_range <- kde$x[in_range]
+  y_in_range <- kde$y[in_range]
+  # Compute the area using the trapezoidal rule
+  area <- sum(diff(x_in_range) * (head(y_in_range, -1) + tail(y_in_range, -1)) / 2)
+  return(area)
+}
+
+# Estimate probability in a range
+prob_range <- kde_area(kde, 2.5, 3.0)
+print(paste("Probability of value between 2.5 and 3.0:", prob_range))
+
+# Estimate probability less than or equal to a threshold
+prob_less_than <- kde_area(kde, -Inf, 2.8)
+print(paste("Probability of value less than or equal to 2.8:", prob_less_than))
+```
+
+### Explanation
+
+1.  **KDE Computation and Plotting:**
+    -   We compute the KDE using the `density` function.
+    -   We plot the KDE to visualize the estimated PDF.
+2.  **Finding the Mode:**
+    -   The mode is found by identifying the value with the highest density in the KDE result.
+3.  **Probability in a Range:**
+    -   The `kde_area` function computes the area under the KDE curve within a specified range using the trapezoidal rule, providing an estimate of the probability.
+4.  **Cumulative Distribution Function (CDF):**
+    -   The same `kde_area` function is used to compute the area from negative infinity to a given threshold to estimate the CDF at that point.
+
+This approach demonstrates how KDE can be used not only for visualization but also for making probabilistic inferences about the data.

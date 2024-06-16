@@ -580,8 +580,8 @@ The regression analysis shows that both horsepower and weight are significant pr
 #### R Code:
 
 ```{r}
-# Load necessary libraries 
-library(dplyr) 
+# Load necessary libraries
+library(dplyr)
 library(ggplot2)
 library(caret)  # For confusion matrix
 library(pROC)   # For AUC
@@ -590,9 +590,9 @@ library(pROC)   # For AUC
 mtcars$am <- as.factor(mtcars$am)
 
 # Fit a logistic regression model to predict transmission based on hp and wt
-logistic_model <- glm(am ~ hp + wt, data = mtcars, family = binomial)  
-# Summarize the logistic regression model 
-summary(logistic_model)  
+logistic_model <- glm(am ~ hp + wt, data = mtcars, family = binomial)
+# Summarize the logistic regression model
+summary(logistic_model)
 
 # Make predictions on the training set
 predicted_probabilities <- predict(logistic_model, type = "response")
@@ -611,7 +611,24 @@ roc_curve <- roc(mtcars$am, predicted_probabilities)
 auc_value <- auc(roc_curve)
 print(paste("AUC:", auc_value))
 
-# Plot ROC Curve
+# Plot the ROC curve
+plot(roc_curve, main = "ROC Curve with Selected Thresholds")
+
+# Add selected threshold values to the plot
+thresholds <- roc_curve$thresholds
+tpr <- roc_curve$sensitivities
+fpr <- 1 - roc_curve$specificities  # FPR is 1 - Specificities
+
+# Select a subset of thresholds to display
+selected_indices <- seq(1, length(thresholds), length.out = 10)  # Adjust this value to control the number of labels
+selected_thresholds <- round(thresholds[selected_indices], 2)
+selected_tpr <- tpr[selected_indices]
+selected_fpr <- fpr[selected_indices]
+
+# Add selected threshold labels to the plot
+text(selected_fpr, selected_tpr, labels = selected_thresholds, pos = 4, cex = 0.8)
+
+# Optionally, plot the ROC curve again without thresholds for a cleaner view
 plot(roc_curve, col = "blue", main = "ROC Curve")
 ```
 
@@ -696,6 +713,32 @@ AUC: 0.965
     -   An AUC of 0.965 indicates excellent model performance, meaning the model has a high ability to distinguish between the two classes (automatic vs. manual transmission).
 
 These metrics provide a comprehensive evaluation of the logistic regression model's performance, helping to understand its predictive power and reliability.
+
+### Determining the Best Threshold Value
+
+To determine the best threshold value from the ROC curve, we often use the Youden's J statistic, which maximizes the difference between sensitivity and specificity. This can be calculated and the corresponding threshold can be identified programmatically.
+
+Here's how to do it in R:
+
+```{r}
+# Calculate the Youden's J statistic for each threshold
+youden_j <- roc_curve$sensitivities + roc_curve$specificities - 1
+
+# Find the index of the maximum Youden's J statistic
+best_threshold_index <- which.max(youden_j)
+
+# Get the best threshold value
+best_threshold <- roc_curve$thresholds[best_threshold_index]
+
+# Print the best threshold value
+print(paste("Best Threshold Value:", best_threshold))
+```
+
+### Explanation:
+
+-   **youden_j**: This vector stores the Youden's J statistic for each threshold.
+-   **which.max(youden_j)**: Finds the index of the maximum Youden's J statistic.
+-   **roc_curve\$thresholds\[best_threshold_index\]**: Gets the threshold value corresponding to the maximum Youden's J statistic.
 
 ### 4. Clustering: K-Means Clustering Example
 
@@ -783,7 +826,11 @@ silhouette_width <- silhouette(kmeans_result$cluster, dist(scaled_data))
 plot(silhouette_width, main = "Silhouette Plot for K-Means Clustering")
 ```
 
-**Silhouette Plot:** The silhouette plot provides a visual representation of the silhouette width for each data point. Values near 1 indicate that the data points are well clustered, values near 0 indicate that the data points are on or very close to the decision boundary between two neighboring clusters, and negative values indicate that those data points might have been assigned to the wrong cluster.
+**Silhouette Plot:**
+
+The silhouette plot provides a visual representation of the silhouette width for each data point.
+
+Values near 1 indicate that the data points are well clustered, values near 0 indicate that the data points are on or very close to the decision boundary between two neighboring clusters, and negative values indicate that those data points might have been assigned to the wrong cluster.
 
 ### Interpretation:
 
